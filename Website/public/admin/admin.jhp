@@ -20,7 +20,7 @@ try.
   end.
   lst=.}.'userlist' getUserInfo_pselectdb_ '' NB. database call to get users
   'Uids Actives Fnames Lnames'=: 4{.|:lst
-catch. NB. Error=: 13!:12'' 
+catch. Error=: 13!:12'' 
 end.
 
 transfer '~CGI/manageusers.asp'
