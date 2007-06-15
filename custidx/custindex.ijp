@@ -1,0 +1,82 @@
+NB. project file: d:/jprg/user/projects/custidx/custindex
+
+coclass 'jproject'
+
+PRIMARYFILES=: 0 : 0
+~Projects/custidx/gui
+~Projects/custidx/sqlcmds
+~Projects/custidx/griddefs
+~Projects/custidx/crosstab
+~Projects/custidx/calcrevs
+~Projects/custidx/idxlist
+~Projects/custidx/exportexcel
+~addons/data/sqlite/sqlite
+~addons/data/sqlite/def
+~addons/tables/tara/tara
+~user/classes/wincrypt
+)
+
+PRIMARYLIBS=: 0 : 0
+convert
+dates
+dll
+files
+font
+gl2
+grid
+pack
+strings
+)
+
+DEVFILES=: 0 : 0
+~Projects/custidx/portdatafromexcel
+~addons/data/sqlite/browser
+~Projects/custidx/dev_custidx
+)
+
+DEVLIBS=: ''
+
+OTHERFILES=: 0 : 0
+~Projects/custidx/test0.ijs
+~addons/tables/tara/tara.ijt
+)
+
+TARGETFILE=: '~Projects/custidx/custidx.ijs'
+
+TARGETLOCALE=: 'pcustidx'
+
+TARGETHEADER=: ''
+
+TARGETEXTRA=: 'NB. custidx ''d:/jprg/user/Projects/custidx/custidx_tst.sqlite'''
+
+BUILDOPTS=: 0 0 1 0 0 0 0
+
+PREBUILDFILE=: ''
+
+POSTBUILDFILE=: ''
+
+TESTFILE=: '~Projects/custidx/test.ijs'
+
+NOTES=: 0 : 0
+TO DO:
+*delete client (upd status to 0) 
+
+*How to calculate rv_value if client specifies manual REVs ???
+  -I think that
+
+*?Menu item to change min price to other than $450
+
+*Outputing customised indexes for each client
+  - use Excel & Tara
+
+*If distributing need to adjust ADDONDIR in defs.ijs to point to installed location of sqlite3.dll
+)
+
+VERSION=: ''
+
+WINDOWS=: 0 : 0
+d:/jprg/user/projects/custidx/gui.ijs;886 9 700 753
+d:/jprg/user/projects/custidx/custidx.ijs;3 7 700 753
+c:/program files/j601/addons/data/sqlite/browser.ijs;118 138 662 804
+c:/program files/j601/system/examples/demo/grid.ijs;42 91 700 753
+)
