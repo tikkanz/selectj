@@ -1,0 +1,60 @@
+NB. project file: d:/jprg/user/projects/selectj/selectj
+
+coclass 'jproject'
+
+PRIMARYFILES=: 0 : 0
+~Projects/selectj/jhpadd
+~Projects/selectj/userlogin
+~Projects/selectj/popfolders
+~Projects/selectj/scenarios
+~Projects/selectj/userdb
+~Projects/selectj/sqlcmds
+~addons/data/sqlite/sqlite
+~addons/data/sqlite/def
+~addons/convert/misc/md5
+)
+
+PRIMARYLIBS=: 0 : 0
+convert
+dll
+files
+guid
+strings
+)
+
+DEVFILES=: 0 : 0
+~addons/web/jhp/jhp
+~addons/web/jhp/request
+)
+
+DEVLIBS=: ''
+
+OTHERFILES=: 0 : 0
+d:/web/selectj/public/admin/admin.jhp
+d:/web/selectj/public/default.jhp
+d:/web/selectj/public/login.jhp
+d:/web/selectj/public/register.jhp
+~Projects/selectj/test0.ijs
+)
+
+TARGETFILE=: 'd:/web/selectj/code/selectj.ijs'
+
+TARGETLOCALE=: 'pselect'
+
+TARGETHEADER=: ''
+
+TARGETEXTRA=: ''
+
+BUILDOPTS=: 0 1 0 1 0 0 1
+
+PREBUILDFILE=: ''
+
+POSTBUILDFILE=: ''
+
+TESTFILE=: '~Projects/selectj/test.ijs'
+
+NOTES=: ''
+
+VERSION=: ''
+
+WINDOWS=: ''
