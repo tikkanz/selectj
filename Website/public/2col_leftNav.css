@@ -86,7 +86,7 @@ label{
 	border-bottom: 1px solid #cccccc;
 	width: 100%;
 	background-color: #669900;
-	background-image: url(img/gainform2.png);
+	background-image:  url("img/gainform.png");
 	background-repeat: repeat-x;
 	background-position: left center;
 }

@@ -18,7 +18,7 @@
 </head>
 <body onload="">
 <div id="masthead">
-  <div id="logo"><a href="../default.jhp"><img src="../img/deltag2.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
+  <div id="logo"><a href="../default.jhp"><img src="../img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
   <h1 id="siteName"><!-- InstanceBeginEditable name="SiteName" -->AnimalSim Web Admin<!-- InstanceEndEditable --></h1> 
   <div id="globalNav"> 
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>

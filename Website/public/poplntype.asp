@@ -21,7 +21,7 @@
 </head>
 <body onload="myformInit(objnmes,inivars)">
 <div id="masthead">
-  <div id="logo"><a href="default.jhp"><img src="img/deltag2.png" alt="AnimalSim Home" width="91" height="55" border="0" /></a></div> 
+  <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim Home" width="91" height="55" border="0" /></a></div> 
   <h1 id="siteName">AnimalSim - <span class="small"><%= fname %> <%= lname %> logged in</span></h1> 
   <div id="globalNav"> 
   <a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct.massey.ac.nz" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a></div> 
