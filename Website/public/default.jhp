@@ -1,0 +1,25 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+    select. action
+    case. 'logout' do.
+      if. loggedIn'' do. DeleteCookie 'UserID' end.
+      page=.'~CGI/logout.html'
+    case. 'loginfail' do.
+	  uname=: qparam 'uname'
+      page=.'~CGI/loginfail.asp'
+    case. 'nouser' do.
+      page=.'~CGI/nouser.html'
+    case. do. NB. default action
+      page=.'~CGI/welcome.html'
+    end.
+      transfer page
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=. 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: ',Error
+  println '</p></body></html>'
+end.
+%>

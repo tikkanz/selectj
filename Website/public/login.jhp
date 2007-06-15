@@ -1,0 +1,28 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  uid=: validLogin qparam each 'usrname';'passwd'
+  if. 0>uid do. NB. invalid login
+    redirect 'default.jhp?action=loginfail&uname=',qparam 'usrname'
+    NB. redirect 'default.jhp?action=loginfail&username=',(qparam 'usrname'),'&error=',(":uid)
+  else.
+    if. 1=isActive ": uid do.
+      NB. Make user active
+    end.
+    page=. '~CGI/usrhome.asp'  NB. destination page
+    NB. keys=. getKeys page NB. get keys required for usrhome.jhp
+    NB. keyvals=: getVals keys  NB. get values for keys and assign to keys
+    'fname lname'=: {:'greeting' getUserInfo_pselectdb_ uid
+    PoplnDescrip=: 'my dummy popln'
+    CurrYear=: 2
+    uid SetCookie 'UserID'
+    transfer page NB. ?scope=login'
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: ',Error
+  println '</p></body></html>'
+end.
+%>

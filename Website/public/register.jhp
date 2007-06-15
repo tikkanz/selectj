@@ -1,0 +1,34 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  if. 'GET' -: env 'REQUEST_METHOD' do.
+    page=. '~CGI/regform.asp'
+    usernameErr=: ''
+  else.
+    uid=: registerUser qparam each qparamKeys''
+    if. 0>uid do. NB. invalid login
+      NB.redirect 'register.jhp?action=regerror&uname=',(qparam 'uname')
+      usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
+      usernameErr=: usernameErr,' Please choose another one.'
+      'fname lname studentid email'=: qparam each ;:'fname lname studentid email'
+      page=. '~CGI/regform.asp'
+    else.
+      page=. '~CGI/usrhome.asp'  NB. destination page
+      NB. keys=. getKeys page NB. get keys required for usrhome.jhp
+      NB. keyvals=: getVals keys  NB. get values for keys and assign to keys
+      'fname lname'=: {:'greeting' getUserInfo_pselectdb_ uid
+      PoplnDescrip=: 'my dummy popln'
+      CurrYear=: 2
+      uid SetCookie 'UserID'
+    end.
+  end.
+  transfer page
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: ',Error
+  println 'Page is: ',page
+  println '</p></body></html>'
+end.
+%>

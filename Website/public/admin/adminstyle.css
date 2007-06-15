@@ -1,0 +1,12 @@
+pre { background-color: #f8f8f0; padding: 4pt; border: 1px solid #e0e0e0; }
+td th {padding:2px 10px 2px 10px; font-size:90%;}
+tr.Tools{background:#e0e0ff; font-size:80%}
+#F1 a{ text-decoration:underline}
+.Error1 {background:#ffffe0;color:red;border:1px solid red;margin:4px 0 4px 0;}
+.r0 {background:#ffffff}
+.r1 {background:#f0f8ff;}
+.rs {background:#e8e0f0}
+.rh {background:#f0f0a0}
+.rh th {border-right: 1px solid #c0c0c0;}
+th.rh  {border-bottom: 1px solid #c0c0c0;}
+

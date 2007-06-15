@@ -1,0 +1,29 @@
+<% 
+load '~.CGI/code/selectj.ijs'
+
+Uids   =:  qparamList 'Uids'
+Select =: ;0 qparamList 'Select'
+Item   =: ''
+Index  =: _1 qparam     'Index'
+Error=: ''
+Actives=: Fnames=: Lnames=: ''
+
+try.
+  select. qparam 'Command'
+  case. 'Reset' do.  NB. reset selected recs
+  case. 'Delete' do.  NB. delete selected recs
+    NB. Names  =: (<<<Select) { Names
+    NB. Amounts=: (<<<Select) { Amounts
+  case. 'Index' do. NB. select & display user record
+    Item=: |:'userrec' getUserInfo_pselectdb_ Index{Uids
+    lst=.}.'userlist' getUserInfo_pselectdb_ '' NB. database call to get users
+    'Uids Actives Fnames Lnames'=: 4{.|:lst
+  case.  do.
+    lst=.}.'userlist' getUserInfo_pselectdb_ '' NB. database call to get users
+    'Uids Actives Fnames Lnames'=: 4{.|:lst
+  end.
+catch. Error=: 13!:12'' end.
+
+NB. transfer '~CGI/userhome.asp' 
+transfer '~CGI/manageusers.asp' 
+%>
