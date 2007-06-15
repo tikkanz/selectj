@@ -6,7 +6,7 @@
 <!-- InstanceBeginEditable name="pgtitle" -->
 <title>AnimalSim</title>
 <!-- InstanceEndEditable -->
-<script language="JavaScript" src="interface.js" type="text/javascript">
+<script language="JavaScript" src="../interface.js" type="text/javascript">
 </script>
 <link rel="stylesheet" href="../2col_leftNav.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" -->
