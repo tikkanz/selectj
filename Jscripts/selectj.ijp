@@ -25,6 +25,7 @@ strings
 DEVFILES=: 0 : 0
 ~addons/web/jhp/jhp
 ~addons/web/jhp/request
+~Projects/selectj/testdb
 )
 
 DEVLIBS=: ''

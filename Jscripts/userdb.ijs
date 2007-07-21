@@ -4,7 +4,8 @@ require 'data/sqlite'
 coclass 'pselectdb'
 
 NB. ConStr=: jpath '~.CGI/code/select_small.sqlite'
-ConStr=:  'd:/web/selectj/code/select_small.sqlite'
+NB. ConStr=:  'd:/web/selectj/code/select_small.sqlite'
+ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
 
 NB. =========================================================
 lasterr=: [: deb LF -.~ }.@(13!:12)

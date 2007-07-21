@@ -72,13 +72,20 @@ NB.*registerUsers v creates a new user, if successful returns userid
 NB. y is boxed list of strings from registration form
 NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0
-  NB. 'uname fname lname studentid email passwd'=.y
-  passwd=._1{::y
-  uname=.0{::y
+  'uname fname lname refnum email passwd'=.y
+  NB.passwd=._1{::y
+  NB.uname=.0{::y
   uinfo =. {:'login' getUserInfo_pselectdb_ uname  NB. retrieve data for username
   if. -.uinfo-:'' do. _2 return. end. NB. check usrname not already in use
+  pinfo =. {:'email' getUserInfo_pselectdb_  email
+  if. -.pinfo-:''  do. NB. if email address already used in people table
+    pid=. 0{::pinfo    NB. get pid of person with that email address
+  else.
+    pid=. 'newperson' insertDBTable_pselectdb_ fname;lname;email NB. insert person in people table
+  end.
   sph=. salthash passwd NB. create salt and passhash
-  uid=.'newuser' insertDBTable_pselectdb_ (}:y),|.sph NB. insert user into database
+  uid=.'newuser' insertDBTable_pselectdb_ pid;uname;refnum;|.sph NB. insert user into database
+  NB. uid=.'newuser' insertDBTable_pselectdb_ (}:y),|.sph NB. insert user into database
 )
 
 NB.*resetUsers v resets user account and folder
