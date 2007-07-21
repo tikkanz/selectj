@@ -109,7 +109,7 @@
       </tr>
       <tr>
         <th scope="row">&nbsp;</th>
-        <td><input value="Create account" id="submt" type="button" tabindex="8" onclick="javascript:callregsubmit();" /></td>
+        <td><input name="Submit" type="submit" id="submt" tabindex="8" onclick="javascript:callregsubmit();" value="Create account" /></td>
       </tr>
 
     </tbody>

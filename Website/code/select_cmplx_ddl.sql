@@ -54,7 +54,7 @@ CREATE TABLE scendefs (
 CREATE TABLE users (
 	ur_id     INTEGER NOT NULL PRIMARY KEY,
 	ur_ppid   INTEGER NOT NULL REFERENCES people(pp_id),
-	ur_inid   INTEGER NOT NULL REFERENCES institutions(in_id),
+	ur_inid   INTEGER DEFAULT 1 REFERENCES institutions(in_id),
 	ur_uname    CHAR(20)  UNIQUE NOT NULL, -- username 
 	ur_passhash CHAR(32),                  -- hashed (salt + password)
 	ur_salt     INTEGER,                   -- salt for creating hashed password
@@ -77,10 +77,11 @@ CREATE TABLE courses (  -- courses offered by each institution
 
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
   of_id     INTEGER NOT NULL PRIMARY KEY,
-  of_crid   INTEGER NOT NULL REFERENCES courses(cr_id) ,
-  of_year   INTEGER NOT NULL DEFAULT NOW(),
+  of_crid   INTEGER NOT NULL REFERENCES courses(cr_id),
+  of_year   INTEGER NOT NULL DEFAULT 2007,
   of_smid   INTEGER NOT NULL REFERENCES semesters(sm_id),
-  of_dmid   INTEGER NOT NULL REFERENCES delivmodes(dm_id) );
+  of_dmid   INTEGER NOT NULL REFERENCES delivmodes(dm_id),
+  of_status INTEGER DEFAULT 1 ); -- >0 active, <1 inactive 
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_id     INTEGER NOT NULL PRIMARY KEY,

@@ -89,13 +89,20 @@ isActive=: 3 : 0
   s=. {:'status' getUserInfo_pselectdb_ y
 )
 registerUser=: 3 : 0
+  'uname fname lname refnum email passwd'=.y
   
-  passwd=._1{::y
-  uname=.0{::y
+  
   uinfo =. {:'login' getUserInfo_pselectdb_ uname  
   if. -.uinfo-:'' do. _2 return. end. 
+  pinfo =. {:'email' getUserInfo_pselectdb_  email
+  if. -.pinfo-:''  do. 
+    pid=. 0{::pinfo    
+  else.
+    pid=. 'newperson' insertDBTable_pselectdb_ fname;lname;email 
+  end.
   sph=. salthash passwd 
-  uid=.'newuser' insertDBTable_pselectdb_ (}:y),|.sph 
+  uid=.'newuser' insertDBTable_pselectdb_ pid;uname;refnum;|.sph 
+  
 )
 resetUsers=: 3 : 0
   if. *#y do.
@@ -121,7 +128,7 @@ deleteUsers=: 3 : 0
 require 'data/sqlite'
 
 coclass 'pselectdb'
-ConStr=:  'd:/web/selectj/code/select_small.sqlite'
+ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
 lasterr=: [: deb LF -.~ }.@(13!:12)
 usrdberr_z_=: (assert 0=#) f.
 
@@ -170,24 +177,37 @@ sqlsel_status=: 0 : 0
 )
 
 sqlsel_greeting=: 0 : 0
-  SELECT ur_fname, ur_lname
-  FROM users
+  SELECT pp_fname, pp_lname
+  FROM users INNER JOIN people on ur_ppid=pp_id
   WHERE ur_id=?;
 )
 
 sqlsel_userlist=: 0 : 0
-  SELECT ur_id,ur_status,ur_fname,ur_lname
-  FROM users
+  SELECT ur_id,ur_status,pp_fname,pp_lname
+  FROM users INNER JOIN people ON ur_ppid=pp_id;
 )
 sqlsel_userrec=: 0 : 0
-  SELECT ur_id,ur_fname,ur_lname,ur_uname,ur_studentid,ur_email,ur_status,ur_salt,ur_passhash
-  FROM users
+  SELECT ur_id,pp_fname,pp_lname,ur_uname,ur_refnum,pp_email,ur_status,ur_salt,ur_passhash
+  FROM users INNER JOIN people ON ur_ppid=pp_id
   WHERE ur_id=?;
 )
 
+
+sqlsel_email=: 0 : 0
+  SELECT pp_id,pp_fname,pp_lname
+  FROM people
+  WHERE pp_email=?;
+)
+
+
+sqlins_newperson=: 0 : 0
+  INSERT INTO people (pp_fname,pp_lname,pp_email)
+  VALUES(?,?,?);
+)
+
 sqlins_newuser=: 0 : 0
-  INSERT INTO users (ur_uname,ur_fname,ur_lname,ur_studentid,ur_email,ur_passhash,ur_salt)
-  VALUES(?,?,?,?,?,?,?);
+  INSERT INTO users (ur_ppid,ur_uname,ur_refnum,ur_passhash,ur_salt)
+  VALUES(?,?,?,?,?);
 )
 
 sqlupd_resetusers=: 0 : 0

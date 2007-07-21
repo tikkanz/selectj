@@ -1,0 +1,38 @@
+[Config]
+Relative path=1
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.HideOutput=0
+DefaultDir=D:\Web\SelectJ
+DefaultCPIndex=0
+LogtoEnd=1
+DontOpen=0
+FileFormat=0
+[Project tree]
+SelectJ
+	+JavaScript
+		public\interface.js
+		public\init_forms.js
+	+HTML
+		public\welcome.html
+		public\usrhome.asp
+		public\regform.asp
+		public\poplntype.asp
+		public\nouser.html
+		public\logout.html
+		public\loginfail.asp
+		public\2col_leftNav.css
+	+SQL
+		code\select_cmplx_ddl.sql
+		code\select_cmplx_data.sql
+		code\select_ddl.sql
+		code\date_data.sql
+	+JHP
+		public\register.jhp
+		public\login.jhp
+		public\default.jhp
+		public\admin.jhp
+		public\admin\admin.jhp
+[Open project files]
+[Selected Project Files]
+Main=

@@ -7,7 +7,7 @@ Index  =: _1 qparam     'Index'
 Error=: ''
 
 try.
-  select. qparam 'Command' 
+  select. qparam 'Command'
   case. 'Reset' do.  NB. reset selected recs
     if. _99-:Index do. Select=:i.#Uids end.
     tmp=. resetUsers Select{Uids
