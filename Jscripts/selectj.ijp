@@ -33,8 +33,8 @@ DEVLIBS=: ''
 OTHERFILES=: 0 : 0
 d:/web/selectj/public/admin/admin.jhp
 d:/web/selectj/public/default.jhp
-d:/web/selectj/public/login.jhp
 d:/web/selectj/public/register.jhp
+d:/web/selectj/public/user.jhp
 ~Projects/selectj/test0.ijs
 )
 

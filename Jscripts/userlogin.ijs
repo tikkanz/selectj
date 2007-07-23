@@ -68,7 +68,7 @@ isActive=: 3 : 0
   s=. {:'status' getUserInfo_pselectdb_ y
 )
 
-NB.*registerUsers v creates a new user, if successful returns userid
+NB.*registerUser v creates a new user, if successful returns userid
 NB. y is boxed list of strings from registration form
 NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0

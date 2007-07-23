@@ -68,18 +68,18 @@ sqlupd_deleteusers=: 0 : 0
 )
 
 
-sqlsel_courses=: 0 : 0
-  SELECT of_id,cr_code,cr_name,of_year,sm_code,dm_code,rl_name
+sqlsel_mycourses=: 0 : 0
+  SELECT of_id,of_admin,cr_code,cr_name,of_year,sm_code,dm_code,rl_name
   FROM (enrolments INNER JOIN roles ON en_rlid=rl_id)
        INNER JOIN
        (((offerings INNER JOIN courses ON of_crid=cr_id)
        INNER JOIN delivmodes ON of_dmid=dm_id)
        INNER JOIN semesters  ON of_smid=sm_id)
        ON en_ofid=of_id
-  WHERE en_urid=1 AND of_status >0;
+  WHERE en_urid=? AND of_status >0;
 )
 
-Notes 'link enrolments with names, roles, and course offering info'
+Note 'link enrolments with names, roles, and course offering info'
   SELECT ur_uname,pp_fname,pp_lname,cr_id,cr_name,cr_code,of_year,dm_code,sm_code,rl_code
   FROM ((enrolments 
           INNER JOIN (users INNER JOIN people ON ur_ppid=pp_id) 

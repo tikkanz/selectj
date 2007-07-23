@@ -33,3 +33,10 @@ refresh=: 3 : 0
 )
 
 boxitem=: ,`(<"_1) @. (0=L.)
+
+setcolnames=: 3 : 0
+if. y-:i.0 0 do. return. end.
+'hdr dat'=. split y
+ (hdr)=: |:dat
+ ''
+)
