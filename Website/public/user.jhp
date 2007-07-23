@@ -11,6 +11,9 @@ try.
     	uid SetCookie 'UserID'
 		redirect 'user.jhp?action=home'
 	  end.
+	case. 'guest' do.
+    	'5' SetCookie 'UserID'
+		redirect 'user.jhp?action=home'
 	case. 'home' do.
 	  uid=. 0 qcookie 'UserID'
 	  if. uid=0 do. redirect 'default.jhp' 

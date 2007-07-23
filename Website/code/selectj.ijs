@@ -246,6 +246,29 @@ sqlsel_mycourses=: 0 : 0
   WHERE en_urid=? AND of_status >0;
 )
 
+
+sqlsel_course=: 0 : 0
+SELECT courses.cr_code cr_code ,
+      courses.cr_name cr_name ,
+      courses.cr_intro cr_intro ,
+      offering_info.of_id of_id ,
+      offering_info.of_crid of_crid ,
+      offering_info.cr_code cr_code ,
+      offering_info.of_year of_year ,
+      offering_info.sm_code sm_code ,
+      offering_info.dm_code dm_code ,
+      offering_info.of_status of_status ,
+      offering_info.pp_fname pp_fname ,
+      offering_info.pp_lname pp_lname 
+
+FROM `offering_info` offering_info INNER JOIN `courses` courses 
+      ON ( `offering_info`.`of_crid` = `courses`.`cr_id` ) 
+WHERE (offering_info.of_id =5);
+)
+
+
+
+
 Note 'link enrolments with names, roles, and course offering info'
   SELECT ur_uname,pp_fname,pp_lname,cr_id,cr_name,cr_code,of_year,dm_code,sm_code,rl_code
   FROM ((enrolments 

@@ -73,7 +73,9 @@ CREATE TABLE courses (  -- courses offered by each institution
   cr_name   CHAR(50) NOT NULL,  -- course name
   cr_code   CHAR(10) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
   cr_descr  CHAR(700),          -- course description
-  cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id) );
+  cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id),
+  cr_intro  CHAR(1000)          -- AnimalSim intro text for course 
+  );
 
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
   of_id     INTEGER NOT NULL PRIMARY KEY,
@@ -136,3 +138,27 @@ BEGIN
      DELETE FROM enrolments
      WHERE en_urid=old.ur_id;
 END;
+
+CREATE VIEW `offering_info` AS 
+-- this VIEW created by support@osenxpsuite.net [Visual Query Builder - SQLite2007 PRO]
+-- created date: 23/07/2007 16:53:35
+SELECT 
+      offerings.of_id of_id ,
+      offerings.of_crid of_crid ,
+      courses.cr_code cr_code ,
+      offerings.of_year of_year ,
+      semesters.sm_code sm_code ,
+      delivmodes.dm_code dm_code ,
+      offerings.of_status of_status ,
+      people.pp_fname pp_fname ,
+      people.pp_lname pp_lname 
+
+FROM 
+      `semesters` semesters INNER JOIN `offerings` offerings ON ( `semesters`.`sm_id` = `offerings`.`of_smid` ) 
+      INNER JOIN `delivmodes` delivmodes ON ( `delivmodes`.`dm_id` = `offerings`.`of_dmid` ) 
+      INNER JOIN `users` users ON ( `users`.`ur_id` = `offerings`.`of_admin` ) 
+      INNER JOIN `courses` courses ON ( `courses`.`cr_id` = `offerings`.`of_crid` ) 
+      INNER JOIN `people` people ON ( `people`.`pp_id` = `users`.`ur_ppid` ) 
+
+WHERE 
+      (offerings.of_status >0);
