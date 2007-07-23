@@ -52,25 +52,25 @@
       <th>First</th>
       <th>Last</th>
       </tr>
-      <% for_i. i.#Uids do. %><tr class="r<%=(Index~:i){'s',":2|i%>">
+      <% for_i. i.#ur_id do. %><tr class="r<%=(Index~:i){'s',":2|i%>">
         <td><input type="checkbox" name="Select"  value="<%= i %>"></td>
-        <td><a href="javascript:cmd('Index',<%=i%>)"><%= i{::Uids %></a>
-		    <input type="hidden"   name="Uids"   value="<%= i{::Uids %>"></td>
-        <td><span><%= i{::Actives %></span> </td>
-        <td><span><%= i{::Fnames %></span> </td>
-        <td><span><%= i{::Lnames %></span> </td>
+        <td><a href="javascript:cmd('Index',<%=i%>)"><%= i{ur_id %></a>
+		    <input type="hidden"   name="ur_id"   value="<%= i{ur_id %>"></td>
+        <td><span><%= i{ur_status %></span> </td>
+        <td><span><%= i{pp_fname %></span> </td>
+        <td><span><%= i{pp_lname %></span> </td>
         </tr><% end. %>
     </table>
     </td>
     <td colspan="3" valign="top">
-    <fieldset><legend>Item</legend>
+    <fieldset><legend>User Info</legend>
       <table cellspacing="0">
         <tr>
         <th width="78" class="rh">UserID</th>
         <td width="93"><%= 'ur_id'keyval Item%></td>
       </tr><tr>
         <th class="rh">Name</th>
-        <td><%='ur_fname'keyval Item%> <%='ur_lname'keyval Item%></td>
+        <td><%='pp_fname'keyval Item%> <%='pp_lname'keyval Item%></td>
       </tr>
       <tr>
         <th class="rh">Username</th>
@@ -78,11 +78,11 @@
       </tr>
       <tr>
         <th class="rh">StudentID</th>
-        <td><%= 'ur_studentid'keyval Item%></td>
+        <td><%= 'ur_refnum'keyval Item%></td>
       </tr>
       <tr>
         <th class="rh">Email</th>
-        <td><%= 'ur_email'keyval Item%></td>
+        <td><%= 'pp_email'keyval Item%></td>
       </tr>
       <tr>
         <th class="rh">Status</th>
@@ -107,7 +107,7 @@ CGIVALS
 <%print CGIVALS %>
 Select
 <%print Select %>
-Uids
+ur_id
 <%print Uids %>
 Index
 <%print Index %>

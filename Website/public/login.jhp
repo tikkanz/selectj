@@ -12,9 +12,8 @@ try.
     page=. '~CGI/usrhome.asp'  NB. destination page
     NB. keys=. getKeys page NB. get keys required for usrhome.jhp
     NB. keyvals=: getVals keys  NB. get values for keys and assign to keys
-    'fname lname'=: {:'greeting' getUserInfo_pselectdb_ uid
-    PoplnDescrip=: 'my dummy popln'
-    CurrYear=: 2
+    setcolnames 'greeting' getUserInfo_pselectdb_ uid
+	setcolnames 'mycourses' getUserInfo_pselectdb_ uid
     uid SetCookie 'UserID'
     transfer page NB. ?scope=login'
   end.

@@ -45,15 +45,12 @@ insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Experiment wi
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Production Animal Science','ASC101','Intro course with genetics',2);
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Using Genetics','USEGEN','Extension for farmers',3);
 
-insert into offerings (of_crid, of_year, of_smid, of_dmid, of_status) values (1,2007,1,1,-1);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (1,2007,4,1);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (2,2007,2,1);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (3,2007,4,2);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (7,2007,2,3);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (5,2007,4,2);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (5,2008,4,2);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (5,2009,4,2);
-insert into offerings (of_crid, of_year, of_smid, of_dmid) values (5,2010,4,2);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin, of_status) values (1,2007,1,1,1,-1);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (1,2007,4,1,1);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (2,2007,2,1,1);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (3,2007,4,2,3);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (7,2007,2,3,3);
+insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (5,'',4,2,1);
 
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,1,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,2,3);
@@ -61,21 +58,13 @@ insert into enrolments (en_urid, en_ofid, en_rlid) values (1,3,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,5,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,6,3);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (1,7,3);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (1,8,3);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (1,9,3);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (2,5,3);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (3,3,3);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (3,5,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,5,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (3,6,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (3,1,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (3,3,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (2,1,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (2,3,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,1,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,3,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (2,6,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (5,6,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (5,7,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (5,8,1);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (5,9,1);
 
 insert into templates (tm_sdid, tm_opt1, tm_opt2, tm_opt3) values (1,1,1,1);
 insert into templates (tm_sdid, tm_opt1, tm_opt2, tm_opt3) values (2,1,1,1);

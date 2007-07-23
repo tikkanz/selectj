@@ -27,21 +27,26 @@
 
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <div id="breadCrumb"> </div>
+  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a></div>
   <h2 id="pageName">User Home Page</h2>
   <div class="story">
-    <h3>Hi <%= fname %> <%= lname %></h3>
+    <h3>Hi <%= pp_fname %> <%= pp_lname %></h3>
         <table cellspacing=0 width=98%><tr class=rh>
-      <th>&#160;</th> <th>Name</th> <th>Amount</th>
-    </tr>
-      <% for_i. i.#Names do. %><tr class="r<%=(Index~:i){'s',":2|i%>">
-        <td><input type=checkbox name=Select  value="<%= i %>"></td>
-        <td><a href="javascript:cmd('Index',<%=i%>)"><%= i{::Names %></a>
-		    <input type=hidden   name=Names   value="<%= i{::Names %>"></td>
-        <td><span><%= i{::Amounts %></span>
-		    <input type=hidden   name=Amounts value="<%= i{::Amounts %>"></td>
-      </tr><% end. %>
+      <th>myCourses</th> 
+      </tr>
+      <% for_idx. i.#of_id do. %><tr>
+        <td><a href="course.jhp?of_id=<%= idx{of_id %>"><%= idx{cr_code %> <%= idx{cr_name %></a> (<%= dtb idx{cr_code %>_<%= idx{of_year %>_<%= idx{sm_code %>_<%= idx{dm_code %>)<br/>
+            Instructor: <%= idx{of_admin %> <br/>
+            My Role: <%= idx{rl_name %> <br/>
+            &nbsp;
+            </td>
+        </tr><% end. %>
     </table>
+  <% 
+  if. 1>#i.#of_id do.
+  print '<p>You are not currently enrolled in any courses</p>'
+  end.
+  %>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --> 

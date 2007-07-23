@@ -42,6 +42,13 @@ refresh=: 3 : 0
 )
 
 boxitem=: ,`(<"_1) @. (0=L.)
+
+setcolnames=: 3 : 0
+if. y-:i.0 0 do. return. end.
+'hdr dat'=. split y
+ (hdr)=: |:dat
+ ''
+)
 loggedIn=: 3 : 0
   uid=. qcookie 'UserID'
   0<#uid
@@ -225,6 +232,33 @@ sqlupd_setusers=: 0 : 0
 sqlupd_deleteusers=: 0 : 0
   DELETE FROM users
   WHERE ur_id=?
+)
+
+
+sqlsel_mycourses=: 0 : 0
+  SELECT of_id,of_admin,cr_code,cr_name,of_year,sm_code,dm_code,rl_name
+  FROM (enrolments INNER JOIN roles ON en_rlid=rl_id)
+       INNER JOIN
+       (((offerings INNER JOIN courses ON of_crid=cr_id)
+       INNER JOIN delivmodes ON of_dmid=dm_id)
+       INNER JOIN semesters  ON of_smid=sm_id)
+       ON en_ofid=of_id
+  WHERE en_urid=? AND of_status >0;
+)
+
+Note 'link enrolments with names, roles, and course offering info'
+  SELECT ur_uname,pp_fname,pp_lname,cr_id,cr_name,cr_code,of_year,dm_code,sm_code,rl_code
+  FROM ((enrolments 
+          INNER JOIN (users INNER JOIN people ON ur_ppid=pp_id) 
+          ON en_urid=ur_id)
+            INNER JOIN roles ON en_rlid=rl_id)
+       INNER JOIN 
+       (((offerings 
+          INNER JOIN courses    ON of_crid=cr_id)
+          INNER JOIN delivmodes ON of_dmid=dm_id)
+          INNER JOIN semesters  ON of_smid=sm_id)
+       ON en_ofid=of_id
+  WHERE en_urid=1;
 )
 require 'files'
 require '~addons/data/sqlite/def.ijs'

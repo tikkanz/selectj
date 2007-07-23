@@ -78,10 +78,11 @@ CREATE TABLE courses (  -- courses offered by each institution
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
   of_id     INTEGER NOT NULL PRIMARY KEY,
   of_crid   INTEGER NOT NULL REFERENCES courses(cr_id),
-  of_year   INTEGER NOT NULL DEFAULT 2007,
+  of_year   INTEGER DEFAULT 2007,
   of_smid   INTEGER NOT NULL REFERENCES semesters(sm_id),
   of_dmid   INTEGER NOT NULL REFERENCES delivmodes(dm_id),
-  of_status INTEGER DEFAULT 1 ); -- >0 active, <1 inactive 
+  of_admin  INTEGER DEFAULT NULL REFERENCES users(ur_id), -- Paper coordinator
+  of_status INTEGER DEFAULT 1 );  
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_id     INTEGER NOT NULL PRIMARY KEY,
@@ -121,3 +122,17 @@ CREATE TABLE errors (
   er_tmid   INTEGER NOT NULL REFERENCES templates(tm_id),
   er_sdid   INTEGER NOT NULL REFERENCES scendefs(sd_id),
   er_errmsg CHAR(100) );  -- text of last error message   
+
+CREATE TRIGGER enrol_new_user 
+AFTER INSERT ON users
+BEGIN
+     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+     VALUES(new.ur_id,6,1);
+END;
+
+CREATE TRIGGER delete_enrols
+BEFORE DELETE ON users
+BEGIN
+     DELETE FROM enrolments
+     WHERE en_urid=old.ur_id;
+END;

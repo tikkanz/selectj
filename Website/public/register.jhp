@@ -10,15 +10,13 @@ try.
       NB.redirect 'register.jhp?action=regerror&uname=',(qparam 'uname')
       usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
       usernameErr=: usernameErr,' Please choose another one.'
-      'fname lname studentid email'=: qparam each ;:'fname lname studentid email'
+      'fname lname refnum email'=: qparam each ;:'fname lname refnum email'
       page=. '~CGI/regform.asp'
     else.
       page=. '~CGI/usrhome.asp'  NB. destination page
-      NB. keys=. getKeys page NB. get keys required for usrhome.jhp
-      NB. keyvals=: getVals keys  NB. get values for keys and assign to keys
-      'fname lname'=: {:'greeting' getUserInfo_pselectdb_ uid
-      PoplnDescrip=: 'my dummy popln'
-      CurrYear=: 2
+      setcolnames 'greeting' getUserInfo_pselectdb_ uid
+      setcolnames 'mycourses' getUserInfo_pselectdb_ uid
+	  if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
       uid SetCookie 'UserID'
     end.
   end.
@@ -27,8 +25,17 @@ catch.
   ContentType'text/html'[ Expires 0
   Error=: 13!:12''
   println '<html><body><p>'
-  println 'There was an error: ',Error
+  println 'There was an error: <pre>',Error,'</pre>'
   println 'Page is: ',page
+  %>
+  <pre> qparamKeys''
+  <%print qparamKeys''%>
+  qparam each qparamKeys''
+  <%print qparam each qparamKeys''%>
+  of_id
+  <%print #of_id %>
+  </pre>
+  <%
   println '</p></body></html>'
 end.
 %>

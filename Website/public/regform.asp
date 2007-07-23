@@ -75,7 +75,7 @@
 
         <th scope="row">Student ID </th>
 
-        <td><input name="studentid" class="box1" id="studentid" type="text" tabindex="4" value="<%= studentid %>"/></td>
+        <td><input name="refnum" class="box1" id="refnum" type="text" tabindex="4" value="<%= refnum %>"/></td>
 
       </tr>
 
@@ -109,7 +109,7 @@
       </tr>
       <tr>
         <th scope="row">&nbsp;</th>
-        <td><input name="Submit" type="submit" id="submt" tabindex="8" onclick="javascript:callregsubmit();" value="Create account" /></td>
+        <td><input name="Button" type="button" id="submt" tabindex="8" onclick="javascript:callregsubmit();" value="Create account" /></td>
       </tr>
 
     </tbody>

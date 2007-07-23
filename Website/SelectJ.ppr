@@ -34,5 +34,14 @@ SelectJ
 		public\admin.jhp
 		public\admin\admin.jhp
 [Open project files]
+0=code\select_cmplx_data.sql
+1=code\select_cmplx_ddl.sql
 [Selected Project Files]
 Main=
+Selected=code\select_cmplx_ddl.sql
+[code\select_cmplx_data.sql]
+TopLine=18
+Caret=61,48
+[code\select_cmplx_ddl.sql]
+TopLine=71
+Caret=11,84
