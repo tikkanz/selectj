@@ -1,0 +1,39 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+  select. action
+    case. 'login' do.
+	  uid=: validLogin qparam each 'usrname';'passwd'
+	  if. 0>uid do. NB. invalid login
+		redirect 'default.jhp?action=loginfail&uname=',qparam 'usrname'
+	  else.
+    	uid SetCookie 'UserID'
+		redirect 'user.jhp?action=home'
+	  end.
+	case. 'home' do.
+	  uid=. 0 qcookie 'UserID'
+	  if. uid=0 do. redirect 'default.jhp' 
+	  else.
+      if. 1=isActive uid do.
+      NB. Make user active
+      end.
+      page=. '~CGI/usrhome.asp'  NB. destination page
+      setcolnames 'greeting' getUserInfo_pselectdb_ uid
+	  setcolnames 'mycourses' getUserInfo_pselectdb_ uid
+  	  if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
+	  transfer page NB. ?scope=login'
+	  end.
+	case. do.
+	  page=. '~CGI/regform.asp'
+	  transfer page
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println 4!:0 <'uid'
+  println '</pre></p></body></html>'
+end.
+%>

@@ -36,14 +36,14 @@
     <p> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec molestie. Sed aliquam sem ut arcu. Phasellus sollicitudin. Vestibulum condimentum facilisis nulla. In hac habitasse platea dictumst. Nulla nonummy. Cras quis libero. Cras venenatis. Aliquam posuere lobortis pede. Nullam fringilla urna id leo. Praesent aliquet pretium erat. Praesent non odio. Pellentesque a magna a mauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Aliquam lacus. Mauris magna eros, semper a, tempor et, rutrum et, tortor. </p>
     <!-- TemplateEndEditable -->
   </div>
-	<form action="login.jhp" method="post" name="login" id="login">
+	<form action="user.jhp" method="post" name="login" id="login">
 	  <table width="423" border="0" cellspacing="0" class="frmtble" style="height:110px;">
 		<caption>
 	  Login
 		</caption>
 		<tbody>
 		  <tr>
-			<th width="107" scope="col">User name </th>
+			<th width="107" scope="col">User name <input name="action" type="hidden" value="login" /></th>
 			<td width="150"><input name="usrname" type="text" class="box1" id="usrname" tabindex="1" /></td>
 			<td width="160" rowspan="3" class="register"><p>Haven't got an account yet?</p>
 		    <p><a href="../register.jhp">Create a user account now</a> </p></td>

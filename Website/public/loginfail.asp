@@ -37,14 +37,14 @@
 	  <p style="color:red; font-weight:bold">Username and password do not match. The username you entered was &quot;<%= uname %>&quot;. </p>
 	<!-- InstanceEndEditable -->
   </div>
-	<form action="login.jhp" method="post" name="login" id="login">
+	<form action="user.jhp" method="post" name="login" id="login">
 	  <table width="423" border="0" cellspacing="0" class="frmtble" style="height:110px;">
 		<caption>
 	  Login
 		</caption>
 		<tbody>
 		  <tr>
-			<th width="107" scope="col">User name </th>
+			<th width="107" scope="col">User name <input name="action" type="hidden" value="login" /></th>
 			<td width="150"><input name="usrname" type="text" class="box1" id="usrname" tabindex="1" /></td>
 			<td width="160" rowspan="3" class="register"><p>Haven't got an account yet?</p>
 		    <p><a href="register.jhp">Create a user account now</a> </p></td>

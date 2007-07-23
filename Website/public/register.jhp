@@ -4,23 +4,20 @@ try.
   if. 'GET' -: env 'REQUEST_METHOD' do.
     page=. '~CGI/regform.asp'
     usernameErr=: ''
+    transfer page
   else.
     uid=: registerUser qparam each qparamKeys''
     if. 0>uid do. NB. invalid login
-      NB.redirect 'register.jhp?action=regerror&uname=',(qparam 'uname')
       usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
       usernameErr=: usernameErr,' Please choose another one.'
       'fname lname refnum email'=: qparam each ;:'fname lname refnum email'
       page=. '~CGI/regform.asp'
+	  transfer page
     else.
-      page=. '~CGI/usrhome.asp'  NB. destination page
-      setcolnames 'greeting' getUserInfo_pselectdb_ uid
-      setcolnames 'mycourses' getUserInfo_pselectdb_ uid
-	  if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
       uid SetCookie 'UserID'
+	  redirect 'user.jhp?action=home'
     end.
   end.
-  transfer page
 catch.
   ContentType'text/html'[ Expires 0
   Error=: 13!:12''
