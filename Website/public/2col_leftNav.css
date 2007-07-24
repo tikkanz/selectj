@@ -117,7 +117,7 @@ label{
 #contentNoNav {
   float:none;
 	width: 60%;
-	padding: 2% 3% 2% 3%;
+	padding: 0.1% 3% 1% 3%;
 }
 
 /***********************************************/
@@ -236,6 +236,17 @@ img.figure{
 	font-style:italic;
 	font-weight: normal;
 }
+.r0 {background:#ffffff}
+.r1 {background:#e8f0ff;}
+.rh {background:#f0f0a0}
+
+#objlist a{
+	font-weight:bold;
+}
+.coursecode{
+	font-size:95%;
+}
+
 /************* #Form styles ***************/
 .small { font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
 font-size: 80%;

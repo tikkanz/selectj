@@ -48,6 +48,9 @@ CREATE TABLE people (
 
 CREATE TABLE scendefs (
   sd_id    INTEGER NOT NULL PRIMARY KEY,
+  sd_name  CHAR(30) NOT NULL,  -- full name of scenario
+  sd_code  CHAR(10) NOT NULL,  -- abbreviation for scenario name
+  sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
   sd_filen CHAR(100) ); -- instead of file name could store files as BLOBS?
   
 -- tables with foreign keys  
@@ -86,6 +89,10 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
   of_admin  INTEGER DEFAULT NULL REFERENCES users(ur_id), -- Paper coordinator
   of_status INTEGER DEFAULT 1 );  
 
+CREATE TABLE offeringstext (  -- text used in interface with offering
+  ox_id     INTEGER NOT NULL PRIMARY KEY REFERENCES offerings(of_id),
+  ox_intro  CHAR(1000) DEFAULT NULL );  -- text for start of offhome.asp
+
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_id     INTEGER NOT NULL PRIMARY KEY,
   en_urid   REFERENCES users(ur_id),
@@ -98,32 +105,39 @@ CREATE TABLE sessions (   -- log of user sessions
   ss_finish REAL,  -- stored as julianday.time
   ss_enid   INTEGER NOT NULL REFERENCES enrolments(en_id)); -- session starts when choose offering not at login?
 
-CREATE TABLE templates (
-  tm_id    INTEGER NOT NULL PRIMARY KEY,
-  tm_sdid  INTEGER NOT NULL REFERENCES scendefs(sd_id),
-  tm_opt1  INTEGER NOT NULL DEFAULT 1,
-  tm_opt2  INTEGER NOT NULL DEFAULT 1,
-  tm_opt3  INTEGER NOT NULL DEFAULT 1); -- a bunch of boolean fields determining ScenDef options to include
+CREATE TABLE cases (
+  cs_id    INTEGER NOT NULL PRIMARY KEY,
+  cs_sdid  INTEGER NOT NULL REFERENCES scendefs(sd_id),
+  cs_opt1  INTEGER NOT NULL DEFAULT 1,
+  cs_opt2  INTEGER NOT NULL DEFAULT 1,
+  cs_opt3  INTEGER NOT NULL DEFAULT 1); -- a bunch of boolean fields determining ScenDef options to include
 
-CREATE TABLE templatetext (  -- text that applicable to each scenario/template
-  tt_id        INTEGER NOT NULL PRIMARY KEY,
-  tt_tmid      REFERENCES templates(tm_id),
-  tt_intro     CHAR(1000),  -- intro text to set scene for scenario
-  tt_instruct  CHAR(1000),  -- instruction text for scenario
-  tt_btwncycle CHAR(1000),  -- text to display between selection cycles
-  tt_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
+CREATE TABLE casetext (  -- text that applicable to each scenario/case
+  ct_id        INTEGER NOT NULL PRIMARY KEY,
+  ct_csid      REFERENCES cases(cs_id),
+  ct_intro     CHAR(1000),  -- intro text to set scene for scenario
+  ct_instruct  CHAR(1000),  -- instruction text for scenario
+  ct_btwncycle CHAR(1000),  -- text to display between selection cycles
+  ct_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
 
-CREATE TABLE offeringtemplates (  -- templates available for each offering
-  ot_id   INTEGER NOT NULL PRIMARY KEY,
-  ot_ofid INTEGER NOT NULL REFERENCES offerings(of_id) ,
-  ot_tmid INTEGER NOT NULL );
+CREATE TABLE offeringcases (  -- cases available for each offering
+  oc_id   INTEGER NOT NULL PRIMARY KEY,
+  oc_ofid INTEGER NOT NULL REFERENCES offerings(of_id) ,
+  oc_csid INTEGER NOT NULL );
 
 CREATE TABLE errors (
   er_id     INTEGER NOT NULL PRIMARY KEY,
   er_ssid   INTEGER NOT NULL REFERENCES sessions(ss_id),
-  er_tmid   INTEGER NOT NULL REFERENCES templates(tm_id),
+  er_csid   INTEGER NOT NULL REFERENCES cases(cs_id),
   er_sdid   INTEGER NOT NULL REFERENCES scendefs(sd_id),
   er_errmsg CHAR(100) );  -- text of last error message   
+
+CREATE TRIGGER create_offtext
+AFTER INSERT ON offerings
+BEGIN
+       INSERT INTO offeringstext (ox_id)
+       VALUES (new.of_id);
+END;
 
 CREATE TRIGGER enrol_new_user 
 AFTER INSERT ON users
@@ -144,14 +158,15 @@ CREATE VIEW `offering_info` AS
 -- created date: 23/07/2007 16:53:35
 SELECT 
       offerings.of_id of_id ,
-      offerings.of_crid of_crid ,
+      courses.cr_id cr_id ,
+      courses.cr_name cr_name ,
       courses.cr_code cr_code ,
       offerings.of_year of_year ,
       semesters.sm_code sm_code ,
       delivmodes.dm_code dm_code ,
       offerings.of_status of_status ,
-      people.pp_fname pp_fname ,
-      people.pp_lname pp_lname 
+      people.pp_fname pp_adminfname ,
+      people.pp_lname pp_adminlname 
 
 FROM 
       `semesters` semesters INNER JOIN `offerings` offerings ON ( `semesters`.`sm_id` = `offerings`.`of_smid` ) 

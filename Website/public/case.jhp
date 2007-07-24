@@ -1,0 +1,38 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+  select. action
+	case. 'home' do.
+	  'uid ofid ocid'=. qcookie"0 ;:'UserID OfferingID CaseID'
+	  if. -.(uid;ofid) validCase ocid do. 
+	    DeleteCookie 'CaseID' 
+	    redirect 'course.jhp?action=home'
+	  else.
+        page=. '~CGI/scnhome.asp'  NB. destination page
+	    setcolnames 'greeting' getTable_pselectdb_ uid
+        setcolnames 'case' getTable_pselectdb_ ocid
+    	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
+	    transfer page
+	  end.
+	case. do.  NB. default action
+	  ocid=. qparam 'oc_id'
+	  if. -.validCase ocid do.
+    	DeleteCookie 'CaseID' 
+	    redirect 'course.jhp?action=home'
+	  else.
+    	otid SetCookie 'CaseID'
+	    redirect 'case.jhp?action=home'
+	  end.
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println 4!:0 <'uid'
+  println COOKIEKEYS
+  println COOKIEVALS
+  println '</pre></p></body></html>'
+end.
+%>

@@ -15,21 +15,20 @@ try.
     	'5' SetCookie 'UserID'
 		redirect 'user.jhp?action=home'
 	case. 'home' do.
-	  uid=. 0 qcookie 'UserID'
-	  if. uid=0 do. redirect 'default.jhp' 
+	  if. -.loggedIn'' do. 
+	    redirect 'default.jhp' 
 	  else.
-      if. 1=isActive uid do.
-      NB. Make user active
-      end.
-      page=. '~CGI/usrhome.asp'  NB. destination page
-      setcolnames 'greeting' getUserInfo_pselectdb_ uid
-	  setcolnames 'mycourses' getUserInfo_pselectdb_ uid
-  	  if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
-	  transfer page NB. ?scope=login'
+		DeleteCookie 'OfferingID'
+        page=. '~CGI/usrhome.asp'  NB. destination page
+    	uid=. 0 qcookie 'UserID'
+        setcolnames 'greeting' getTable_pselectdb_ uid
+	    setcolnames 'mycourses' getTable_pselectdb_ uid
+    	if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
+	    transfer page
 	  end.
 	case. do.
-	  page=. '~CGI/regform.asp'
-	  transfer page
+	  if. loggedIn'' do. DeleteCookie 'UserID' end.
+      redirect 'default.jhp' 
   end.
 catch.
   ContentType'text/html'[ Expires 0

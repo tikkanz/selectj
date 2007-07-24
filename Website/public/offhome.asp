@@ -27,25 +27,21 @@
 
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a></div>
-  <h2 id="pageName">Hi <%= pp_fname %> <%= pp_lname %></h2>
+  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a> | <a href="user.jhp?action=home">myCourses</a></div>
+  <h2 id="pageName"><%=cr_code%> <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
   <div class="story">
+    <h3>Introduction</h3>
+    <p><%=ox_intro%></p>
         <table cellspacing=0 width=78%><tr class=rh>
-      <th>myCourses</th> 
+      <th>AnimalSim Cases</th> 
       </tr>
-      <% for_idx. i.#of_id do. %><tr class="r<%=,":2|idx%>">
-        <td id="objlist"><a href="course.jhp?of_id=<%= idx{of_id %>"><%= idx{cr_code %> <%= idx{cr_name %></a> <span class="coursecode">(<%= dtb idx{cr_code %>_<%= idx{of_year %>_<%= idx{sm_code %>_<%= idx{dm_code %>)</span><br/>
-            &nbsp;&nbsp;Instructor: <%=idx{pp_adminfname%> <%=idx{pp_adminlname%> <br/>
-            &nbsp;&nbsp;My Role: <%= idx{rl_name %> <br/>
+      <% for_idx. i.#oc_id do. %><tr class="r<%=,":2|idx%>">
+        <td id="objlist"><a href="case.jhp?oc_id=<%= idx{oc_id %>"><%= idx{sd_name %></a> <span class="coursecode">(<%= dtb idx{sd_code%>)</span><br/>
+            <%=idx{sd_descr%><br/>
             &nbsp;
             </td>
         </tr><% end. %>
     </table>
-  <% 
-  if. 1>#i.#of_id do.
-  print '<p>You are not currently enrolled in any courses</p>'
-  end.
-  %>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --> 

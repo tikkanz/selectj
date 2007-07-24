@@ -17,9 +17,10 @@ insert into semesters (sm_name, sm_code, sm_descr) values ('Semester Three', '03
 insert into semesters (sm_name, sm_code, sm_descr) values ('Double Semester', '12', 'February through November');
 
 insert into roles (rl_name, rl_code, rl_descr) values ('Student', 'STUD', 'Student in the course');
-insert into roles (rl_name, rl_code, rl_descr) values ('Template Designer', 'TDESIGN', 'User can create and edit templates');
+insert into roles (rl_name, rl_code, rl_descr) values ('Case Designer', 'CASEDESIGN', 'User can create and edit cases');
 insert into roles (rl_name, rl_code, rl_descr) values ('Course Administrator', 'CADMIN', 'Person responsible for administering the course');
 insert into roles (rl_name, rl_code, rl_descr) values ('Site Administrator', 'SADMIN', 'Super user');
+insert into roles (rl_name, rl_code, rl_descr) values ('Course Designer', 'CDESIGN', 'Person responsible for administering the course');
 
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');
@@ -27,9 +28,9 @@ insert into people (pp_fname, pp_lname, pp_email) values ('Jason', 'Win', 'onfir
 insert into people (pp_fname, pp_lname, pp_email) values ('Joe', 'Bloggs', 'jbloggs@xtra.co.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Temporary', 'Guest', 'guest@nodomain.com');
 
-insert into scendefs (sd_filen) values ('BiggerPopln/animalsim.ini');
-insert into scendefs (sd_filen) values ('ChangeREVs/animalsim.ini');
-insert into scendefs (sd_filen) values ('SelectManual/animalsim.ini');
+insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Population Size','POPSZ','Does the size of the breeding population affect the rate of progress through selection?','BiggerPopln/animalsim.ini');
+insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Changing REVs','CHGREV','You can change relative economic values (REVs) for the traits in your selection index.','ChangeREVs/animalsim.ini');
+insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Select animals manually','POPSZ','You specify which animals to use as parents individually, using your own selection criteria.','SelectManual/animalsim.ini');
 
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (1,1,'tikka','55f9078cf55595a928ec8cf35e20d106',2079797903);
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (3,1,'injapan','6530575557447b07e16da4204329c8a8',-865438670);
@@ -52,6 +53,8 @@ insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (3,2
 insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (7,2007,2,3,3);
 insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (5,'',4,2,1);
 
+update offeringstext set ox_intro='This is the intro text for the extramural version of 117.352' where ox_id=2;
+
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,1,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,2,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,3,3);
@@ -66,28 +69,22 @@ insert into enrolments (en_urid, en_ofid, en_rlid) values (2,3,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,1,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,3,1);
 
-insert into templates (tm_sdid, tm_opt1, tm_opt2, tm_opt3) values (1,1,1,1);
-insert into templates (tm_sdid, tm_opt1, tm_opt2, tm_opt3) values (2,1,1,1);
-insert into templates (tm_sdid, tm_opt1, tm_opt2, tm_opt3) values (3,1,1,1);
+insert into cases (cs_sdid, cs_opt1, cs_opt2, cs_opt3) values (1,1,1,1);
+insert into cases (cs_sdid, cs_opt1, cs_opt2, cs_opt3) values (2,1,1,1);
+insert into cases (cs_sdid, cs_opt1, cs_opt2, cs_opt3) values (3,1,1,1);
 
-insert into templatetext (tt_tmid, tt_intro, tt_instruct, tt_conc) values (1,'intro texta','instruction texta','conclusion texta');
-insert into templatetext (tt_tmid, tt_intro, tt_instruct, tt_conc) values (2,'intro textb','instruction textb','conclusion textb');
-insert into templatetext (tt_tmid, tt_intro, tt_instruct, tt_btwncycle, tt_conc) values (3,'intro textc','instruction textc','between cycle textc','conclusion textc');
+insert into casetext (ct_csid, ct_intro, ct_instruct, ct_conc) values (1,'intro texta','instruction texta','conclusion texta');
+insert into casetext (ct_csid, ct_intro, ct_instruct, ct_conc) values (2,'intro textb','instruction textb','conclusion textb');
+insert into casetext (ct_csid, ct_intro, ct_instruct, ct_btwncycle, ct_conc) values (3,'intro textc','instruction textc','between cycle textc','conclusion textc');
 
-insert into offeringtemplates (ot_ofid, ot_tmid) values (1,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (1,3);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (2,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (2,3);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (3,2);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (5,2);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (2,3);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (6,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (6,2);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (7,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (7,2);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (8,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (8,2);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (9,1);
-insert into offeringtemplates (ot_ofid, ot_tmid) values (9,2);
+insert into offeringcases (oc_ofid, oc_csid) values (1,1);
+insert into offeringcases (oc_ofid, oc_csid) values (1,3);
+insert into offeringcases (oc_ofid, oc_csid) values (2,1);
+insert into offeringcases (oc_ofid, oc_csid) values (2,2);
+insert into offeringcases (oc_ofid, oc_csid) values (2,3);
+insert into offeringcases (oc_ofid, oc_csid) values (3,2);
+insert into offeringcases (oc_ofid, oc_csid) values (5,2);
+insert into offeringcases (oc_ofid, oc_csid) values (6,1);
+insert into offeringcases (oc_ofid, oc_csid) values (6,2);
 
 commit;

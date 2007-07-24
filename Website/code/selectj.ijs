@@ -54,6 +54,26 @@ loggedIn=: 3 : 0
   0<#uid
   
 )
+enrolledIn=: 3 : 0
+  if. -.loggedIn'' do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
+  uid enrolledIn y
+:
+  if. 2=3!:0 x do. x=.". x end.
+  if. 2=3!:0 y do. y=.". y end.
+  enrld=.'enrolled' getTable_pselectdb_ y;x
+  0<#enrld
+)
+validCase=: 3 : 0
+  if. -.loggedIn'' do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
+  ofid=. 0 qcookie 'OfferingID'
+  if. -.enrolledIn ofid
+  (uid;ofid) validCase y
+:
+  vldcs=.'validcase' getTable_pselectdb_ x;y
+  0<#vldcs
+)
 getScenarioInfo=: 3 : 0
   'default' getScenarioInfo y
   :
@@ -86,22 +106,22 @@ salthash=: 3 : 0
 validLogin=: 3 : 0
  'usrnme passwd'=. y
   if. usrnme -: '' do. _1 return. end. 
-  uinfo =. {:'login' getUserInfo_pselectdb_ usrnme  
+  uinfo =. {:'login' getTable_pselectdb_ usrnme  
   if. ''-: uinfo   do. _2 return. end.   
   'duid dunme dhash dsalt' =. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
   duid
 )
 isActive=: 3 : 0
-  s=. {:'status' getUserInfo_pselectdb_ y
+  s=. {:'status' getTable_pselectdb_ y
 )
 registerUser=: 3 : 0
   'uname fname lname refnum email passwd'=.y
   
   
-  uinfo =. {:'login' getUserInfo_pselectdb_ uname  
+  uinfo =. {:'login' getTable_pselectdb_ uname  
   if. -.uinfo-:'' do. _2 return. end. 
-  pinfo =. {:'email' getUserInfo_pselectdb_  email
+  pinfo =. {:'email' getTable_pselectdb_  email
   if. -.pinfo-:''  do. 
     pid=. 0{::pinfo    
   else.
@@ -152,7 +172,7 @@ sEnd=: 0 : 0
   r
 )
 sdefine=: 1 : 'm : (sBegin , (0 : 0) , sEnd)'
-getUserInfo=: dyad sdefine
+getTable=: dyad sdefine
   r=.(boxopen y) query__db ".'sqlsel_',x
 )
 
@@ -236,37 +256,62 @@ sqlupd_deleteusers=: 0 : 0
 
 
 sqlsel_mycourses=: 0 : 0
-  SELECT of_id,of_admin,cr_code,cr_name,of_year,sm_code,dm_code,rl_name
-  FROM (enrolments INNER JOIN roles ON en_rlid=rl_id)
-       INNER JOIN
-       (((offerings INNER JOIN courses ON of_crid=cr_id)
-       INNER JOIN delivmodes ON of_dmid=dm_id)
-       INNER JOIN semesters  ON of_smid=sm_id)
-       ON en_ofid=of_id
-  WHERE en_urid=? AND of_status >0;
+  SELECT offering_info.of_id of_id ,
+        offering_info.cr_name cr_name ,
+        offering_info.cr_code cr_code ,
+        offering_info.of_year of_year ,
+        offering_info.sm_code sm_code ,
+        offering_info.dm_code dm_code ,
+        offering_info.pp_adminfname pp_adminfname ,
+        offering_info.pp_adminlname pp_adminlname ,
+        roles.rl_name rl_name
+  FROM offering_info INNER JOIN enrolments ON ( offering_info.of_id = enrolments.en_ofid ) 
+        INNER JOIN roles ON ( roles.rl_id = enrolments.en_rlid ) 
+  WHERE (offering_info.of_status >0) AND (enrolments.en_urid =?)
+  ORDER BY offering_info.cr_code  Asc, offering_info.of_year  Asc;
 )
 
+sqlsel_enrolled=: 0 : 0
+  SELECT enrolments.en_id en_id ,
+         enrolments.en_ofid en_ofid ,
+         enrolments.en_urid en_urid 
+  FROM   enrolments 
+  WHERE (enrolments.en_ofid =?) AND (enrolments.en_urid =?);
+)
+
+sqlsel_validcase=: 0 : 0
+
+)
 
 sqlsel_course=: 0 : 0
-SELECT courses.cr_code cr_code ,
-      courses.cr_name cr_name ,
-      courses.cr_intro cr_intro ,
-      offering_info.of_id of_id ,
-      offering_info.of_crid of_crid ,
-      offering_info.cr_code cr_code ,
-      offering_info.of_year of_year ,
-      offering_info.sm_code sm_code ,
-      offering_info.dm_code dm_code ,
-      offering_info.of_status of_status ,
-      offering_info.pp_fname pp_fname ,
-      offering_info.pp_lname pp_lname 
-
-FROM `offering_info` offering_info INNER JOIN `courses` courses 
-      ON ( `offering_info`.`of_crid` = `courses`.`cr_id` ) 
-WHERE (offering_info.of_id =5);
+  SELECT offering_info.of_id of_id ,
+        offering_info.cr_name cr_name ,
+        offering_info.cr_code cr_code ,
+        offering_info.of_year of_year ,
+        offering_info.sm_code sm_code ,
+        offering_info.dm_code dm_code ,
+        offering_info.pp_adminfname pp_adminfname ,
+        offering_info.pp_adminlname pp_adminlname ,
+        offeringstext.ox_intro ox_intro 
+  FROM `offering_info` offering_info INNER JOIN `offeringstext` offeringstext 
+        ON ( `offering_info`.`of_id` = `offeringstext`.`ox_id` ) 
+  WHERE (offering_info.of_id =?);
 )
 
+sqlsel_coursecases=: 0 : 0
+  SELECT scendefs.sd_name sd_name ,
+        scendefs.sd_descr sd_descr ,
+        scendefs.sd_id sd_id ,
+        scendefs.sd_code sd_code ,
+        offeringcases.oc_id 
+  FROM  `scendefs` scendefs INNER JOIN `cases` cases ON ( `scendefs`.`sd_id` = `cases`.`cs_sdid` ) 
+        INNER JOIN `offeringcases` offeringcases ON ( `cases`.`cs_id` = `offeringcases`.`oc_csid` ) 
+  WHERE (offeringcases.oc_ofid =?);
+)
 
+sqlsel_case=: 0 : 0
+
+)
 
 
 Note 'link enrolments with names, roles, and course offering info'

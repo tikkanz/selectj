@@ -1,0 +1,39 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+  select. action
+	case. 'home' do.
+	  'uid ofid'=. qcookie"0 'UserID';'OfferingID'
+	  if. -.uid enrolledIn ofid do. 
+	    DeleteCookie 'OfferingID' 
+	    redirect 'user.jhp?action=home'
+	  else.
+        page=. '~CGI/offhome.asp'  NB. destination page
+	    setcolnames 'greeting' getTable_pselectdb_ uid
+        setcolnames 'course' getTable_pselectdb_ ofid
+		setcolnames 'coursecases' getTable_pselectdb_ ofid
+    	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
+	    transfer page
+	  end.
+	case. do.  NB. default action
+	  ofid=. qparam 'of_id'
+	  if. -.enrolledIn ofid do.
+    	DeleteCookie 'OfferingID' 
+	    redirect 'user.jhp?action=home'
+	  else.
+    	ofid SetCookie 'OfferingID'
+	    redirect 'course.jhp?action=home'
+	  end.
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println 4!:0 <'uid'
+  println COOKIEKEYS
+  println COOKIEVALS
+  println '</pre></p></body></html>'
+end.
+%>

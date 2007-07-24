@@ -4,7 +4,10 @@ try.
   action=. qparam 'action'
     select. action
     case. 'logout' do.
-      if. loggedIn'' do. DeleteCookie 'UserID' end.
+      if. loggedIn'' do. 
+	    DeleteCookie 'OfferingID'
+	    DeleteCookie 'UserID' 
+	  end.
       page=.'~CGI/logout.html'
     case. 'loginfail' do.
 	  uname=: qparam 'uname'
