@@ -35,7 +35,7 @@ NB. )
 NB.*getUserInfo v gets user info from database
 NB. y is values to look up in database
 NB. x is string specifying name of sqlquery to run
-getUserInfo=: dyad sdefine
+getTable=: dyad sdefine
   r=.(boxopen y) query__db ".'sqlsel_',x
 )
 

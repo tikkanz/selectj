@@ -1,9 +1,35 @@
 NB. functions to do with validating & registering users
+
 NB.*loggedIn v Checks if a user is currently authenticated
 loggedIn=: 3 : 0
   uid=. qcookie 'UserID'
   0<#uid
   NB. could also check uid is valid
+)
+
+NB.*enrolledIn v Checks if authenticated user is enrolled in offering
+NB. y is numeric offering id (of_id)
+enrolledIn=: 3 : 0
+  if. -.loggedIn'' do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
+  uid enrolledIn y
+:
+  if. 2=3!:0 x do. x=.". x end.
+  if. 2=3!:0 y do. y=.". y end.
+  enrld=.'enrolled' getTable_pselectdb_ y;x
+  0<#enrld
+)
+
+NB.*validCase v Checks if case id is valid for user offering
+validCase=: 3 : 0
+  if. -.loggedIn'' do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
+  ofid=. 0 qcookie 'OfferingID'
+  if. -.enrolledIn ofid
+  (uid;ofid) validCase y
+:
+  vldcs=.'validcase' getTable_pselectdb_ x;y
+  0<#vldcs
 )
 
 NB.*getScenarioInfo v gets Scenario info from ini file
@@ -56,7 +82,7 @@ NB.  result is numeric _1 if not valid, string userid if valid
 validLogin=: 3 : 0
  'usrnme passwd'=. y
   if. usrnme -: '' do. _1 return. end. NB. check for empty usrname
-  uinfo =. {:'login' getUserInfo_pselectdb_ usrnme  NB. retrieve data for username
+  uinfo =. {:'login' getTable_pselectdb_ usrnme  NB. retrieve data for username
   if. ''-: uinfo   do. _2 return. end.   NB. check username exists
   'duid dunme dhash dsalt' =. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. NB. check password is valid
@@ -65,7 +91,7 @@ validLogin=: 3 : 0
 
 NB.*isActive checks if username is inactive (needs to be reinitalised)
 isActive=: 3 : 0
-  s=. {:'status' getUserInfo_pselectdb_ y
+  s=. {:'status' getTable_pselectdb_ y
 )
 
 NB.*registerUser v creates a new user, if successful returns userid
@@ -75,9 +101,9 @@ registerUser=: 3 : 0
   'uname fname lname refnum email passwd'=.y
   NB.passwd=._1{::y
   NB.uname=.0{::y
-  uinfo =. {:'login' getUserInfo_pselectdb_ uname  NB. retrieve data for username
+  uinfo =. {:'login' getTable_pselectdb_ uname  NB. retrieve data for username
   if. -.uinfo-:'' do. _2 return. end. NB. check usrname not already in use
-  pinfo =. {:'email' getUserInfo_pselectdb_  email
+  pinfo =. {:'email' getTable_pselectdb_  email
   if. -.pinfo-:''  do. NB. if email address already used in people table
     pid=. 0{::pinfo    NB. get pid of person with that email address
   else.
