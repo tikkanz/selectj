@@ -35,8 +35,25 @@ refresh=: 3 : 0
 boxitem=: ,`(<"_1) @. (0=L.)
 
 setcolnames=: 3 : 0
-if. y-:i.0 0 do. return. end.
-'hdr dat'=. split y
- (hdr)=: |:dat
- ''
+  if. y-:i.0 0 do. return. end.
+  'hdr dat'=. split y
+  (hdr)=: |:dat
+  ''
 )
+
+NB.*coercetxt v converts any boxed txt to numeric, leave boxed numeric alone
+coercetxt=: 3 : 0
+  isboxed=.0<L. y
+  y=. boxopen y
+  msk=. -.isnum @> y
+  newnums=. 0&coerce each msk#y
+  y=.[newnums (I.msk)}y NB. works?
+  if. -.isboxed do. >y end. NB. unboxed if was at start
+)
+
+NB. ---------------------------------------------------------
+NB.*listatom v makes y a 1-item list if y is atom (rank 0)
+NB. suggested by Chris Burke JForum June 2007
+NB. (listatom 5) -: ,5
+NB. (listatom i.4 3) -: i.4 3
+listatom=: 1&#

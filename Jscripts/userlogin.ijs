@@ -14,21 +14,22 @@ enrolledIn=: 3 : 0
   uid=. 0 qcookie 'UserID'
   uid enrolledIn y
 :
-  if. 2=3!:0 x do. x=.". x end.
-  if. 2=3!:0 y do. y=.". y end.
+  x=. coercetxt x
+  y=. coercetxt y
   enrld=.'enrolled' getTable_pselectdb_ y;x
   0<#enrld
 )
 
 NB.*validCase v Checks if case id is valid for user offering
 validCase=: 3 : 0
-  if. -.loggedIn'' do. 0 return. end.
-  uid=. 0 qcookie 'UserID'
   ofid=. 0 qcookie 'OfferingID'
-  if. -.enrolledIn ofid
+  if. -.enrolledIn ofid do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
   (uid;ofid) validCase y
 :
-  vldcs=.'validcase' getTable_pselectdb_ x;y
+  x=. coercetxt x
+  y=. coercetxt y
+  vldcs=.'validcase' getTable_pselectdb_ x,<y
   0<#vldcs
 )
 
