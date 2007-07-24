@@ -1,0 +1,20 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+  select. action
+	case. do.  NB. default action
+ 	  'uid ofid csid'=. qparam"0 ;:'userid offeringid caseid'
+      uid SetCookie 'UserID'
+	  ofid SetCookie 'OfferingID'
+      csid SetCookie 'CaseID'
+	  redirect 'case.jhp?action=home'
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println '</pre></p></body></html>'
+end.
+%>

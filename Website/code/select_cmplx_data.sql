@@ -30,7 +30,7 @@ insert into people (pp_fname, pp_lname, pp_email) values ('Temporary', 'Guest', 
 
 insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Population Size','POPSZ','Does the size of the breeding population affect the rate of progress through selection?','BiggerPopln/animalsim.ini');
 insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Changing REVs','CHGREV','You can change relative economic values (REVs) for the traits in your selection index.','ChangeREVs/animalsim.ini');
-insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Select animals manually','POPSZ','You specify which animals to use as parents individually, using your own selection criteria.','SelectManual/animalsim.ini');
+insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Select animals manually','MANSEL','You specify which animals to use as parents individually, using your own selection criteria.','SelectManual/animalsim.ini');
 
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (1,1,'tikka','55f9078cf55595a928ec8cf35e20d106',2079797903);
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (3,1,'injapan','6530575557447b07e16da4204329c8a8',-865438670);
@@ -58,7 +58,7 @@ update offeringstext set ox_intro='This is the intro text for the extramural ver
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,1,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,2,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,3,3);
-insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,3);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,5);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,5,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,6,3);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (3,3,3);

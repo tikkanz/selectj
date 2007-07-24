@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default_static.dwt" codeOutsideHTMLIsLocked="false" -->
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
@@ -12,9 +12,7 @@
 <!-- InstanceBeginEditable name="stylesheets" -->
 <link rel="stylesheet" href="adminstyle.css" type="text/css" />
 <!-- InstanceEndEditable -->
-<!-- InstanceParam name="JavascriptInHeader" type="boolean" value="false" -->
 <!-- InstanceParam name="bodyOnload" type="text" value="" -->
-
 </head>
 <body onload="">
 <div id="masthead">
@@ -123,7 +121,7 @@ function cmd(name, item) {
 }
 </script>
 <!-- InstanceEndEditable --></div> 
-<!--end content --> 
+<!--end content --><!-- InstanceBeginEditable name="navbar" --><!-- InstanceEndEditable --> 
 <!--end navbar --> 
 <div id="siteInfo"> 
   <img src="../img/fill_clear.gif" width="1" height="1"/> <a href="mailto:R.G.Sherlock@massey.ac.nz">Contact Me</a> | &copy;2005-2006

@@ -18,12 +18,13 @@ try.
 	  if. -.loggedIn'' do. 
 	    redirect 'default.jhp' 
 	  else.
+	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
         page=. '~CGI/usrhome.asp'  NB. destination page
     	uid=. 0 qcookie 'UserID'
         setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'mycourses' getTable_pselectdb_ uid
-    	if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
+    	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
 	    transfer page
 	  end.
 	case. do.

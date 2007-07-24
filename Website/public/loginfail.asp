@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default_static_login.dwt" codeOutsideHTMLIsLocked="false" -->
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default_login.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
@@ -11,8 +11,6 @@
 <link rel="stylesheet" href="2col_leftNav.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" -->
 <!-- InstanceEndEditable -->
-
-
 
 </head>
 <body onload="">
@@ -28,7 +26,7 @@
 <div id="contentNoNav"> 
   
   <div id="breadCrumb"> </div>
-  <h2 id="pageName"><!-- InstanceBeginEditable name="page name" -->Welcome to the AnimalSim web interface<!-- InstanceEndEditable --></h2>
+  <h2 id="courseName"><!-- InstanceBeginEditable name="page name" -->Welcome to the AnimalSim web interface<!-- InstanceEndEditable --></h2>
   <div class="story">
     <!-- InstanceBeginEditable name="Story" -->
 	  <p>Using AnimalSim you can <em>investigate genetic selection</em>. Create your own breeding population, experiment with different selection objectives and strategies.</p>
@@ -62,7 +60,7 @@
 	  </table>
 	</form>
 </div> 
-<!--end content --> 
+<!--end content --><!-- InstanceBeginEditable name="navbar" --><!-- InstanceEndEditable --> 
 <!--end navbar --> 
 <div id="siteInfo"> 
   <img src="img/fill_clear.gif" width="1" height="1"/> <a href="mailto:R.G.Sherlock@massey.ac.nz">Contact Me</a> | &copy;2005-2006

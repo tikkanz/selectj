@@ -5,6 +5,7 @@ try.
     select. action
     case. 'logout' do.
       if. loggedIn'' do. 
+	    DeleteCookie 'CaseID'
 	    DeleteCookie 'OfferingID'
 	    DeleteCookie 'UserID' 
 	  end.

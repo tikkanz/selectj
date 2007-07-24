@@ -17,22 +17,22 @@ SelectJ
 		public\welcome.html
 		public\usrhome.asp
 		public\regform.asp
-		public\poplntype.asp
 		public\nouser.html
 		public\logout.html
 		public\loginfail.asp
 		public\2col_leftNav.css
+		public\offhome.asp
+		public\casehome.asp
 	+SQL
 		code\select_cmplx_ddl.sql
 		code\select_cmplx_data.sql
-		code\select_ddl.sql
-		code\date_data.sql
 	+JHP
 		public\register.jhp
-		public\login.jhp
 		public\default.jhp
-		public\admin.jhp
 		public\admin\admin.jhp
+		public\case.jhp
+		public\course.jhp
+		public\user.jhp
 [Open project files]
 [Selected Project Files]
 Main=

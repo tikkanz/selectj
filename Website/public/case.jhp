@@ -4,24 +4,25 @@ try.
   action=. qparam 'action'
   select. action
 	case. 'home' do.
-	  'uid ofid ocid'=. qcookie"0 ;:'UserID OfferingID CaseID'
-	  if. -.(uid;ofid) validCase ocid do. 
+	  'uid ofid csid'=. qcookie"0 ;:'UserID OfferingID CaseID'
+	  if. -.(uid;ofid) validCase csid do.
 	    DeleteCookie 'CaseID' 
 	    redirect 'course.jhp?action=home'
 	  else.
-        page=. '~CGI/scnhome.asp'  NB. destination page
+        page=. '~CGI/casehome.asp'  NB. destination page
 	    setcolnames 'greeting' getTable_pselectdb_ uid
-        setcolnames 'case' getTable_pselectdb_ ocid
-    	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
+	    setcolnames 'coursename' getTable_pselectdb_ ofid
+        setcolnames 'case' getTable_pselectdb_ csid
+    	NB. if. isnoun 'of_id' do. of_id=:i.0 0 end.
 	    transfer page
 	  end.
 	case. do.  NB. default action
-	  ocid=. qparam 'oc_id'
-	  if. -.validCase ocid do.
+	  csid=. qparam 'cs_id'
+	  if. -.validCase csid do.
     	DeleteCookie 'CaseID' 
 	    redirect 'course.jhp?action=home'
 	  else.
-    	otid SetCookie 'CaseID'
+    	csid SetCookie 'CaseID'
 	    redirect 'case.jhp?action=home'
 	  end.
   end.

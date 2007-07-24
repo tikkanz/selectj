@@ -44,11 +44,20 @@ refresh=: 3 : 0
 boxitem=: ,`(<"_1) @. (0=L.)
 
 setcolnames=: 3 : 0
-if. y-:i.0 0 do. return. end.
-'hdr dat'=. split y
- (hdr)=: |:dat
- ''
+  if. y-:i.0 0 do. return. end.
+  'hdr dat'=. split y
+  (hdr)=: |:dat
+  ''
 )
+coercetxt=: 3 : 0
+  isboxed=.0<L. y
+  y=. boxopen y
+  msk=. -.isnum @> y
+  newnums=. 0&coerce each msk#y
+  y=.[newnums (I.msk)}y 
+  if. -.isboxed do. >y end. 
+)
+listatom=: 1&#
 loggedIn=: 3 : 0
   uid=. qcookie 'UserID'
   0<#uid
@@ -59,19 +68,20 @@ enrolledIn=: 3 : 0
   uid=. 0 qcookie 'UserID'
   uid enrolledIn y
 :
-  if. 2=3!:0 x do. x=.". x end.
-  if. 2=3!:0 y do. y=.". y end.
+  x=. coercetxt x
+  y=. coercetxt y
   enrld=.'enrolled' getTable_pselectdb_ y;x
   0<#enrld
 )
 validCase=: 3 : 0
-  if. -.loggedIn'' do. 0 return. end.
-  uid=. 0 qcookie 'UserID'
   ofid=. 0 qcookie 'OfferingID'
-  if. -.enrolledIn ofid
+  if. -.enrolledIn ofid do. 0 return. end.
+  uid=. 0 qcookie 'UserID'
   (uid;ofid) validCase y
 :
-  vldcs=.'validcase' getTable_pselectdb_ x;y
+  x=. coercetxt x
+  y=. coercetxt y
+  vldcs=.'validcase' getTable_pselectdb_ x,<y
   0<#vldcs
 )
 getScenarioInfo=: 3 : 0
@@ -280,7 +290,11 @@ sqlsel_enrolled=: 0 : 0
 )
 
 sqlsel_validcase=: 0 : 0
-
+  SELECT enrolments.en_urid ur_id ,
+         enrolments.en_ofid of_id ,
+         offeringcases.oc_csid cs_id 
+  FROM  `enrolments` enrolments INNER JOIN `offeringcases` offeringcases ON ( `enrolments`.`en_ofid` = `offeringcases`.`oc_ofid` ) 
+  WHERE (enrolments.en_urid =?) AND (enrolments.en_ofid =?) AND (offeringcases.oc_csid =?);
 )
 
 sqlsel_course=: 0 : 0
@@ -298,19 +312,32 @@ sqlsel_course=: 0 : 0
   WHERE (offering_info.of_id =?);
 )
 
+sqlsel_coursename=: 0 : 0
+  SELECT offering_info.cr_name cr_name ,
+         offering_info.cr_code cr_code 
+  FROM `offering_info` offering_info
+  WHERE (offering_info.of_id =?);
+)
+
 sqlsel_coursecases=: 0 : 0
   SELECT scendefs.sd_name sd_name ,
         scendefs.sd_descr sd_descr ,
         scendefs.sd_id sd_id ,
         scendefs.sd_code sd_code ,
-        offeringcases.oc_id 
+        offeringcases.oc_csid cs_id 
   FROM  `scendefs` scendefs INNER JOIN `cases` cases ON ( `scendefs`.`sd_id` = `cases`.`cs_sdid` ) 
         INNER JOIN `offeringcases` offeringcases ON ( `cases`.`cs_id` = `offeringcases`.`oc_csid` ) 
   WHERE (offeringcases.oc_ofid =?);
 )
 
 sqlsel_case=: 0 : 0
-
+  SELECT scendefs.sd_descr cs_descr ,
+         scendefs.sd_name cs_name ,
+         scendefs.sd_code cs_code ,
+         casetext.ct_intro ct_intro 
+  FROM  `cases` cases INNER JOIN `casetext` casetext ON ( `cases`.`cs_id` = `casetext`.`ct_csid` ) 
+        INNER JOIN `scendefs` scendefs ON ( `scendefs`.`sd_id` = `cases`.`cs_sdid` ) 
+  WHERE (cases.cs_id =?);
 )
 
 
