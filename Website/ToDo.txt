@@ -1,0 +1,30 @@
+If user logs in and is only enrolled in one course, then automatically "clicks" on that course.
+
+If multiple people log on as Guest at the same time they need to have different ur_ids otherwise their server data will conficit. Could store the server data in a folder that is determined by ur_id and sessionid. Clean up for Guest, but leave for real users.
+
+Should really use sessionid for cookie and link to ur_id in database to improve security.
+
+Set a variable called GuestID=:5 or similar.
+
+Access to admin functions via additional menu(s) on right that appear(s) based on role(s) of logged in user (and current page??)   
+Lots of admin pages to add. For now just do following as examples:
+     Given Course, choose cases to include.
+     Import user list (choose course for them to be enrolled in).
+Others are:
+       Enrol users in offering (from list of registered users)
+       Create a scenario definition based on AnimalSim "template folder"
+       Create case from available scenario definitions (or existing cases?)
+              Edit Text for case
+       Add course
+       Add offering for course (copy from existing?)
+
+     
+On CourseHome, Move CaseList to right?
+On CaseHome, Do basic css formating for headings.
+             Need to workout dynamic way to choose page content depending on case status.
+             Dynamic display of selection parameters specified for Case
+
+Method for choosing to retain results of cases
+Method for summarising multiple retained cases
+
+Login in directly to course as well as case
