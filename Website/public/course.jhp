@@ -10,7 +10,7 @@ try.
 	    redirect 'user.jhp?action=home'
 	  else.
 	  	DeleteCookie 'CaseID'
-        page=. '~CGI/offhome.asp'  NB. destination page
+        page=. '~CGI/course_home.asp'  NB. destination page
 	    setcolnames 'greeting' getTable_pselectdb_ uid
         setcolnames 'course' getTable_pselectdb_ ofid
 		setcolnames 'coursecases' getTable_pselectdb_ ofid

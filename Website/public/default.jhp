@@ -1,22 +1,20 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
+  DeleteCookie 'CaseID'
+  DeleteCookie 'OfferingID'
+  DeleteCookie 'UserID' 
   action=. qparam 'action'
     select. action
     case. 'logout' do.
-      if. loggedIn'' do. 
-	    DeleteCookie 'CaseID'
-	    DeleteCookie 'OfferingID'
-	    DeleteCookie 'UserID' 
-	  end.
-      page=.'~CGI/logout.html'
+      page=.'~CGI/default_logout.html'
     case. 'loginfail' do.
 	  uname=: qparam 'uname'
-      page=.'~CGI/loginfail.asp'
+      page=.'~CGI/default_loginfail.asp'
     case. 'nouser' do.
-      page=.'~CGI/nouser.html'
-    case. do. NB. default action
-      page=.'~CGI/welcome.html'
+      page=.'~CGI/default_nouser.html'
+0    case. do. NB. default action
+      page=.'~CGI/default_welcome.html'
     end.
       transfer page
 catch.

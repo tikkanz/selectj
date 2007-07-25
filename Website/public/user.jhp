@@ -15,12 +15,12 @@ try.
     	'5' SetCookie 'UserID'
 		redirect 'user.jhp?action=home'
 	case. 'home' do.
-	  if. -.loggedIn'' do. 
+	  if. -.loggedIn'' do.
 	    redirect 'default.jhp' 
 	  else.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
-        page=. '~CGI/usrhome.asp'  NB. destination page
+        page=. '~CGI/user_home.asp'  NB. destination page
     	uid=. 0 qcookie 'UserID'
         setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'mycourses' getTable_pselectdb_ uid

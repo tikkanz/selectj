@@ -8,7 +8,7 @@
 <!-- InstanceEndEditable -->
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
-<link rel="stylesheet" href="2col_leftNav.css" type="text/css" />
+<link rel="stylesheet" href="animalsim.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" -->
 <!-- InstanceEndEditable -->
 
@@ -40,8 +40,8 @@
         </tr><% end. %>
     </table>
   <% 
-  if. 1>#i.#of_id do.
-  print '<p>You are not currently enrolled in any courses</p>'
+  if. 0=#of_id do.
+  println '<p>You are not currently enrolled in any courses</p>'
   end.
   %>
   </div>

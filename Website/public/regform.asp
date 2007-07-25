@@ -8,7 +8,7 @@
 <!-- InstanceEndEditable -->
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
-<link rel="stylesheet" href="2col_leftNav.css" type="text/css" />
+<link rel="stylesheet" href="animalsim.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" -->
 <!-- InstanceEndEditable -->
 <!-- InstanceParam name="bodyOnload" type="text" value="" -->
