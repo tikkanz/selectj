@@ -4,7 +4,7 @@ try.
   action=. qparam 'action'
   select. action
 	case. 'home' do.
-	  'uid ofid'=. qcookie"0 'UserID';'OfferingID'
+	  'uid ofid'=. qcookie"0 ;:'UserID OfferingID'
 	  if. -.uid enrolledIn ofid do. 
 	    DeleteCookie 'OfferingID' 
 	    redirect 'user.jhp?action=home'

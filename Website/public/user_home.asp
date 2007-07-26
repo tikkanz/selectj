@@ -21,21 +21,18 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --> 
-
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> > <span class="current">myCourses</span><!-- InstanceEndEditable --> </div>
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a> > <span class="current">myCourses</span></div>
-  <h2 id="courseName">Hi <%= pp_fname %> <%= pp_lname %></h2>
+  <h2 id="pageName">Hi <%= pp_fname %> <%= pp_lname %></h2>
   <div class="story">
         <table cellspacing=0 width=78%><tr class=rh>
       <th>myCourses</th> 
       </tr>
       <% for_idx. i.#of_id do. %><tr class="r<%=,":2|idx%>">
-        <td id="objlist"><a href="course.jhp?of_id=<%= idx{of_id %>"><%= idx{cr_code %> <%= idx{cr_name %></a> <span class="coursecode">(<%= dtb idx{cr_code %>_<%= idx{of_year %>_<%= idx{sm_code %>_<%= idx{dm_code %>)</span><br/>
+        <td class="objlist"><a href="course.jhp?of_id=<%= idx{of_id %>"><%= idx{cr_code %> <%= idx{cr_name %></a> <span class="coursecode">(<%= dtb idx{cr_code %>_<%= idx{of_year %>_<%= idx{sm_code %>_<%= idx{dm_code %>)</span><br/>
             &nbsp;&nbsp;Instructor: <%=idx{pp_adminfname%> <%=idx{pp_adminlname%> <br/>
-            &nbsp;&nbsp;My Role: <%= idx{rl_name %> <br/>
-            &nbsp;
+            &nbsp;&nbsp;My Role: <%= idx{rl_name %>
             </td>
         </tr><% end. %>
     </table>

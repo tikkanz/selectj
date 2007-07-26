@@ -20,13 +20,11 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --> 
-
-<div id="content"> 
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <a href="course.jhp?action=home">CourseHome</a> > <span class="current">CaseHome</span><!-- InstanceEndEditable --></div>
+<div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- InstanceEndEditable --></div>
+<div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
-  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <a href="course.jhp?action=home">CourseHome</a> > <span class="current">CaseHome</span></div>
-  <div class="courseName"><%= cr_code%> <%= cr_name %></div>
-  <div class="caseName"><%= cs_name %> </div>
+  <h2 id="pageName"><%= cs_name %> </h2>
   <div class="story">
     <h3>Introduction </h3>
       <p><%= cs_descr %> </p>
@@ -38,15 +36,17 @@
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 
   <div id="sectionLinks"> 
-  Case Menu
-    <ul> 
-      <!--<li><a href="../poplntype.asp">Choose Question </a></li>
-	  <li><a href="../usrhome.asp">Home page </a></li> --> 
-      <li><a href="case.jhp?action=reset">Reset case</a></li>
-	  <li><a href="case.jhp?action=params">Selection details</a></li> 
-      <li><a href="case.jhp?action=selectmate">Breed your flock</a></li> 
-      <!--<li><a href="../default.jhp?action=logout">Logout </a></li>--> 
-    </ul> &nbsp;
+
+    <dl> 
+      <dt>Case Menu</dt>
+      <!--<dd><a href="../poplntype.asp">Choose Question </a></dd>
+	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
+      <dd><a href="case.jhp?action=status">Case status</a></dd>
+	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
+      <dd><a href="case.jhp?action=selectmate">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=reset">Reset case</a></dd>
+      <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
+    </dl> &nbsp;
   </div> 
 </div>
 <!--end navbar --> 

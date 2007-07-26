@@ -20,11 +20,10 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --> 
-
-<div id="content"> 
+<!-- end masthead --><div id="breadCrumb"><!-- TemplateBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <a href="course.jhp?action=home">CourseHome</a> > <span class="current">CaseHome</span><!-- TemplateEndEditable --></div>
+<div class="courseName"><!-- TemplateBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- TemplateEndEditable --></div>
+<div id="content">
   <!-- TemplateBeginEditable name="pgContent" -->
-  <div id="breadCrumb"><a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <a href="course.jhp?action=home">CourseHome</a> > <span class="current">CaseHome</span></div>
   <div class="courseName"> CourseCode CourseName </div>
   <div class="caseName"> CaseName </div>
   <h2 id="courseName">Page Name</h2>
@@ -36,15 +35,17 @@
 <!-- TemplateEndEditable --></div> 
 <!--end content --><div id="navBar"> 
   <div id="sectionLinks"> 
-  Case Menu
-    <ul> 
-      <!--<li><a href="../poplntype.asp">Choose Question </a></li>
-	  <li><a href="../usrhome.asp">Home page </a></li> --> 
-      <li><a href="case.jhp?action=reset">Reset case</a></li>
-	  <li><a href="case.jhp?action=params">Selection details</a></li> 
-      <li><a href="case.jhp?action=selectmate">Breed your flock</a></li> 
-      <!--<li><a href="../default.jhp?action=logout">Logout </a></li>--> 
-    </ul> &nbsp;
+
+    <dl> 
+      <dt>Case Menu</dt>
+      <!--<dd><a href="../poplntype.asp">Choose Question </a></dd>
+	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
+      <dd><a href="case.jhp?action=status">Case status</a></dd>
+	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
+      <dd><a href="case.jhp?action=selectmate">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=reset">Reset case</a></dd>
+      <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
+    </dl> &nbsp;
   </div> 
 </div>
 <!--end navbar --> 

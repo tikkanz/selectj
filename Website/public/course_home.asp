@@ -21,12 +21,10 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --> 
-
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <span class="current">CourseHome</span><!-- InstanceEndEditable --> </div>
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <div id="breadCrumb"> <a href="default.jhp?action=logout">Logout</a> > <a href="user.jhp?action=home">myCourses</a> > <span class="current">CourseHome</span></div>
-  <h2 id="courseName"><%=cr_code%> <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
+  <h2 id="pageName"><%=cr_code%> - <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
   <div class="story">
     <h3>Introduction</h3>
     <p><%=ox_intro%></p>
@@ -34,7 +32,7 @@
       <th>AnimalSim Cases</th> 
       </tr>
       <% for_idx. i.#cs_id do. %><tr class="r<%=,":2|idx%>">
-        <td id="objlist"><a href="case.jhp?cs_id=<%= idx{cs_id %>"><%= idx{sd_name %></a> <span class="coursecode">(<%= dtb idx{sd_code%>)</span><br/>
+        <td class="objlist"><a href="case.jhp?cs_id=<%= idx{cs_id %>"><%= idx{sd_name %></a> <span class="coursecode">(<%= dtb idx{sd_code%>)</span><br/>
             <%=idx{sd_descr%><br/>
             &nbsp;
             </td>

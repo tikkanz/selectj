@@ -14,15 +14,16 @@ SelectJ
 		public\interface.js
 		public\init_forms.js
 	+HTML
-		public\welcome.html
-		public\usrhome.asp
+		public\user_home.asp
 		public\regform.asp
-		public\nouser.html
-		public\logout.html
-		public\loginfail.asp
-		public\2col_leftNav.css
-		public\offhome.asp
-		public\casehome.asp
+		public\pophome.asp
+		public\default_welcome.html
+		public\default_nouser.html
+		public\default_logout.html
+		public\default_loginfail.asp
+		public\course_home.asp
+		public\case_home.asp
+		public\animalsim.css
 	+SQL
 		code\select_cmplx_ddl.sql
 		code\select_cmplx_data.sql
@@ -35,5 +36,14 @@ SelectJ
 		public\user.jhp
 		ToDo.txt
 [Open project files]
+0=ToDo.txt
+1=public\case_home.asp
 [Selected Project Files]
 Main=
+Selected=public\case_home.asp
+[ToDo.txt]
+TopLine=2
+Caret=1,32
+[public\case_home.asp]
+TopLine=16
+Caret=28,17

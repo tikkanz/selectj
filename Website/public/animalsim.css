@@ -1,6 +1,7 @@
 /***********************************************/
-/* 2col_leftNav.css                            */
-/* Use with template 2col_leftNav.html          */
+/* animalsim.css                               */
+/* Based on 2col_leftNav.css                   */
+/* Use with template default.dwt               */
 /***********************************************/
 
 /***********************************************/
@@ -75,6 +76,12 @@ label{
  color: #334d55;
 }
 				
+table{
+	border-top: 1px solid #669900;
+	border-bottom: 1px solid #669900;
+}
+
+
 
 /***********************************************/
 /* Layout Divs                                 */
@@ -92,31 +99,27 @@ label{
 }
 
 #navBar{
-	margin: 0% 0% 0% 82%;
+	margin: 25px 0% 0% 82%;
 	padding: 0px;
 	background-color: #ddffaa;
-	border-right: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
 	background-repeat: repeat-y;
 	background-position: right;
-}
-
-#navBar a:link,#navBar a:visited,#navBar a:hover {
-	color: #006699;
-	text-decoration: none;
+	border-color: #dfa;
+	border-style: none solid solid solid;
+	border-width: 1px;
 }
 
 #content{
 	float:left;
-	width: 79%;
+	width: 80.5%;
 	margin: 0;
-	padding: 0.1% 0% 1% 3%;
+	padding: 0.1% 0% 1% 1.5%;
 }
 
 #contentNoNav {
 	float:none;
-	width: 60%;
-	padding: 0.1% 3% 1% 3%;
+	width: 70%;
+	padding: 0.1% 0% 1% 1.5%;
 }
 
 /***********************************************/
@@ -147,9 +150,15 @@ label{
 /*************** #pageName styles **************/
 
 #pageName{
-	padding: 10px 0px 5px 10px;
+	padding: 8px 40px 5px 10px;
 }
-
+.courseName{
+	padding: 3px 0px 3px 10px;
+	font-size: 80%;
+	font-weight: bold;
+	background-color: #ddffaa;
+	border-bottom: 1px solid #ccc;
+}
 /************* #globalNav styles **************/
 
 #globalNav{
@@ -179,9 +188,10 @@ label{
 /************* #breadCrumb styles *************/
 
 #breadCrumb{
-	font-size: 80%;
+	font-size: 75%;
 	padding: 3px 0px 3px 10px;
 	line-height: normal;
+	border-bottom: 1px solid #ddffaa;
 }
 
 
@@ -214,7 +224,7 @@ label{
 	font-size: 80%;
 }
 .story h3{
-	padding: 20px 0px 2px 0px;
+	padding: 10px 0px 2px 0px;
 }
 .story h4{
 	padding-left: 10px;
@@ -228,7 +238,8 @@ img.figure{
 	float: none;
 }
 .story p{
-	padding: 0px 0px 6px 0px;
+    margin: 5px 0px;
+	padding: 0px 15px 6px 0px;
 }
 .releasedate{
 	padding: 0px 0px 0px 0px;
@@ -238,13 +249,19 @@ img.figure{
 }
 .r0 {background:#ffffff}
 .r1 {background:#e8f0ff;}
-.rh {background:#f0f0a0}
+.rh {background:#f0f0a0;}
+.rh th{
+	padding:3px 0px;
+	}
 
-#objlist a{
+.objlist {
+	padding:7px 4px;
+}
+.objlist a{
 	font-weight:bold;
 }
 .coursecode{
-	font-size:95%;
+	font-size:80%;
 }
 
 /************* #Form styles ***************/
@@ -343,33 +360,46 @@ font-size: 120%;
 
 /*********** #navBar link styles ***********/
 
-#navBar ul a:link, #navBar ul a:visited {display: block;}
-#navBar ul {list-style: none; margin: 0; padding: 0;}
+#navBar a:link,#navBar a:visited,#navBar a:hover {
+	color: #006699;
+	text-decoration: none;
+}
+
+#navBar dl a:link, #navBar dl a:visited {display: block;}
+#navBar dl {list-style: none; margin: 0; padding: 0;}
+#navBar dt {margin: 0px 0px 0px 0px;}
+#navBar dd {margin: 0px 0px 0px 0px;}
 
 /* hack to fix IE/Win's broken rendering of block-level anchors in lists */
-#navBar li {border-bottom: 1px solid #EEE;}
+#navBar dd {border-bottom: 1px solid #EEE;}
 
 /* fix for browsers that don't need the hack */
-html>body #navBar li {border-bottom: none;}
+html>body #navBar dd {border-bottom: none;}
 
 
 /*********** #sectionLinks styles ***********/
 
 #sectionLinks{
 	position: relative;
-	margin: 0px;
+	margin: 0;
 	padding: 15px 0px 0px 0px;
-	border-bottom: 1px solid #cccccc;
+	border-bottom: 1px solid #ccc;
 	font-size: 90%;
 }
 
+#sectionLinks dt{
+	padding: 0px 0px 1px 10px;
+	font-weight:bold;
+	color:#668800;
+}
+
 #sectionLinks h3{
-	padding: 10px 0px 2px 10px;
+	padding: 10px 0px 2px 20px;
 }
 
 #sectionLinks a:link{
-	padding: 2px 0px 2px 10px;
-	border-top: 1px solid #cccccc;
+	padding: 2px 0px 2px 20px;
+	border-top: 1px solid #ccc;
 	width: 100%;
   voice-family: "\"}\""; 
   voice-family:inherit;
@@ -377,14 +407,14 @@ html>body #navBar li {border-bottom: none;}
 }
 
 #sectionLinks a:visited{
-	border-top: 1px solid #cccccc;
-	padding: 2px 0px 2px 10px;
+	border-top: 1px solid #ccc;
+	padding: 2px 0px 2px 20px;
 }
 
 #sectionLinks a:hover{
-	border-top: 1px solid #cccccc;
-	background-color: #dddddd;
-	padding: 2px 0px 2px 10px;
+	border-top: 1px solid #ccc;
+	background-color: #ddd;
+	padding: 2px 0px 2px 20px;
 }
 
 

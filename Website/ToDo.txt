@@ -20,11 +20,12 @@ Others are:
 
      
 On CourseHome, Move CaseList to right?
-On CaseHome, Do basic css formating for headings.
-             Need to workout dynamic way to choose page content depending on case status.
+On CaseHome, Need to workout dynamic way to choose page content depending on case status.
              Dynamic display of selection parameters specified for Case
 
 Method for choosing to retain results of cases
 Method for summarising multiple retained cases
 
 Login in directly to course as well as case
+
+
