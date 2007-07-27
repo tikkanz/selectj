@@ -28,7 +28,7 @@
   <div class="story">
     <h3>Introduction </h3>
       <p><%= cs_descr %> </p>
-      <p><%=ct_intro%></p>
+      <p><%=cx_intro%></p>
     <h3>Status </h3>
       <p>Your population has undergone <%= 0 >. CurrYear %> cycles of selection.</p>
       <p>What do you want to do next? Choose a task from the menu on the right.</p>

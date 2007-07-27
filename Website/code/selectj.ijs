@@ -162,6 +162,18 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+getAllTrtNames=: 3 : 0
+  'uid ofid'=. qcookie"0 ;:'UserId CaseID'
+  (uid;ofid) getAllTrtNames y
+:
+  if. 0=#y do. y=. 0 qcookie 'CaseID' end.
+  xlfnme=. 'TrtInfo' getFnme x,<y
+  1{."1 'tDefn' readexcel xlfnme
+)
+getFnme=: 4 : 0
+  
+)
+
 require 'data/sqlite'
 
 coclass 'pselectdb'
@@ -267,17 +279,18 @@ sqlupd_deleteusers=: 0 : 0
 
 sqlsel_mycourses=: 0 : 0
   SELECT offering_info.of_id of_id ,
-        offering_info.cr_name cr_name ,
-        offering_info.cr_code cr_code ,
-        offering_info.of_year of_year ,
-        offering_info.sm_code sm_code ,
-        offering_info.dm_code dm_code ,
-        offering_info.pp_adminfname pp_adminfname ,
-        offering_info.pp_adminlname pp_adminlname ,
-        roles.rl_name rl_name
-  FROM offering_info INNER JOIN enrolments ON ( offering_info.of_id = enrolments.en_ofid ) 
-        INNER JOIN roles ON ( roles.rl_id = enrolments.en_rlid ) 
-  WHERE (offering_info.of_status >0) AND (enrolments.en_urid =?)
+         offering_info.cr_name cr_name ,
+         offering_info.cr_code cr_code ,
+         offering_info.of_year of_year ,
+         offering_info.sm_code sm_code ,
+         offering_info.dm_code dm_code ,
+         offering_info.pp_adminfname pp_adminfname ,
+         offering_info.pp_adminlname pp_adminlname ,
+         roles.rl_name rl_name 
+  FROM `enrolments` enrolments INNER JOIN `offering_info` offering_info ON ( `enrolments`.`en_ofid` = `offering_info`.`of_id` ) 
+        INNER JOIN `enrolmentroles` enrolmentroles ON ( `enrolmentroles`.`er_enid` = `enrolments`.`en_id` ) 
+        INNER JOIN `roles` roles ON ( `enrolmentroles`.`er_rlid` = `roles`.`rl_id` ) 
+  WHERE (enrolments.en_urid =?) AND (offering_info.of_status >0)
   ORDER BY offering_info.cr_code  Asc, offering_info.of_year  Asc;
 )
 
@@ -334,8 +347,8 @@ sqlsel_case=: 0 : 0
   SELECT scendefs.sd_descr cs_descr ,
          scendefs.sd_name cs_name ,
          scendefs.sd_code cs_code ,
-         casetext.ct_intro ct_intro 
-  FROM  `cases` cases INNER JOIN `casetext` casetext ON ( `cases`.`cs_id` = `casetext`.`ct_csid` ) 
+         casestext.cx_intro cx_intro 
+  FROM  `cases` cases INNER JOIN `casestext` casestext ON ( `cases`.`cs_id` = `casestext`.`cx_id` ) 
         INNER JOIN `scendefs` scendefs ON ( `scendefs`.`sd_id` = `cases`.`cs_sdid` ) 
   WHERE (cases.cs_id =?);
 )

@@ -76,9 +76,7 @@ CREATE TABLE courses (  -- courses offered by each institution
   cr_name   CHAR(50) NOT NULL,  -- course name
   cr_code   CHAR(10) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
   cr_descr  CHAR(700),          -- course description
-  cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id),
-  cr_intro  CHAR(1000)          -- AnimalSim intro text for course 
-  );
+  cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id) );
 
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
   of_id     INTEGER NOT NULL PRIMARY KEY,
@@ -95,10 +93,16 @@ CREATE TABLE offeringstext (  -- text used in interface with offering
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_id     INTEGER NOT NULL PRIMARY KEY,
-  en_urid   REFERENCES users(ur_id),
-  en_ofid   REFERENCES offerings(of_id),
-  en_rlid   REFERENCES roles(rl_id));
+  en_urid   INTEGER REFERENCES users(ur_id),
+  en_ofid   INTEGER REFERENCES offerings(of_id));
   
+ -- user can have multiple roles for an enrolment, highest is default
+CREATE TABLE enrolmentroles (  -- intersection of enrolments and user role 
+  er_id     INTEGER NOT NULL PRIMARY KEY,
+  er_enid   INTEGER NOT NULL REFERENCES enrolments(en_id),
+  er_rlid   INTEGER NOT NULL REFERENCES roles(rl_id));
+
+
 CREATE TABLE sessions (   -- log of user sessions
   ss_id     INTEGER NOT NULL PRIMARY KEY,
   ss_start  REAL,  -- stored as julianday.time
@@ -108,17 +112,24 @@ CREATE TABLE sessions (   -- log of user sessions
 CREATE TABLE cases (
   cs_id    INTEGER NOT NULL PRIMARY KEY,
   cs_sdid  INTEGER NOT NULL REFERENCES scendefs(sd_id),
+  cs_admin INTEGER NOT NULL REFERENCES users(ur_id), -- case admin
   cs_opt1  INTEGER NOT NULL DEFAULT 1,
   cs_opt2  INTEGER NOT NULL DEFAULT 1,
   cs_opt3  INTEGER NOT NULL DEFAULT 1); -- a bunch of boolean fields determining ScenDef options to include
 
-CREATE TABLE casetext (  -- text that applicable to each scenario/case
-  ct_id        INTEGER NOT NULL PRIMARY KEY,
-  ct_csid      REFERENCES cases(cs_id),
-  ct_intro     CHAR(1000),  -- intro text to set scene for scenario
-  ct_instruct  CHAR(1000),  -- instruction text for scenario
-  ct_btwncycle CHAR(1000),  -- text to display between selection cycles
-  ct_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
+CREATE TABLE casestext (  -- text that applicable to each scenario/case
+  cx_id        INTEGER NOT NULL PRIMARY KEY REFERENCES cases(cs_id),
+  cx_intro     CHAR(1000),  -- intro text to set scene for scenario
+  cx_instruct  CHAR(1000),  -- instruction text for scenario
+  cx_btwncycle CHAR(1000),  -- text to display between selection cycles
+  cx_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
+
+CREATE TABLE caseroles (
+  cl_id   INTEGER NOT NULL PRIMARY KEY,
+  cl_csid INTEGER NOT NULL REFERENCES cases(cs_id),
+  cl_urid INTEGER NOT NULL REFERENCES users(ur_id),
+  cl_rlid INTEGER NOT NULL REFERENCES roles(rl_id) );
+
 
 CREATE TABLE offeringcases (  -- cases available for each offering
   oc_id   INTEGER NOT NULL PRIMARY KEY,
@@ -139,11 +150,36 @@ BEGIN
        VALUES (new.of_id);
 END;
 
-CREATE TRIGGER enrol_new_user 
+CREATE TRIGGER create_offadminrole
+AFTER INSERT ON offerings
+BEGIN
+       INSERT INTO enrolments (en_urid,en_ofid)
+       VALUES (new.of_admin,new.of_id);
+       INSERT INTO enrolmentroles (er_enid,er_rlid)
+       VALUES (last_insert_rowid(),12);
+END;
+
+CREATE TRIGGER create_casetext
+AFTER INSERT ON cases
+BEGIN
+       INSERT INTO casestext (cx_id)
+       VALUES (new.cs_id);
+END;
+
+CREATE TRIGGER create_caseowner
+AFTER INSERT ON cases
+BEGIN
+       INSERT INTO caseroles (cl_csid,cl_urid,cl_rlid)
+       VALUES (new.cs_id,new.cs_admin,50);
+END;
+
+CREATE TRIGGER enrol_new_user -- enrol new users in Experiment with AnSim course 
 AFTER INSERT ON users
 BEGIN
-     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
-     VALUES(new.ur_id,6,1);
+     INSERT INTO enrolments (en_urid,en_ofid)
+     VALUES(new.ur_id,6);
+     INSERT INTO enrolmentroles (er_enid,er_rlid)
+     VALUES (last_insert_rowid(),1);
 END;
 
 CREATE TRIGGER delete_enrols
@@ -151,6 +187,13 @@ BEFORE DELETE ON users
 BEGIN
      DELETE FROM enrolments
      WHERE en_urid=old.ur_id;
+END;
+
+CREATE TRIGGER delete_enrolroles
+BEFORE DELETE ON enrolments
+BEGIN
+     DELETE FROM enrolmentroles
+     WHERE er_enid=old.en_id;
 END;
 
 CREATE VIEW `offering_info` AS 

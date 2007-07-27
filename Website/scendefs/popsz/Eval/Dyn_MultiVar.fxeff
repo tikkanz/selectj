@@ -1,0 +1,16 @@
+AnimalSim EBV multitrait evaluation   --- Ric Sherlock & Nicolas Lopez-Villalobos -----------
+ flk   3     !I
+ yob    9    !I
+ Tag         !A !P
+ sflk   3    !I
+ syob   9    !I
+ sire        
+ dflk   3    !I
+ dyob   9    !I
+ dam         
+ sex    2    !I
+ aod    7    !I 
+ br     4    !I    
+ rr     4    !I
+ dob
+ status

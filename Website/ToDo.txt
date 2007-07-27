@@ -28,4 +28,11 @@ Method for summarising multiple retained cases
 
 Login in directly to course as well as case
 
+Database table that maps userid_offeringid_caseid to caseinstanceid/name
+When user chooses a case for an offering, a caseinstance is created (if one doesn't already exist.). The scenario definition is copied into the folder userpop/uname/offeringcode/caseinstancename/  where caseinstance name is a "unique" generated string.
+When user resets case, they are prompted to save summary (if case completed), or that this will delete current case progress (if case started but not completed). At that stage the summary (what? where?) is saved (if asked) and old caseinstancename folder is deleted. A new caseinstancename is generated and a new copy of the scenario definition is made into userpop/uname/offeringcode/newcaseinstancename/
 
+Break en_rlid out of enrolments and make separate intersection table enrolmentroles between enrolments and roles.
+Users can have multiple roles for the same enrolment, role with highest permissions takes precedence. Precedence from lowest to highest is Student;Course Designer;Course Administrator;Site Administrator
+When a OFFEDIT/OFFADMIN adds a existing case to their
+A case gets created from available Scenario Definitions. The creator of the case is the COWNER. The COWNER can assign other users to be CEDITORs. Cases are available for any CDESIGN/CADMIN to include in their offering. If they want to change/edit the case, then they need to create a new case (based on the old one) and edit that.  
