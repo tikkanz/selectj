@@ -47,7 +47,7 @@ CREATE TABLE people (
   pp_email  CHAR(40) NOT NULL);   -- email here instead of user record for uniqueness? 
 
 CREATE TABLE scendefs (
-  sd_id    INTEGER NOT NULL PRIMARY KEY,
+  sd_id    INTEGER PRIMARY KEY,
   sd_name  CHAR(30) NOT NULL,  -- full name of scenario
   sd_code  CHAR(10) NOT NULL,  -- abbreviation for scenario name
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
@@ -55,7 +55,7 @@ CREATE TABLE scendefs (
   
 -- tables with foreign keys  
 CREATE TABLE users (
-	ur_id     INTEGER NOT NULL PRIMARY KEY,
+	ur_id     INTEGER PRIMARY KEY,
 	ur_ppid   INTEGER NOT NULL REFERENCES people(pp_id),
 	ur_inid   INTEGER DEFAULT 1 REFERENCES institutions(in_id),
 	ur_uname    CHAR(20)  UNIQUE NOT NULL, -- username 
@@ -72,14 +72,14 @@ CREATE TABLE passrecvry (  -- table used to help users recover from forgotten pa
   ps_tstamp REAL);   -- timestamp for tokens (julianday.time) 
 
 CREATE TABLE courses (  -- courses offered by each institution
-  cr_id     INTEGER NOT NULL PRIMARY KEY,
+  cr_id     INTEGER PRIMARY KEY,
   cr_name   CHAR(50) NOT NULL,  -- course name
   cr_code   CHAR(10) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
   cr_descr  CHAR(700),          -- course description
   cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id) );
 
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
-  of_id     INTEGER NOT NULL PRIMARY KEY,
+  of_id     INTEGER PRIMARY KEY,
   of_crid   INTEGER NOT NULL REFERENCES courses(cr_id),
   of_year   INTEGER DEFAULT 2007,
   of_smid   INTEGER NOT NULL REFERENCES semesters(sm_id),
@@ -92,25 +92,25 @@ CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_intro  CHAR(1000) DEFAULT NULL );  -- text for start of offhome.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
-  en_id     INTEGER NOT NULL PRIMARY KEY,
+  en_id     INTEGER PRIMARY KEY,
   en_urid   INTEGER REFERENCES users(ur_id),
   en_ofid   INTEGER REFERENCES offerings(of_id));
   
  -- user can have multiple roles for an enrolment, highest is default
 CREATE TABLE enrolmentroles (  -- intersection of enrolments and user role 
-  er_id     INTEGER NOT NULL PRIMARY KEY,
-  er_enid   INTEGER NOT NULL REFERENCES enrolments(en_id),
-  er_rlid   INTEGER NOT NULL REFERENCES roles(rl_id));
+  el_enid   INTEGER REFERENCES enrolments(en_id),
+  el_rlid   INTEGER REFERENCES roles(rl_id),
+  PRIMARY KEY(el_enid,el_rlid) );
 
 
 CREATE TABLE sessions (   -- log of user sessions
-  ss_id     INTEGER NOT NULL PRIMARY KEY,
+  ss_id     INTEGER PRIMARY KEY,
   ss_start  REAL,  -- stored as julianday.time
   ss_finish REAL,  -- stored as julianday.time
-  ss_enid   INTEGER NOT NULL REFERENCES enrolments(en_id)); -- session starts when choose offering not at login?
+  ss_enid   INTEGER NOT NULL REFERENCES enrolments(en_id) ); -- session starts when choose offering not at login?
 
 CREATE TABLE cases (
-  cs_id    INTEGER NOT NULL PRIMARY KEY,
+  cs_id    INTEGER PRIMARY KEY,
   cs_sdid  INTEGER NOT NULL REFERENCES scendefs(sd_id),
   cs_admin INTEGER NOT NULL REFERENCES users(ur_id), -- case admin
   cs_opt1  INTEGER NOT NULL DEFAULT 1,
@@ -125,19 +125,19 @@ CREATE TABLE casestext (  -- text that applicable to each scenario/case
   cx_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
 
 CREATE TABLE caseroles (
-  cl_id   INTEGER NOT NULL PRIMARY KEY,
   cl_csid INTEGER NOT NULL REFERENCES cases(cs_id),
   cl_urid INTEGER NOT NULL REFERENCES users(ur_id),
-  cl_rlid INTEGER NOT NULL REFERENCES roles(rl_id) );
+  cl_rlid INTEGER NOT NULL REFERENCES roles(rl_id),
+  PRIMARY KEY(cl_csid,cl_urid,cl_rlid) );
 
 
 CREATE TABLE offeringcases (  -- cases available for each offering
-  oc_id   INTEGER NOT NULL PRIMARY KEY,
   oc_ofid INTEGER NOT NULL REFERENCES offerings(of_id) ,
-  oc_csid INTEGER NOT NULL );
+  oc_csid INTEGER NOT NULL REFERENCES cases(cs_id),
+  PRIMARY KEY(oc_ofid,oc_csid) );
 
 CREATE TABLE errors (
-  er_id     INTEGER NOT NULL PRIMARY KEY,
+  er_id     INTEGER PRIMARY KEY,
   er_ssid   INTEGER NOT NULL REFERENCES sessions(ss_id),
   er_csid   INTEGER NOT NULL REFERENCES cases(cs_id),
   er_sdid   INTEGER NOT NULL REFERENCES scendefs(sd_id),
@@ -155,7 +155,7 @@ AFTER INSERT ON offerings
 BEGIN
        INSERT INTO enrolments (en_urid,en_ofid)
        VALUES (new.of_admin,new.of_id);
-       INSERT INTO enrolmentroles (er_enid,er_rlid)
+       INSERT INTO enrolmentroles (el_enid,el_rlid)
        VALUES (last_insert_rowid(),12);
 END;
 
@@ -178,7 +178,7 @@ AFTER INSERT ON users
 BEGIN
      INSERT INTO enrolments (en_urid,en_ofid)
      VALUES(new.ur_id,6);
-     INSERT INTO enrolmentroles (er_enid,er_rlid)
+     INSERT INTO enrolmentroles (el_enid,el_rlid)
      VALUES (last_insert_rowid(),1);
 END;
 
@@ -193,7 +193,7 @@ CREATE TRIGGER delete_enrolroles
 BEFORE DELETE ON enrolments
 BEGIN
      DELETE FROM enrolmentroles
-     WHERE er_enid=old.en_id;
+     WHERE el_enid=old.en_id;
 END;
 
 CREATE VIEW `offering_info` AS 

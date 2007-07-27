@@ -95,13 +95,13 @@ insert into enrolments (en_urid, en_ofid) values (2,3);
 insert into enrolments (en_urid, en_ofid) values (4,1);
 insert into enrolments (en_urid, en_ofid) values (4,3);
 
-insert into enrolmentroles (er_enid, er_rlid) values (12,10);
-insert into enrolmentroles (er_enid, er_rlid) values (13,1);
-insert into enrolmentroles (er_enid, er_rlid) values (14,1);
-insert into enrolmentroles (er_enid, er_rlid) values (15,1);
-insert into enrolmentroles (er_enid, er_rlid) values (16,1);
-insert into enrolmentroles (er_enid, er_rlid) values (17,1);
-insert into enrolmentroles (er_enid, er_rlid) values (18,1);
+insert into enrolmentroles (el_enid, el_rlid) values (12,10);
+insert into enrolmentroles (el_enid, el_rlid) values (13,1);
+insert into enrolmentroles (el_enid, el_rlid) values (14,1);
+insert into enrolmentroles (el_enid, el_rlid) values (15,1);
+insert into enrolmentroles (el_enid, el_rlid) values (16,1);
+insert into enrolmentroles (el_enid, el_rlid) values (17,1);
+insert into enrolmentroles (el_enid, el_rlid) values (18,1);
 
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (1,1,1,1,1);
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (2,1,1,1,1);
