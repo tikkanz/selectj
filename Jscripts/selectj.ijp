@@ -18,7 +18,7 @@ PRIMARYLIBS=: 0 : 0
 convert
 dll
 files
-guid
+random
 strings
 )
 

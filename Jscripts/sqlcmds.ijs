@@ -160,6 +160,30 @@ sqlsel_case=: 0 : 0
   WHERE (cs.cs_id =?);
 )
 
+sqlins_session=: 0 : 0
+  INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
+  VALUES(?,?,?,?,julianday('now','20 minutes'));
+)
+
+sqlsel_session=: 0 : 0
+  SELECT ss.ss_urid ss_urid ,
+         ss.ss_salt ss_salt ,
+         (ss.ss_expire-julianday('now')) timeleft 
+  FROM  `sessions`  ss 
+  WHERE (ss.ss_id =?) AND (ss.ss_status >0);
+)
+
+sqlupd_session=: 0 : 0
+  UPDATE sessions
+  SET ss_expire=julianday('now','20 minutes')
+  WHERE ss_id=?
+)
+sqlupd_sessionexpire=: 0 : 0
+  UPDATE sessions
+  SET ss_status=0
+  WHERE ss_id=?
+)
+
 Note 'link enrolments with names, roles, and course offering info'
   SELECT ur_uname,pp_fname,pp_lname,cr_id,cr_name,cr_code,of_year,dm_code,sm_code,rl_code
   FROM ((enrolments 

@@ -59,6 +59,9 @@ if. -.4=3!:0 y do. len=.8 else. len=.y end.
 len (]{~ [:?[$ [:#]) x
 )
 
+NB.*isdefseed v check if random seed has been reset from J6.01 default
+isdefseed=: 3 : '+./({.2{::9!:44'''')=16807 1215910514'
+
 NB.*salthash v generates hash
 NB. y is password string
 NB. x if present is the salt to use
@@ -68,8 +71,7 @@ salthash=: 3 : 0
   if. 0<#x do. s=.x
     if. 2=3!:0 s do. s=.".s end. NB. handle string
   else. 
-    if. +./(1{::9!:44'')=624,>:i.3 do. NB.reset random seed if state incremented less than 3 times
-        9!:1 (_2) 3!:4 , guids 1 end.
+    if. isdefseed'' do. randomize'' end.
     s=. createSalt '' 
   end.
   h=. md5 y,2&ic s
@@ -113,6 +115,62 @@ registerUser=: 3 : 0
   sph=. salthash passwd NB. create salt and passhash
   uid=.'newuser' insertDBTable_pselectdb_ pid;uname;refnum;|.sph NB. insert user into database
   NB. uid=.'newuser' insertDBTable_pselectdb_ (}:y),|.sph NB. insert user into database
+)
+
+NB.*writeTicket v makes ticket string for cookie
+writeTicket=: 3 : 0
+  'tsid thash'=.y
+  ('ssid=',":tsid),'&hash=',thash
+)
+NB.*readTicket v reads ticket string
+readTicket=: 3 : 0
+  {:"1 qsparse y NB. qsparse from JHP
+)
+
+NB.*createSession v creates a new user session
+NB. returns ticket to write to cookie
+NB. y is userID
+createSession=: 3 : 0
+ if. isdefseed'' do. randomize'' end.
+ sid=. ?<:-:2^32 NB. random session id
+ sh=. salthash ":sid 
+ 'session' insertDBTable_pselectdb_  sid;y;sh
+ tk=. writeTicket sid;{:sh
+)
+
+NB.*validSession v validates session ticket
+NB. if session ticket cookie not valid, returns 0
+NB. if expired, update ss_status to 0 and returns 0
+NB. if valid, updates expiry and returns ss_urid
+NB. y is content (session ticket) of sessionID cookie
+validSession=: 3 : 0
+  'sid shash'=. readTicket y
+  sinfo=.'session' getTable_pselectdb_ ".sid
+  if. 0=#sinfo do. 0 return. end. NB. no (active) session
+  'hdr dat'=. split sinfo         
+  (hdr)=: |:dat                   NB. assign hdrnames
+  NB. if. -. shash -: ss_hash do. 0 return. end. NB.
+  if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
+  if. timeleft<0 do. 
+    'sessionexpire' updateDBTable_pselectdb_ ".sid
+    0
+  else.
+    'session' updateDBTable_pselectdb_ ".sid
+    ss_urid
+  end.
+)
+
+NB.*updateSession v updates expiry of session
+updateSession=: 3 : 0
+  sid=.0{:: readTicket y
+  'session' updateDBTable_pselectdb_ ".sid
+)
+
+NB.*expireSession v changes status of session to inactive
+NB. maybe better to delete expired sessions?
+expireSession=: 3 : 0
+  sid=.0{:: readTicket y
+  'sessionexpire' updateDBTable_pselectdb_ ".sid
 )
 
 NB.*resetUsers v resets user account and folder
