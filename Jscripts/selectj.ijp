@@ -4,11 +4,14 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jhpadd
+~Projects/selectj/passwdhash
 ~Projects/selectj/userlogin
+~Projects/selectj/adminusers
 ~Projects/selectj/popfolders
 ~Projects/selectj/scenarios
 ~Projects/selectj/userdb
 ~Projects/selectj/sqlcmds
+~Projects/selectj/sqlcmds_interface
 ~addons/data/sqlite/sqlite
 ~addons/data/sqlite/def
 ~addons/convert/misc/md5

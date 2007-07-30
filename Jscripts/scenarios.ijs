@@ -23,3 +23,17 @@ NB. result is string of filename, or numeric _1 if file doesn't exist
 getFnme=: 4 : 0
   
 )
+
+
+NB.*getScenarioInfo v gets Scenario info from ini file
+NB. y is numeric user id
+NB. x is optional vector of boxed strings specifying info to get
+NB.   [default is 'login']
+getScenarioInfo=: 3 : 0
+  'default' getScenarioInfo y
+  :
+  keys=. boxopen x
+  uid=. ":y NB. handle y if numeric
+  inifile=. '~.CGI/flocks/',uid,'/animalsim.ini'
+  NB. readkeys from ini file
+)
