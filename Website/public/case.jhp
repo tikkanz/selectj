@@ -4,12 +4,13 @@ try.
   action=. qparam 'action'
   select. action
 	case. 'home' do.
-	  'uid ofid csid'=. qcookie"0 ;:'UserID OfferingID CaseID'
-	  if. -.(uid;ofid) validCase csid do.
+	  if. 0-: uofcid=. validCase'' do.
 	    DeleteCookie 'CaseID' 
-	    redirect 'course.jhp?action=home'
+		redirect 'course.jhp?action=home'
+	    NB. redirect 'course.jhp?action=home'
 	  else.
         page=. '~CGI/case_home.asp'  NB. destination page
+		'uid ofid csid'=. uofcid
 	    setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'coursename' getTable_pselectdb_ ofid
         setcolnames 'case' getTable_pselectdb_ csid
@@ -17,9 +18,9 @@ try.
 	    transfer page
 	  end.
 	case. do.  NB. default action
-	  csid=. qparam 'cs_id'
-	  if. -.validCase csid do.
-    	DeleteCookie 'CaseID' 
+	  csid=. 0 qparam 'cs_id'
+	  if. 0-: validCase csid do.
+    	DeleteCookie 'CaseID'
 	    redirect 'course.jhp?action=home'
 	  else.
     	csid SetCookie 'CaseID'

@@ -5,10 +5,15 @@ try.
   select. action
 	case. do.  NB. default action
  	  'uid ofid csid'=. qparam"0 ;:'userid offeringid caseid'
-      uid SetCookie 'UserID'
+  	  tkt=. createSession uid
+      tkt SetCookie 'SessionTicket'
 	  ofid SetCookie 'OfferingID'
-      csid SetCookie 'CaseID'
-	  redirect 'case.jhp?action=home'
+	  if. #csid do.
+        csid SetCookie 'CaseID'
+	    redirect 'case.jhp?action=home'
+	  else.
+   	    redirect 'course.jhp?action=home'
+	  end.
   end.
 catch.
   ContentType'text/html'[ Expires 0

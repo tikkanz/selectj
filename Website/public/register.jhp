@@ -6,7 +6,7 @@ try.
     usernameErr=: ''
     transfer page
   else.
-    uid=: registerUser qparam each qparamKeys''
+    uid=. registerUser qparam each qparamKeys''
     if. 0>uid do. NB. invalid login
       usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
       usernameErr=: usernameErr,' Please choose another one.'
@@ -14,7 +14,8 @@ try.
       page=. '~CGI/regform.asp'
 	  transfer page
     else.
-      uid SetCookie 'UserID'
+  	  tkt=. createSession uid
+      tkt SetCookie 'SessionTicket'
 	  redirect 'user.jhp?action=home'
     end.
   end.

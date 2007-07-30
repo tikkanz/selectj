@@ -4,7 +4,7 @@ IFJIJX_j_=: 1
 script_z_ '~system\main\convert.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
-script_z_ '~system\packages\misc\guid.ijs'
+script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~system\main\strings.ijs'
 
 coclass 'pselect'
@@ -58,40 +58,6 @@ coercetxt=: 3 : 0
   if. -.isboxed do. >y end. 
 )
 listatom=: 1&#
-loggedIn=: 3 : 0
-  uid=. qcookie 'UserID'
-  0<#uid
-  
-)
-enrolledIn=: 3 : 0
-  if. -.loggedIn'' do. 0 return. end.
-  uid=. 0 qcookie 'UserID'
-  uid enrolledIn y
-:
-  x=. coercetxt x
-  y=. coercetxt y
-  enrld=.'enrolled' getTable_pselectdb_ y;x
-  0<#enrld
-)
-validCase=: 3 : 0
-  ofid=. 0 qcookie 'OfferingID'
-  if. -.enrolledIn ofid do. 0 return. end.
-  uid=. 0 qcookie 'UserID'
-  (uid;ofid) validCase y
-:
-  x=. coercetxt x
-  y=. coercetxt y
-  vldcs=.'validcase' getTable_pselectdb_ x,<y
-  0<#vldcs
-)
-getScenarioInfo=: 3 : 0
-  'default' getScenarioInfo y
-  :
-  keys=. boxopen x
-  uid=. ":y 
-  inifile=. '~.CGI/flocks/',uid,'/animalsim.ini'
-  
-)
 createSalt=: ([: _2&(3!:4) a. {~ [: ? 256 $~ ])&4
 randpwd=: 3 : 0
 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' randpwd y
@@ -99,32 +65,41 @@ randpwd=: 3 : 0
 if. -.4=3!:0 y do. len=.8 else. len=.y end.
 len (]{~ [:?[$ [:#]) x
 )
+isdefseed=: 3 : '+./({.2{::9!:44'''')=16807 1215910514'
 salthash=: 3 : 0
   '' salthash y 
   :
   if. 0<#x do. s=.x
     if. 2=3!:0 s do. s=.".s end. 
   else. 
-    if. +./(1{::9!:44'')=624,>:i.3 do. 
-        9!:1 (_2) 3!:4 , guids 1 end.
+    if. isdefseed'' do. randomize'' end.
     s=. createSalt '' 
   end.
   h=. md5 y,2&ic s
   s;h  
 )
-
-validLogin=: 3 : 0
- 'usrnme passwd'=. y
-  if. usrnme -: '' do. _1 return. end. 
-  uinfo =. {:'login' getTable_pselectdb_ usrnme  
-  if. ''-: uinfo   do. _2 return. end.   
-  'duid dunme dhash dsalt' =. 4{.uinfo
-  if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
-  duid
+createSession=: 3 : 0
+ if. isdefseed'' do. randomize'' end.
+ sid=. >:?<:-:2^32 
+ sh=. salthash ":sid 
+ 'session' insertDBTable_pselectdb_  sid;y;sh
+ tk=. writeTicket sid;{:sh
+)
+expireSession=: 3 : 0
+  if.0=#y do. y=. qcookie 'SessionTicket' end.
+  sid=.0{:: readTicket y
+  'sessionexpire' updateDBTable_pselectdb_ ".sid
 )
 isActive=: 3 : 0
   s=. {:'status' getTable_pselectdb_ y
 )
+readTicket=: 3 : 0
+  kVTable=. qsparse y  
+  sid=.'ssid' keyval kVTable
+  shash=. 'hash' keyval kVTable
+  sid;shash
+)
+
 registerUser=: 3 : 0
   'uname fname lname refnum email passwd'=.y
   
@@ -141,6 +116,58 @@ registerUser=: 3 : 0
   uid=.'newuser' insertDBTable_pselectdb_ pid;uname;refnum;|.sph 
   
 )
+updateSession=: 3 : 0
+  if.0=#y do. y=. qcookie 'SessionTicket' end.
+  sid=.0{:: readTicket y
+  'session' updateDBTable_pselectdb_ ".sid
+)
+validCase=: 3 : 0
+  if. 0-: uofid=.validEnrolment'' do. 0 return. end.
+  uofid validCase y
+:
+  if. 0=#y do. y=.0 qcookie 'CaseID' end.
+  vldcs=.'validcase' getTable_pselectdb_ x,<y
+  if. #vldcs do. x,<y else. 0 end.
+)
+validEnrolment=: 3 : 0
+  if. 0-: uid=.validSession'' do. 0 return. end.
+  uid validEnrolment y
+:
+  if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
+  enrld=.'enrolled' getTable_pselectdb_ y;x
+  if. #enrld do. x;y else. 0 end.
+)
+validLogin=: 3 : 0
+ 'usrnme passwd'=. y
+  if. usrnme -: '' do. _1 return. end. 
+  uinfo =. {:'login' getTable_pselectdb_ usrnme  
+  if. ''-: uinfo   do. _2 return. end.   
+  'duid dunme dhash dsalt' =. 4{.uinfo
+  if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
+  duid
+)
+validSession=: 3 : 0
+  if. 0=#y do. y=. qcookie 'SessionTicket' end.
+  'sid shash'=. readTicket y
+  sinfo=.'session' getTable_pselectdb_ ".sid
+  if. 0=#sinfo do. 0 return. end. 
+  'hdr dat'=. split sinfo         
+  (hdr)=: |:dat                   
+  
+  if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
+  if. timeleft<0 do. 
+    'sessionexpire' updateDBTable_pselectdb_ ".sid
+    0
+  else.
+    'session' updateDBTable_pselectdb_ ".sid
+    ss_urid
+  end.
+)
+writeTicket=: 3 : 0
+  'tsid thash'=.y
+  ('ssid=',":tsid),'&hash=',thash
+)
+
 resetUsers=: 3 : 0
   if. *#y do.
     'resetusers' updateDBTable_pselectdb_ y
@@ -174,6 +201,14 @@ getFnme=: 4 : 0
   
 )
 
+getScenarioInfo=: 3 : 0
+  'default' getScenarioInfo y
+  :
+  keys=. boxopen x
+  uid=. ":y 
+  inifile=. '~.CGI/flocks/',uid,'/animalsim.ini'
+  
+)
 require 'data/sqlite'
 
 coclass 'pselectdb'
@@ -208,12 +243,6 @@ updateDBTable=: dyad sdefine
 )
 
 coclass 'pselectdb'
-
-sqlsel_userid=: 0 : 0
-  SELECT users.ur_id ur_id
-  FROM users
-  WHERE users.ur_uname=?;
-)
 sqlsel_login=: 0 : 0
   SELECT users.ur_id ur_id, 
          users.ur_uname ur_uname,
@@ -222,19 +251,70 @@ sqlsel_login=: 0 : 0
   FROM users
   WHERE users.ur_uname=?;
 )
+
 sqlsel_status=: 0 : 0
   SELECT users.ur_status ur_status
   FROM users
   WHERE users.ur_id=?;
 )
 
-sqlsel_greeting=: 0 : 0
-  SELECT pp.pp_fname pp_fname,
+sqlsel_email=: 0 : 0
+  SELECT pp.pp_id pp_id ,
+         pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
-  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
-  WHERE ur.ur_id=?;
+  FROM `people` pp
+  WHERE pp.pp_email=?;
 )
 
+sqlins_newperson=: 0 : 0
+  INSERT INTO people (pp_fname,pp_lname,pp_email)
+  VALUES(?,?,?);
+)
+
+sqlins_newuser=: 0 : 0
+  INSERT INTO users (ur_ppid,ur_uname,ur_refnum,ur_passhash,ur_salt)
+  VALUES(?,?,?,?,?);
+)
+
+sqlins_session=: 0 : 0
+  INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
+  VALUES(?,?,?,?,julianday('now','20 minutes'));
+)
+
+sqlsel_session=: 0 : 0
+  SELECT ss.ss_urid ss_urid ,
+         ss.ss_salt ss_salt ,
+         (ss.ss_expire-julianday('now')) timeleft 
+  FROM  `sessions`  ss 
+  WHERE (ss.ss_id =?) AND (ss.ss_status >0);
+)
+
+sqlupd_session=: 0 : 0
+  UPDATE sessions
+  SET ss_expire=julianday('now','20 minutes')
+  WHERE ss_id=?
+)
+sqlupd_sessionexpire=: 0 : 0
+  UPDATE sessions
+  SET ss_status=0
+  WHERE ss_id=?
+)
+
+sqlsel_enrolled=: 0 : 0
+  SELECT en.en_id en_id ,
+         en.en_ofid en_ofid ,
+         en.en_urid en_urid 
+  FROM   `enrolments` en
+  WHERE (en.en_ofid =?) AND (en.en_urid =?);
+)
+
+sqlsel_validcase=: 0 : 0
+  SELECT en.en_urid ur_id ,
+         en.en_ofid of_id ,
+         oc.oc_csid cs_id 
+  FROM  `enrolments` en INNER JOIN `offeringcases` oc ON ( `en`.`en_ofid` = `oc`.`oc_ofid` ) 
+  WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
+)
 sqlsel_userlist=: 0 : 0
   SELECT ur.ur_id ur_id ,
          ur.ur_status ur_status ,
@@ -242,6 +322,8 @@ sqlsel_userlist=: 0 : 0
          pp.pp_lname pp_lname
   FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id;
 )
+
+
 sqlsel_userrec=: 0 : 0
   SELECT ur.ur_id ur_id ,
          pp.pp_fname pp_fname ,
@@ -254,26 +336,6 @@ sqlsel_userrec=: 0 : 0
          ur.ur_passhash ur_passhash
   FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
   WHERE ur.ur_id=?;
-)
-
-
-sqlsel_email=: 0 : 0
-  SELECT pp.pp_id pp_id ,
-         pp.pp_fname pp_fname ,
-         pp.pp_lname pp_lname
-  FROM `people` pp
-  WHERE pp.pp_email=?;
-)
-
-
-sqlins_newperson=: 0 : 0
-  INSERT INTO people (pp_fname,pp_lname,pp_email)
-  VALUES(?,?,?);
-)
-
-sqlins_newuser=: 0 : 0
-  INSERT INTO users (ur_ppid,ur_uname,ur_refnum,ur_passhash,ur_salt)
-  VALUES(?,?,?,?,?);
 )
 
 sqlupd_resetusers=: 0 : 0
@@ -293,6 +355,14 @@ sqlupd_deleteusers=: 0 : 0
   WHERE ur_id=?
 )
 
+coclass 'pselectdb'
+sqlsel_greeting=: 0 : 0
+  SELECT pp.pp_fname pp_fname,
+         pp.pp_lname pp_lname
+  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
+  WHERE ur.ur_id=?;
+)
+
 sqlsel_mycourses=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
@@ -308,22 +378,6 @@ sqlsel_mycourses=: 0 : 0
         INNER JOIN `roles` rl ON ( `el`.`el_rlid` = `rl`.`rl_id` ) 
   WHERE (en.en_urid =?) AND (off_info.of_status >0)
   ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
-)
-
-sqlsel_enrolled=: 0 : 0
-  SELECT en.en_id en_id ,
-         en.en_ofid en_ofid ,
-         en.en_urid en_urid 
-  FROM   `enrolments` en
-  WHERE (en.en_ofid =?) AND (en.en_urid =?);
-)
-
-sqlsel_validcase=: 0 : 0
-  SELECT en.en_urid ur_id ,
-         en.en_ofid of_id ,
-         oc.oc_csid cs_id 
-  FROM  `enrolments` en INNER JOIN `offeringcases` oc ON ( `en`.`en_ofid` = `oc`.`oc_ofid` ) 
-  WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
 )
 
 sqlsel_course=: 0 : 0
@@ -369,20 +423,6 @@ sqlsel_case=: 0 : 0
   WHERE (cs.cs_id =?);
 )
 
-Note 'link enrolments with names, roles, and course offering info'
-  SELECT ur_uname,pp_fname,pp_lname,cr_id,cr_name,cr_code,of_year,dm_code,sm_code,rl_code
-  FROM ((enrolments 
-          INNER JOIN (users INNER JOIN people ON ur_ppid=pp_id) 
-          ON en_urid=ur_id)
-            INNER JOIN roles ON en_rlid=rl_id)
-       INNER JOIN 
-       (((offerings 
-          INNER JOIN courses    ON of_crid=cr_id)
-          INNER JOIN delivmodes ON of_dmid=dm_id)
-          INNER JOIN semesters  ON of_smid=sm_id)
-       ON en_ofid=of_id
-  WHERE en_urid=1;
-)
 require 'files'
 require '~addons/data/sqlite/def.ijs'
 

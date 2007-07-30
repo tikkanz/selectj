@@ -1,22 +1,23 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
-  DeleteCookie 'CaseID'
-  DeleteCookie 'OfferingID'
-  DeleteCookie 'UserID' 
   action=. qparam 'action'
     select. action
     case. 'logout' do.
       page=.'~CGI/default_logout.html'
+	  expireSession''
     case. 'loginfail' do.
 	  uname=: qparam 'uname'
       page=.'~CGI/default_loginfail.asp'
     case. 'nouser' do.
       page=.'~CGI/default_nouser.html'
-0    case. do. NB. default action
+    case. do. NB. default action
       page=.'~CGI/default_welcome.html'
     end.
-      transfer page
+    DeleteCookie 'CaseID'
+    DeleteCookie 'OfferingID'
+    DeleteCookie 'SessionTicket'
+    transfer page
 catch.
   ContentType'text/html'[ Expires 0
   Error=. 13!:12''

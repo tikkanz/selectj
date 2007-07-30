@@ -8,27 +8,32 @@ try.
 	  if. 0>uid do. NB. invalid login
 		redirect 'default.jhp?action=loginfail&uname=',qparam 'usrname'
 	  else.
-    	uid SetCookie 'UserID'
+	    tkt=. createSession uid
+    	tkt SetCookie 'SessionTicket'
 		redirect 'user.jhp?action=home'
 	  end.
 	case. 'guest' do.
-    	'5' SetCookie 'UserID'
+	    tkt=. createSession '5'
+    	tkt SetCookie 'SessionTicket'
 		redirect 'user.jhp?action=home'
 	case. 'home' do.
-	  if. -.loggedIn'' do.
+	  if. 0-: uid=.validSession'' do.
 	    redirect 'default.jhp' 
 	  else.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
         page=. '~CGI/user_home.asp'  NB. destination page
-    	uid=. 0 qcookie 'UserID'
         setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'mycourses' getTable_pselectdb_ uid
     	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
-	    transfer page
+		if. 1=#of_id do. NB. if only one course then go direct
+		  redirect 'course.jhp?of_id=',":of_id
+		else.
+	      transfer page
+		end.
 	  end.
 	case. do.
-	  if. loggedIn'' do. DeleteCookie 'UserID' end.
+	  if. validSession'' do. expireSession'' end. NB. even with valid session, shouldn't manually enter URL, so expire session.
       redirect 'default.jhp' 
   end.
 catch.
