@@ -66,11 +66,10 @@ sqlupd_sessionexpire=: 0 : 0
 )
 
 sqlsel_enrolled=: 0 : 0
-  SELECT en.en_id en_id ,
-         en.en_ofid en_ofid ,
-         en.en_urid en_urid 
+  SELECT en.en_urid en_urid ,
+         en.en_ofid en_ofid 
   FROM   `enrolments` en
-  WHERE (en.en_ofid =?) AND (en.en_urid =?);
+  WHERE (en.en_urid =?) AND (en.en_ofid =?);
 )
 
 sqlsel_validcase=: 0 : 0

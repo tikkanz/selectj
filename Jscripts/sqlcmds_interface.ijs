@@ -20,9 +20,8 @@ sqlsel_mycourses=: 0 : 0
          off_info.pp_adminfname pp_adminfname ,
          off_info.pp_adminlname pp_adminlname ,
          rl.rl_name rl_name 
-  FROM `enrolments` en INNER JOIN `offering_info` off_info ON ( `en`.`en_ofid` = `off_info`.`of_id` ) 
-        INNER JOIN `enrolmentroles` el ON ( `el`.`el_enid` = `en`.`en_id` ) 
-        INNER JOIN `roles` rl ON ( `el`.`el_rlid` = `rl`.`rl_id` ) 
+  FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
+        INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
   WHERE (en.en_urid =?) AND (off_info.of_status >0)
   ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
 )

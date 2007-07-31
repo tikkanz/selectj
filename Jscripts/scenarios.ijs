@@ -18,13 +18,6 @@ NB.  xlfnme=. 'd:\web\selectj\scendefs\popsz\trtinfo.xls'
   1{."1 'tDefn' readexcel xlfnme
 )
 
-NB.*getFnme v get filename of specified filetype for user,offering,case
-NB. result is string of filename, or numeric _1 if file doesn't exist
-getFnme=: 4 : 0
-  
-)
-
-
 NB.*getScenarioInfo v gets Scenario info from ini file
 NB. y is numeric user id
 NB. x is optional vector of boxed strings specifying info to get

@@ -19,6 +19,8 @@ expireSession=: 3 : 0
   'sessionexpire' updateDBTable_pselectdb_ ".sid
 )
 
+GUESTID=:5
+
 NB.*isActive v checks if username is inactive (needs to be reinitalised)
 isActive=: 3 : 0
   s=. {:'status' getTable_pselectdb_ y
@@ -85,7 +87,7 @@ validEnrolment=: 3 : 0
   uid validEnrolment y
 :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getTable_pselectdb_ y;x
+  enrld=.'enrolled' getTable_pselectdb_ x;y
   if. #enrld do. x;y else. 0 end.
 )
 
