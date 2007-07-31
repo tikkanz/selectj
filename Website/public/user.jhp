@@ -13,7 +13,7 @@ try.
 		redirect 'user.jhp?action=home'
 	  end.
 	case. 'guest' do.
-	    tkt=. createSession '5'
+	    tkt=. createSession GUESTID
     	tkt SetCookie 'SessionTicket'
 		redirect 'user.jhp?action=home'
 	case. 'home' do.

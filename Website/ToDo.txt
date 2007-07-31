@@ -12,19 +12,29 @@ Others are:
 
      
 On CourseHome, Move CaseList to right?
-On CaseHome, Need to workout dynamic way to choose page content depending on case status.
+
+If multiple people log on as Guest at the same time they will have different ss_ids, but the same ur_id. Need to be careful about how/where to write their server data so it doesn't conflict. Maybe if ur_id=5 (guest) then store the server data in a folder that is determined by ur_id and sessionid. Clean up for Guest, but leave for real users.
+
+User clicks on caseoffering:
+     -does the user have a current instance of this caseoffering?
+     -if not create usercaseoffering instance (special handling for Guest?)
+     -determine progress and load appropriate page
+     -dynamically choose page content depending on caseinstances stage (ci_stage).
              Dynamic display of selection parameters specified for Case
 
+Database table caseinstances maps userid_offeringid_caseid to caseinstanceid.
+When user chooses a case for an offering, a caseinstance is created (if one doesn't already exist.). The scenario definition is copied into the folder userpop/uname/offeringcode/casecode/caseinstanceid/  where caseinstanceid is the string of the caseinstances.ci_id.
+
+Reset case
+When user resets case, they are prompted to save summary (if case completed), or that this will delete current case progress (if case started but not completed). At that stage the summary is saved (if desired by user) and old caseinstancename folder is deleted. The old caseinstance record is made inactive(deleted?) and ci_sumry updated appropriately. A new caseinstancename is generated and a new copy of the scenario definition is made into userpop/uname/offeringcode/casecode/newcaseinstanceid/. 
+
+Summarize case
 Method for choosing to retain results of cases
+       Option from conclusion page
+       Prompt on "Reset case" if case finished
 Method for summarising multiple retained cases
-
-If multiple people log on as Guest at the same time they need to have different ur_ids otherwise their server data will conficit. Could store the server data in a folder that is determined by ur_id and sessionid. Clean up for Guest, but leave for real users.
-
-Set a variable called GuestID=:5 or similar.
-
-Database table that maps userid_offeringid_caseid to caseinstanceid/name
-When user chooses a case for an offering, a caseinstance is created (if one doesn't already exist.). The scenario definition is copied into the folder userpop/uname/offeringcode/caseinstancename/  where caseinstance name is a "unique" generated string.
-When user resets case, they are prompted to save summary (if case completed), or that this will delete current case progress (if case started but not completed). At that stage the summary (what? where?) is saved (if asked) and old caseinstancename folder is deleted. A new caseinstancename is generated and a new copy of the scenario definition is made into userpop/uname/offeringcode/newcaseinstancename/
+       Save user scenario definition file (animsim.ini) and summary file (animsummry.csv) for case with user's name and description of case
+       Save in userpop/uname/offeringcode/casecode/summary/<caseinstance>.ini <caseinstance>.csv
 
 Users can have multiple roles for the same enrolment, role with highest permissions takes precedence. Precedence from lowest to highest is Student;Course Designer;Course Administrator;Site Administrator
 Can a user access the same enrolment using their different roles or only their highest permissioned one?

@@ -87,21 +87,21 @@ Lorem ipsum dolor sit amet consectetuer pellentesque mauris leo vel id. Interdum
 <p>Volutpat Nam facilisis montes Integer elit Praesent pede pretium consequat Vestibulum. Nec et pede Morbi orci adipiscing Sed ligula facilisi Maecenas urna. Enim turpis pharetra Ut elit malesuada pretium tellus et elit Nullam. Cursus In Aenean nunc wisi dui lacinia iaculis quis semper mauris. Mattis at lorem In id Phasellus Suspendisse eget ac tempor quis. In feugiat et enim In Lorem wisi sociis elit.
 ' where ox_id=6;
 
-insert into enrolments (en_urid, en_ofid) values (1,4);
-insert into enrolments (en_urid, en_ofid) values (1,5);
-insert into enrolments (en_urid, en_ofid) values (4,5);
-insert into enrolments (en_urid, en_ofid) values (2,1);
-insert into enrolments (en_urid, en_ofid) values (2,3);
-insert into enrolments (en_urid, en_ofid) values (4,1);
-insert into enrolments (en_urid, en_ofid) values (4,3);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,10);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (1,5,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (4,5,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (2,1,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (2,3,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (4,1,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (4,3,1);
 
-insert into enrolmentroles (el_enid, el_rlid) values (12,10);
-insert into enrolmentroles (el_enid, el_rlid) values (13,1);
-insert into enrolmentroles (el_enid, el_rlid) values (14,1);
-insert into enrolmentroles (el_enid, el_rlid) values (15,1);
-insert into enrolmentroles (el_enid, el_rlid) values (16,1);
-insert into enrolmentroles (el_enid, el_rlid) values (17,1);
-insert into enrolmentroles (el_enid, el_rlid) values (18,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (12,10);
+-- insert into enrolmentroles (el_enid, el_rlid) values (13,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (14,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (15,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (16,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (17,1);
+-- insert into enrolmentroles (el_enid, el_rlid) values (18,1);
 
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (1,1,1,1,1);
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (2,1,1,1,1);

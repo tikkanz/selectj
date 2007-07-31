@@ -134,7 +134,7 @@ validEnrolment=: 3 : 0
   uid validEnrolment y
 :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getTable_pselectdb_ y;x
+  enrld=.'enrolled' getTable_pselectdb_ x;y
   if. #enrld do. x;y else. 0 end.
 )
 validLogin=: 3 : 0
@@ -189,6 +189,16 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+getFnme=: 4 : 0
+  
+)
+
+createCaseInstance=: 3 : 0
+
+)
+getCaseInstance=: 3 : 0
+
+)
 getAllTrtNames=: 3 : 0
   'uid ofid'=. qcookie"0 ;:'UserId CaseID'
   (uid;ofid) getAllTrtNames y
@@ -197,10 +207,6 @@ getAllTrtNames=: 3 : 0
   xlfnme=. 'TrtInfo' getFnme x,<y
   1{."1 'tDefn' readexcel xlfnme
 )
-getFnme=: 4 : 0
-  
-)
-
 getScenarioInfo=: 3 : 0
   'default' getScenarioInfo y
   :
@@ -301,11 +307,10 @@ sqlupd_sessionexpire=: 0 : 0
 )
 
 sqlsel_enrolled=: 0 : 0
-  SELECT en.en_id en_id ,
-         en.en_ofid en_ofid ,
-         en.en_urid en_urid 
+  SELECT en.en_urid en_urid ,
+         en.en_ofid en_ofid 
   FROM   `enrolments` en
-  WHERE (en.en_ofid =?) AND (en.en_urid =?);
+  WHERE (en.en_urid =?) AND (en.en_ofid =?);
 )
 
 sqlsel_validcase=: 0 : 0
@@ -373,9 +378,8 @@ sqlsel_mycourses=: 0 : 0
          off_info.pp_adminfname pp_adminfname ,
          off_info.pp_adminlname pp_adminlname ,
          rl.rl_name rl_name 
-  FROM `enrolments` en INNER JOIN `offering_info` off_info ON ( `en`.`en_ofid` = `off_info`.`of_id` ) 
-        INNER JOIN `enrolmentroles` el ON ( `el`.`el_enid` = `en`.`en_id` ) 
-        INNER JOIN `roles` rl ON ( `el`.`el_rlid` = `rl`.`rl_id` ) 
+  FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
+        INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
   WHERE (en.en_urid =?) AND (off_info.of_status >0)
   ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
 )

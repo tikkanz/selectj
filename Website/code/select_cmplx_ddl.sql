@@ -92,15 +92,17 @@ CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_intro  CHAR(1000) DEFAULT NULL );  -- text for start of offhome.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
-  en_id     INTEGER NOT NULL PRIMARY KEY,
   en_urid   INTEGER REFERENCES users(ur_id),
-  en_ofid   INTEGER REFERENCES offerings(of_id));
+  en_ofid   INTEGER REFERENCES offerings(of_id),
+  en_rlid   INTEGER REFERENCES roles(rl_id),
+  PRIMARY KEY(en_urid,en_ofid,en_rlid) );
   
  -- user can have multiple roles for an enrolment, highest is default
-CREATE TABLE enrolmentroles (  -- intersection of enrolments and user role 
-  el_enid   INTEGER REFERENCES enrolments(en_id),
-  el_rlid   INTEGER REFERENCES roles(rl_id),
-  PRIMARY KEY(el_enid,el_rlid) );
+--CREATE TABLE enrolmentroles (  -- intersection of enrolments and user role 
+--  el_urid   INTEGER REFERENCES users(ur_id),
+--  el_ofid   INTEGER REFERENCES offerings(of_id),
+--  el_rlid   INTEGER REFERENCES roles(rl_id),
+--  PRIMARY KEY(el_urid,el_ofid,el_rlid) );
 
 
 CREATE TABLE sessions (   -- user sessions
@@ -142,6 +144,17 @@ CREATE TABLE offeringcases (  -- cases available for each offering
   oc_csid INTEGER NOT NULL REFERENCES cases(cs_id),
   PRIMARY KEY(oc_ofid,oc_csid) );
 
+CREATE TABLE caseinstances (  -- case instance for user offering
+  ci_id INTEGER NOT NULL PRIMARY KEY, -- CaseInstance Id
+  ci_urid  INTEGER NOT NULL REFERENCES users (ur_id),
+  ci_ofid  INTEGER NOT NULL REFERENCES offerings (of_id),
+  ci_csid  INTEGER NOT NULL REFERENCES cases (cs_id),
+  ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
+  ci_usrdescr CHAR(1000) DEFAULT NULL, -- user's description for CaseInstance
+  ci_sumry    INTEGER DEFAULT 0,        -- summary saved? 0 no; 1 yes
+  ci_stage    CHAR(16) DEFAULT 'intro',   -- status, 'intro';'instruct';'btwncycle';'conc'
+  ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current
+
 CREATE TABLE errors (
   er_id     INTEGER NOT NULL PRIMARY KEY,
   er_ssid   INTEGER NOT NULL REFERENCES sessions(ss_id),
@@ -159,10 +172,10 @@ END;
 CREATE TRIGGER create_offadminrole
 AFTER INSERT ON offerings
 BEGIN
-       INSERT INTO enrolments (en_urid,en_ofid)
-       VALUES (new.of_admin,new.of_id);
-       INSERT INTO enrolmentroles (el_enid,el_rlid)
-       VALUES (last_insert_rowid(),12);
+       INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+       VALUES (new.of_admin,new.of_id,12);
+--       INSERT INTO enrolmentroles (el_enid,el_rlid)
+--       VALUES (last_insert_rowid(),12);
 END;
 
 CREATE TRIGGER create_casetext
@@ -182,10 +195,10 @@ END;
 CREATE TRIGGER enrol_new_user -- enrol new users in Experiment with AnSim course 
 AFTER INSERT ON users
 BEGIN
-     INSERT INTO enrolments (en_urid,en_ofid)
-     VALUES(new.ur_id,6);
-     INSERT INTO enrolmentroles (el_enid,el_rlid)
-     VALUES (last_insert_rowid(),1);
+     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+     VALUES(new.ur_id,6,1);
+--     INSERT INTO enrolmentroles (el_enid,el_rlid)
+--     VALUES (last_insert_rowid(),1);
 END;
 
 CREATE TRIGGER delete_enrols
@@ -195,34 +208,34 @@ BEGIN
      WHERE en_urid=old.ur_id;
 END;
 
-CREATE TRIGGER delete_enrolroles
-BEFORE DELETE ON enrolments
-BEGIN
-     DELETE FROM enrolmentroles
-     WHERE el_enid=old.en_id;
-END;
+-- CREATE TRIGGER delete_enrolroles
+-- BEFORE DELETE ON enrolments
+-- BEGIN
+--     DELETE FROM enrolmentroles
+--     WHERE el_enid=old.en_id;
+-- END;
 
 CREATE VIEW `offering_info` AS 
 -- this VIEW created by support@osenxpsuite.net [Visual Query Builder - SQLite2007 PRO]
 -- created date: 23/07/2007 16:53:35
 SELECT 
-      offerings.of_id of_id ,
-      courses.cr_id cr_id ,
-      courses.cr_name cr_name ,
-      courses.cr_code cr_code ,
-      offerings.of_year of_year ,
-      semesters.sm_code sm_code ,
-      delivmodes.dm_code dm_code ,
-      offerings.of_status of_status ,
-      people.pp_fname pp_adminfname ,
-      people.pp_lname pp_adminlname 
+      of.of_id of_id ,
+      cr.cr_id cr_id ,
+      cr.cr_name cr_name ,
+      cr.cr_code cr_code ,
+      of.of_year of_year ,
+      sm.sm_code sm_code ,
+      dm.dm_code dm_code ,
+      of.of_status of_status ,
+      pp.pp_fname pp_adminfname ,
+      pp.pp_lname pp_adminlname 
 
 FROM 
-      `semesters` semesters INNER JOIN `offerings` offerings ON ( `semesters`.`sm_id` = `offerings`.`of_smid` ) 
-      INNER JOIN `delivmodes` delivmodes ON ( `delivmodes`.`dm_id` = `offerings`.`of_dmid` ) 
-      INNER JOIN `users` users ON ( `users`.`ur_id` = `offerings`.`of_admin` ) 
-      INNER JOIN `courses` courses ON ( `courses`.`cr_id` = `offerings`.`of_crid` ) 
-      INNER JOIN `people` people ON ( `people`.`pp_id` = `users`.`ur_ppid` ) 
+      `semesters` sm INNER JOIN `offerings` of ON ( `sm`.`sm_id` = `of`.`of_smid` ) 
+      INNER JOIN `delivmodes` dm ON ( `dm`.`dm_id` = `of`.`of_dmid` ) 
+      INNER JOIN `users` ur ON ( `ur`.`ur_id` = `of`.`of_admin` ) 
+      INNER JOIN `courses` cr ON ( `cr`.`cr_id` = `of`.`of_crid` ) 
+      INNER JOIN `people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
 
 WHERE 
-      (offerings.of_status >0);
+      (of.of_status >0);
