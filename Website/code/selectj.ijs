@@ -90,6 +90,8 @@ expireSession=: 3 : 0
   sid=.0{:: readTicket y
   'sessionexpire' updateDBTable_pselectdb_ ".sid
 )
+
+GUESTID=:5
 isActive=: 3 : 0
   s=. {:'status' getTable_pselectdb_ y
 )
@@ -192,12 +194,18 @@ deleteUsers=: 3 : 0
 getFnme=: 4 : 0
   
 )
-
 createCaseInstance=: 3 : 0
-
+  'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
 )
 getCaseInstance=: 3 : 0
-
+  if. 0=#y do.
+    if. 0-: uofcsid=. validCase'' do. 0 return. end.
+  else.
+    if. 0-: uofcsid=. (2{.y) validCase 2}.y do. 0 return. end.
+  end.
+  cinst=.'caseinstance' getTable_pselectdb_ uofcsid
+  if. 0=#cinst do. 0 return. end.
+  cinst
 )
 getAllTrtNames=: 3 : 0
   'uid ofid'=. qcookie"0 ;:'UserId CaseID'
@@ -418,13 +426,13 @@ sqlsel_coursecases=: 0 : 0
 )
 
 sqlsel_case=: 0 : 0
-  SELECT sd.sd_descr cs_descr ,
-         sd.sd_name cs_name ,
-         sd.sd_code cs_code ,
-         cx.cx_intro cx_intro 
-  FROM  `cases` cs INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_id` ) 
-        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-  WHERE (cs.cs_id =?);
+  SELECT sd.sd_name sd_name ,
+         sd.sd_code sd_code ,
+         sd.sd_descr sd_descr ,
+         cx.cx_text cx_text 
+  FROM  `scendefs` sd INNER JOIN `cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+        INNER JOIN `casestext` cx ON ( `cases`.`cs_id` = `cx`.`cx_csid` ) 
+  WHERE (cx.cx_csid =?) AND (cx.cx_xnid =1);
 )
 
 require 'files'

@@ -23,6 +23,10 @@ insert into roles (rl_id,rl_name,rl_code,rl_descr) values (20,'Case Editor', 'CE
 insert into roles (rl_id,rl_name,rl_code,rl_descr) values (22,'Case Owner', 'COWNER', 'User created the case and can assign additonal Case Editors');
 insert into roles (rl_id,rl_name,rl_code,rl_descr) values (50,'Site Administrator', 'SADMIN', 'Super user');
 
+insert into textblocks (xn_name,xn_code) values ('Introduction','intro');
+insert into textblocks (xn_name,xn_code) values ('Instructions','instruct');
+insert into textblocks (xn_name,xn_code) values ('Between Cycles','btwncycles');
+insert into textblocks (xn_name,xn_code) values ('Conclusion','conc');
 
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');
@@ -107,50 +111,58 @@ insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (1,1,1,1,1);
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (2,1,1,1,1);
 insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (3,1,1,1,1);
 
-update casestext set 
-cx_intro='
+-- trigger automatially creates casestext entry for intro
+update casestext set cx_text='
 Intro texta. Lorem ipsum dolor sit amet consectetuer natoque sed libero tellus pede. Risus urna condimentum Pellentesque enim habitasse mauris pretium Aenean eros porta. At elit neque nonummy lorem cursus urna ipsum et auctor mattis. Augue id scelerisque quis dui ornare id leo Nulla odio nascetur. Venenatis nulla lacinia semper id justo ipsum mus lacinia.</p>
 <p>Consectetuer lacinia Ut Nam convallis eget id purus congue adipiscing ac. Dui convallis sit id Aenean tincidunt est dictumst aliquam eros id. Et ac in Nam scelerisque ut quis pulvinar faucibus ac justo. Feugiat vel justo orci Donec enim elit pulvinar pede eu rutrum. Nam quis Pellentesque id tortor et Morbi elit mi Donec pretium. Quis montes ridiculus rhoncus Nulla eu.
-', cx_instruct='
-Instruction texta. Lorem ipsum dolor sit amet consectetuer nibh Ut libero egestas quis. Eget Curabitur pellentesque Sed Nullam tempor Lorem Vestibulum Cras libero laoreet. </p>
-<p>Et fringilla tortor lacinia tincidunt nunc fames magnis est mauris ut. Porttitor Pellentesque elit Morbi nec natoque Cras ut Suspendisse In nascetur. </p>
-<p>Aenean magnis Sed dui at justo et nonummy at augue risus. Molestie massa morbi felis neque ligula pretium a habitasse.
-', cx_conc='
-Conclusion texta. Lorem ipsum dolor sit amet consectetuer hendrerit sociis elit Quisque nibh. Consectetuer tortor risus consectetuer Ut Pellentesque tincidunt neque non laoreet egestas. Justo tellus ac id.</p>
-<p>Vestibulum mi metus amet id augue nec condimentum feugiat turpis dui. Nullam justo faucibus pede Vestibulum porttitor tortor lacinia semper tellus auctor. Interdum at tincidunt wisi.</p>
-<p>Pede at ac congue orci elit consectetuer eu pede consequat montes. Pede vel mauris laoreet leo elit quis id nunc metus nulla. Lobortis condimentum pellentesque est Curabitur.
-' where cx_id=1 ;
+' where cx_csid=1 and cx_xnid=1;
 
-update casestext set 
-cx_intro='
+update casestext set cx_text='
 Intro textb. Lorem ipsum dolor sit amet consectetuer Nulla Donec vitae ridiculus leo. Et fringilla ut hendrerit feugiat Nam laoreet mus non interdum in. Consequat non commodo consectetuer Nam et euismod neque Donec non nec. Nam tellus elit malesuada a Phasellus feugiat Curabitur Ut cursus tempor. Pretium Nullam Curabitur ut Nullam quam porttitor vitae dui Sed convallis. Congue Vivamus urna sem.</p>
 <p>Sit faucibus enim Suspendisse elit eu Vivamus ullamcorper malesuada ante mauris. Sociis dictum libero penatibus tincidunt morbi adipiscing ridiculus risus faucibus Nulla. Congue dictumst vel ac iaculis sodales Aenean Phasellus Maecenas condimentum pretium. Nunc elit libero pulvinar amet nascetur Aenean congue vitae elit lacus. Consequat platea platea habitant amet amet justo feugiat ac Sed volutpat. Metus vel sed pharetra a consectetuer pede vitae.
-', cx_instruct='
-Instruction textb. Lorem ipsum dolor sit amet consectetuer Integer at Curabitur amet gravida. Elit dolor Curabitur nec elit Vivamus neque.</p>
-<p>Sed laoreet fringilla Curabitur lacinia semper dignissim senectus nibh nibh Maecenas. Netus consequat Donec quis.</p>
-<p>Pellentesque accumsan eros natoque In eleifend tellus iaculis cursus Maecenas cursus. Risus vel elit at Curabitur justo accumsan.
-',cx_conc='
-Conclusion textb. Lorem ipsum dolor sit amet consectetuer at id quis pede laoreet. Integer malesuada et penatibus ligula convallis malesuada ipsum elit vitae consequat. Nunc risus.</p>
-<p>Proin Maecenas risus tincidunt dignissim Aenean facilisi morbi mauris consequat metus. Massa platea Donec tincidunt ridiculus amet leo leo Quisque sem Nulla. Dolor porta.
-' where cx_id=2;
+' where cx_csid=2 and cx_xnid=1;
 
-update casestext set
-cx_intro='
+update casestext set cx_text='
 Intro textc. Lorem ipsum dolor sit amet consectetuer felis et facilisi vitae Aenean. Nunc Vivamus dictumst parturient Vestibulum augue morbi ut at sem amet. Vestibulum nonummy ut magnis dui justo libero tempus tempor in quis. Mi enim Cras pellentesque ligula diam pulvinar Nam egestas aliquet feugiat. Pellentesque Integer.</p>
 <p>Vel orci Phasellus semper ut semper lacinia ut elit tincidunt egestas. Nisl lacus elit ridiculus Suspendisse hendrerit diam ornare Donec pellentesque id. Mauris libero ultrices sociis augue consectetuer Donec ut nulla Aenean sodales. Massa nibh tellus tincidunt Mauris natoque nec cursus augue.</p>
 <p>Ac Nunc semper non sodales Vestibulum est neque pulvinar sociis dolor. Pulvinar id enim amet quis orci felis laoreet dolor ultrices ligula. Wisi ante fringilla elit ac Phasellus enim pretium elit vitae leo. Laoreet eget Morbi malesuada pede Nam cursus nulla turpis dui quis. Semper arcu vel.
-', cx_instruct='
+' where cx_csid=3 and cx_xnid=1;
+
+insert into casestext (cx_csid,cx_xnid,cx_text) values (1,2,'
+Instruction texta. Lorem ipsum dolor sit amet consectetuer nibh Ut libero egestas quis. Eget Curabitur pellentesque Sed Nullam tempor Lorem Vestibulum Cras libero laoreet. </p>
+<p>Et fringilla tortor lacinia tincidunt nunc fames magnis est mauris ut. Porttitor Pellentesque elit Morbi nec natoque Cras ut Suspendisse In nascetur. </p>
+<p>Aenean magnis Sed dui at justo et nonummy at augue risus. Molestie massa morbi felis neque ligula pretium a habitasse.
+');
+insert into casestext (cx_csid,cx_xnid,cx_text) values (1,4,'
+Conclusion texta. Lorem ipsum dolor sit amet consectetuer hendrerit sociis elit Quisque nibh. Consectetuer tortor risus consectetuer Ut Pellentesque tincidunt neque non laoreet egestas. Justo tellus ac id.</p>
+<p>Vestibulum mi metus amet id augue nec condimentum feugiat turpis dui. Nullam justo faucibus pede Vestibulum porttitor tortor lacinia semper tellus auctor. Interdum at tincidunt wisi.</p>
+<p>Pede at ac congue orci elit consectetuer eu pede consequat montes. Pede vel mauris laoreet leo elit quis id nunc metus nulla. Lobortis condimentum pellentesque est Curabitur.
+');
+
+insert into casestext (cx_csid,cx_xnid,cx_text) values (2,2,' 
+Instruction textb. Lorem ipsum dolor sit amet consectetuer Integer at Curabitur amet gravida. Elit dolor Curabitur nec elit Vivamus neque.</p>
+<p>Sed laoreet fringilla Curabitur lacinia semper dignissim senectus nibh nibh Maecenas. Netus consequat Donec quis.</p>
+<p>Pellentesque accumsan eros natoque In eleifend tellus iaculis cursus Maecenas cursus. Risus vel elit at Curabitur justo accumsan.
+');
+insert into casestext (cx_csid,cx_xnid,cx_text) values (2,4,'
+Conclusion textb. Lorem ipsum dolor sit amet consectetuer at id quis pede laoreet. Integer malesuada et penatibus ligula convallis malesuada ipsum elit vitae consequat. Nunc risus.</p>
+<p>Proin Maecenas risus tincidunt dignissim Aenean facilisi morbi mauris consequat metus. Massa platea Donec tincidunt ridiculus amet leo leo Quisque sem Nulla. Dolor porta.
+');
+
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,2,'
 Instruction textc. Lorem ipsum dolor sit amet consectetuer justo Donec eget Maecenas eu. Vel Sed sollicitudin rhoncus orci eleifend urna et nec nonummy.</p>
 <p>Enim libero tempor nibh Curabitur Nam Curabitur pede convallis mauris Nulla. Quis convallis tristique tellus odio turpis in Aenean tincidunt ac quis. Volutpat.</p>
 <p>In leo urna mauris Aliquam faucibus Suspendisse Praesent at magnis tincidunt. Aliquam quis orci Nam laoreet sapien consectetuer laoreet ante.</p>
 <p>Id congue Sed vitae nec dolor Sed iaculis Nulla et amet. Nisl mauris ante convallis orci justo felis risus interdum id.
-', cx_btwncycle='
+');
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,3,'
 Between cycle textc. Lorem ipsum dolor sit amet consectetuer at lacus odio wisi mauris. Eu tincidunt a id In Vestibulum.</p>
 <p>Neque et eget Nunc id Phasellus penatibus semper mollis risus Suspendisse. Rhoncus id dapibus ut Lorem Pellentesque ipsum tempus.
-', cx_conc='
+');
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,4,'
 Conclusion textc. Lorem ipsum dolor sit amet consectetuer at elit scelerisque Aenean metus. Orci Duis et consequat dapibus id Nulla et ipsum Phasellus.</p>
 <p>Sed feugiat volutpat Quisque non id nisl ac sem lorem et. Vestibulum nascetur Quisque molestie condimentum enim id aliquam ligula amet diam. Pretium Nullam.
-' where cx_id=3;
+');
 
 insert into offeringcases (oc_ofid, oc_csid) values (1,1);
 insert into offeringcases (oc_ofid, oc_csid) values (1,3);

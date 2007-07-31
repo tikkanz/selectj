@@ -35,7 +35,7 @@ CREATE TABLE roles (
   rl_name  CHAR(30) NOT NULL,
   rl_code  CHAR(10) NOT NULL,  -- abbreviation eg. usr or admin
   rl_descr CHAR(100) );        -- description of roles
-  
+
 CREATE TABLE people (
   pp_id   INTEGER NOT NULL PRIMARY KEY,
   pp_fname  CHAR(30) NOT NULL,    -- first names
@@ -52,6 +52,11 @@ CREATE TABLE scendefs (
   sd_code  CHAR(10) NOT NULL,  -- abbreviation for scenario name
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
   sd_filen CHAR(100) ); -- instead of file name could store files as BLOBS?
+
+CREATE TABLE textblocks ( -- names for blocks of text (not just in cases?)
+  xn_id    INTEGER NOT NULL PRIMARY KEY,
+  xn_name  CHAR(50) NOT NULL,  -- name for text block eg. 'Introduction' or 'Materials and Methods'
+  xn_code  CHAR(10) NOT NULL );  -- code for text block eg. 'intro' or 'instruct'   
   
 -- tables with foreign keys  
 CREATE TABLE users (
@@ -89,21 +94,13 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
 
 CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_id     INTEGER NOT NULL PRIMARY KEY REFERENCES offerings(of_id),
-  ox_intro  CHAR(1000) DEFAULT NULL );  -- text for start of offhome.asp
+  ox_intro  CHAR(1024) DEFAULT NULL );  -- text for start of course_home.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_urid   INTEGER REFERENCES users(ur_id),
   en_ofid   INTEGER REFERENCES offerings(of_id),
   en_rlid   INTEGER REFERENCES roles(rl_id),
   PRIMARY KEY(en_urid,en_ofid,en_rlid) );
-  
- -- user can have multiple roles for an enrolment, highest is default
---CREATE TABLE enrolmentroles (  -- intersection of enrolments and user role 
---  el_urid   INTEGER REFERENCES users(ur_id),
---  el_ofid   INTEGER REFERENCES offerings(of_id),
---  el_rlid   INTEGER REFERENCES roles(rl_id),
---  PRIMARY KEY(el_urid,el_ofid,el_rlid) );
-
 
 CREATE TABLE sessions (   -- user sessions
   ss_id     INTEGER NOT NULL PRIMARY KEY,
@@ -113,9 +110,6 @@ CREATE TABLE sessions (   -- user sessions
   ss_status INTEGER DEFAULT 1, -- 0 inactive, 1 active
   ss_expire REAL );  -- date/time to expire stored as julianday.time
   -- make inactive or delete when logout/expire? could log start/end in separate table
-  -- ss_start  REAL,  -- stored as julianday.time
-  -- ss_finish REAL,  -- stored as julianday.time
-  -- ss_enid   INTEGER NOT NULL REFERENCES enrolments(en_id) ); -- session starts when choose offering not at login?
 
 CREATE TABLE cases (
   cs_id    INTEGER NOT NULL PRIMARY KEY,
@@ -126,11 +120,10 @@ CREATE TABLE cases (
   cs_opt3  INTEGER DEFAULT 1); -- a bunch of boolean fields determining ScenDef options to include
 
 CREATE TABLE casestext (  -- text that applicable to each scenario/case
-  cx_id        INTEGER NOT NULL PRIMARY KEY REFERENCES cases(cs_id),
-  cx_intro     CHAR(1000),  -- intro text to set scene for scenario
-  cx_instruct  CHAR(1000),  -- instruction text for scenario
-  cx_btwncycle CHAR(1000),  -- text to display between selection cycles
-  cx_conc      CHAR(1000)); -- text to display at conclusion of selection cycles
+  cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
+  cx_xnid  INTEGER NOT NULL REFERENCES textblocks(xn_id) ,
+  cx_text  CHAR(1024) DEFAULT 'Lorem ipsum dolor sit.' ,  -- text to set scene for scenario
+  PRIMARY KEY(cx_csid,cx_xnid) );
 
 CREATE TABLE caseroles (
   cl_csid INTEGER NOT NULL REFERENCES cases(cs_id),
@@ -178,11 +171,11 @@ BEGIN
 --       VALUES (last_insert_rowid(),12);
 END;
 
-CREATE TRIGGER create_casetext
+CREATE TRIGGER create_casetext -- creates placeholder for intro text for a case when it is created
 AFTER INSERT ON cases
 BEGIN
-       INSERT INTO casestext (cx_id)
-       VALUES (new.cs_id);
+       INSERT INTO casestext (cx_csid,cx_xnid)
+       VALUES (new.cs_id,1);
 END;
 
 CREATE TRIGGER create_caseowner
@@ -207,13 +200,6 @@ BEGIN
      DELETE FROM enrolments
      WHERE en_urid=old.ur_id;
 END;
-
--- CREATE TRIGGER delete_enrolroles
--- BEFORE DELETE ON enrolments
--- BEGIN
---     DELETE FROM enrolmentroles
---     WHERE el_enid=old.en_id;
--- END;
 
 CREATE VIEW `offering_info` AS 
 -- this VIEW created by support@osenxpsuite.net [Visual Query Builder - SQLite2007 PRO]
