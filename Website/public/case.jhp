@@ -10,10 +10,12 @@ try.
 	    NB. redirect 'course.jhp?action=home'
 	  else.
         page=. '~CGI/case_home.asp'  NB. destination page
+		ciid=. getCaseInstance uofcsid
+		setcolnames 'casestage' getTable_pselectdb_ ciid
 		'uid ofid csid'=. uofcsid
 	    setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'coursename' getTable_pselectdb_ ofid
-        setcolnames 'case' getTable_pselectdb_ csid
+        setcolnames 'case' getTable_pselectdb_ csid;ci_stage
     	NB. if. isnoun 'of_id' do. of_id=:i.0 0 end.
 	    transfer page
 	  end.
@@ -33,6 +35,7 @@ catch.
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
   println 4!:0 <'uid'
+  println ciid
   println COOKIEKEYS
   println COOKIEVALS
   println '</pre></p></body></html>'

@@ -51,7 +51,7 @@ CREATE TABLE scendefs (
   sd_name  CHAR(30) NOT NULL,  -- full name of scenario
   sd_code  CHAR(10) NOT NULL,  -- abbreviation for scenario name
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
-  sd_filen CHAR(100) ); -- instead of file name could store files as BLOBS?
+  sd_filen CHAR(100) ); -- filename of zip file containing scendef. Instead of file name could store files as BLOBS?
 
 CREATE TABLE textblocks ( -- names for blocks of text (not just in cases?)
   xn_id    INTEGER NOT NULL PRIMARY KEY,
@@ -145,7 +145,7 @@ CREATE TABLE caseinstances (  -- case instance for user offering
   ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
   ci_usrdescr CHAR(1000) DEFAULT NULL, -- user's description for CaseInstance
   ci_sumry    INTEGER DEFAULT 0,        -- summary saved? 0 no; 1 yes
-  ci_stage    CHAR(16) DEFAULT 'intro',   -- status, 'intro';'instruct';'btwncycle';'conc'
+  ci_stage    INTEGER DEFAULT 1 REFERENCES textblocks(xn_id),   -- stage, 
   ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current
 
 CREATE TABLE errors (

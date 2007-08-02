@@ -15,7 +15,7 @@ On CourseHome, Move CaseList to right?
 
 If multiple people log on as Guest at the same time they will have different ss_ids, but the same ur_id. Need to be careful about how/where to write their server data so it doesn't conflict. Maybe if ur_id=5 (guest) then store the server data in a folder that is determined by ur_id and sessionid. Clean up for Guest, but leave for real users.
 
-User clicks on caseoffering:
+User clicks on caseoffering: (special handling for Guest?)
      -does the user have a current instance of this caseoffering?
      -if not create usercaseoffering instance (special handling for Guest?)
      -determine progress and load appropriate page

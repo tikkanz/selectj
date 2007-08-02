@@ -38,12 +38,16 @@ SelectJ
 [Open project files]
 0=ToDo.txt
 1=code\select_cmplx_ddl.sql
+2=code\select_cmplx_data.sql
 [Selected Project Files]
 Main=
 Selected=ToDo.txt
 [ToDo.txt]
-TopLine=10
-Caret=1,17
+TopLine=13
+Caret=267,26
 [code\select_cmplx_ddl.sql]
-TopLine=141
-Caret=1,144
+TopLine=91
+Caret=27,112
+[code\select_cmplx_data.sql]
+TopLine=203
+Caret=15,125

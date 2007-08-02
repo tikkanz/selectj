@@ -6,6 +6,7 @@ script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
 script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~system\main\strings.ijs'
+script_z_ '~system\packages\misc\task.ijs'
 
 coclass 'pselect'
 
@@ -154,7 +155,7 @@ validSession=: 3 : 0
   sinfo=.'session' getTable_pselectdb_ ".sid
   if. 0=#sinfo do. 0 return. end. 
   'hdr dat'=. split sinfo         
-  (hdr)=: |:dat                   
+  (hdr)=. |:dat                   
   
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
@@ -191,21 +192,54 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+
+pathdelim=: 4 : '}.;([:x&,,)each y'
 getFnme=: 4 : 0
-  
+  sep=. PATHSEP_j_
+  basefldr=. 'd:\web\selectj\'
+  select. x
+    case. 'caseinstfolder' do.
+    
+      pathinfo=. 'caseinstfolder' getTableStr_pselectdb_ y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
+      fnme=. sep pathdelim ur_uname;of_code;sd_code;ci_id
+      fnme=. 'userpop',sep,fnme,sep
+    case. 'scendef' do.
+    
+      pathinfo=. 'scendef' getTableStr_pselectdb_ y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      fnme=. 'scendefs',sep,(,sd_code),'.zip'
+    case. do.
+  end.
+  fnme=. basefldr,fnme
+)
+
+Note 'list filenames in tree'
+,. ,>"1 (,/"0) 1 dir each (dirpath jpath 'd:/web/selectj/scendefs/popsz')#~ a:=(<'.svn') ss each dirpath jpath 'd:/web/selectj/scendefs/popsz'
 )
 createCaseInstance=: 3 : 0
-  'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
+  'uid ofid csid'=. y
+  ciid=. 'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
+  zippath=. tolower 'scendef' getFnme csid
+  newpath=. tolower 'caseinstfolder' getFnme ciid
+  t=.zippath unzip newpath
+  ciid
 )
 getCaseInstance=: 3 : 0
   if. 0=#y do.
     if. 0-: uofcsid=. validCase'' do. 0 return. end.
   else.
-    if. 0-: uofcsid=. (2{.y) validCase 2}.y do. 0 return. end.
+    uofcsid=. y
   end.
-  cinst=.'caseinstance' getTable_pselectdb_ uofcsid
-  if. 0=#cinst do. 0 return. end.
-  cinst
+  ciid=. >@{:'caseinstance' getTable_pselectdb_ uofcsid
+  if. #ciid do.
+    ciid
+  else. 
+    createCaseInstance uofcsid
+  end.
 )
 getAllTrtNames=: 3 : 0
   'uid ofid'=. qcookie"0 ;:'UserId CaseID'
@@ -245,6 +279,9 @@ sEnd=: 0 : 0
 sdefine=: 1 : 'm : (sBegin , (0 : 0) , sEnd)'
 getTable=: dyad sdefine
   r=.(boxopen y) query__db ".'sqlsel_',x
+)
+getTableStr=: dyad sdefine
+  r=.(boxopen y) strquery__db ".'sqlsel_',x
 )
 
 insertDBTable=: dyad sdefine
@@ -328,6 +365,39 @@ sqlsel_validcase=: 0 : 0
   FROM  `enrolments` en INNER JOIN `offeringcases` oc ON ( `en`.`en_ofid` = `oc`.`oc_ofid` ) 
   WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
 )
+
+sqlins_caseinstance=: 0 : 0
+  INSERT INTO caseinstances (ci_urid,ci_ofid,ci_csid)
+  VALUES(?,?,?);
+)
+
+sqlsel_caseinstance=: 0 : 0
+  SELECT ci.ci_id ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?);
+)
+
+sqlsel_caseinstfolder=: 0 : 0
+  SELECT ur.ur_uname ur_uname ,
+         off_info.cr_code cr_code ,
+         off_info.of_year of_year ,
+      	 off_info.sm_code sm_code ,
+         off_info.dm_code dm_code ,
+         sd.sd_code sd_code ,
+         ci.ci_id ci_id 
+  FROM  `users` ur INNER JOIN `caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
+        INNER JOIN `cases` cases ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `offering_info` off_info ON ( `off_info`.`of_id` = `ci`.`ci_ofid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
+)
+
+sqlsel_scendef=: 0 : 0
+  SELECT sd.sd_code sd_code 
+  FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+  WHERE (cs.cs_id =?);
+)
+
 sqlsel_userlist=: 0 : 0
   SELECT ur.ur_id ur_id ,
          ur.ur_status ur_status ,
@@ -425,15 +495,73 @@ sqlsel_coursecases=: 0 : 0
   WHERE (oc.oc_ofid =?);
 )
 
+sqlsel_casestage=: 0 : 0
+  SELECT ci.ci_stage ci_stage 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_id =?);
+)
+
 sqlsel_case=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
          sd.sd_descr sd_descr ,
+         xn.xn_name xn_name ,
          cx.cx_text cx_text 
-  FROM  `scendefs` sd INNER JOIN `cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
-        INNER JOIN `casestext` cx ON ( `cases`.`cs_id` = `cx`.`cx_csid` ) 
-  WHERE (cx.cx_csid =?) AND (cx.cx_xnid =1);
+FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+      INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
+      INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 
+WHERE (cs.cs_id =?) AND (xn.xn_id =?);
 )
+
+coclass 'punzip'
+
+3 : 0 ''
+if. -.IFUNIX do. require 'task' end.
+if. IFCONSOLE do.
+  UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
+else.
+  UNZIP=: UNZIP_j_
+end.
+)
+
+
+dquote=: '"'&, @ (,&'"')
+hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
+exequote=: 3 : 0
+  f=. deb y
+  if. '"' = {. f do. f return. end.
+  ndx=. 4 + 1 i.~ '.exe' E. f
+  if. ndx >: #f do. f return. end.
+  '"',(ndx{.f),'"',ndx }. f
+)
+shellcmd=: 3 : 0
+  if. IFUNIX do.
+    hostcmd y
+  else.
+    spawn y
+  end.
+)
+unzip=: 4 : 0
+  file=.x
+  dir=. y
+  e=. 'Unexpected error'
+  if. IFUNIX do.
+    e=. shellcmd 'tar -xzf ',(dquote file),' -C ',dquote dir
+  else.
+    z=. exequote UNZIP
+    if. +./'7z' E. UNZIP do. 
+      dirsw=.' -o'
+    else.  
+      dirsw=.' -d'
+    end.
+    r=. z,' ',(dquote file),dirsw,dquote dir
+    e=. shellcmd r
+    
+  end.
+  e
+)
+
+unzip_z_=: unzip_punzip_
 
 require 'files'
 require '~addons/data/sqlite/def.ijs'
