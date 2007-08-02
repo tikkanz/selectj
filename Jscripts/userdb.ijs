@@ -32,11 +32,18 @@ NB. getPhrasesBySec=: verb sdefine
 NB.     r=. (boxopen y) query__db sqlPhrasesBySec
 NB. )
 
-NB.*getUserInfo v gets user info from database
+NB.*getTable v gets info from database
 NB. y is values to look up in database
 NB. x is string specifying name of sqlquery to run
 getTable=: dyad sdefine
   r=.(boxopen y) query__db ".'sqlsel_',x
+)
+
+NB.*getTableStr v gets info from database as strings
+NB. y is values to look up in database
+NB. x is string specifying name of sqlquery to run
+getTableStr=: dyad sdefine
+  r=.(boxopen y) strquery__db ".'sqlsel_',x
 )
 
 insertDBTable=: dyad sdefine

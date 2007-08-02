@@ -115,7 +115,7 @@ validSession=: 3 : 0
   sinfo=.'session' getTable_pselectdb_ ".sid
   if. 0=#sinfo do. 0 return. end. NB. no (active) session
   'hdr dat'=. split sinfo         
-  (hdr)=: |:dat                   NB. assign hdrnames
+  (hdr)=. |:dat                   NB. assign hdrnames
   NB. if. -. shash -: ss_hash do. 0 return. end. NB.
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 

@@ -12,6 +12,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/userdb
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
+~Projects/misc/extractzip
 ~addons/data/sqlite/sqlite
 ~addons/data/sqlite/def
 ~addons/convert/misc/md5
@@ -23,6 +24,7 @@ dll
 files
 random
 strings
+task
 )
 
 DEVFILES=: 0 : 0

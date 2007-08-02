@@ -59,19 +59,20 @@ sqlsel_coursecases=: 0 : 0
   WHERE (oc.oc_ofid =?);
 )
 
+sqlsel_casestage=: 0 : 0
+  SELECT ci.ci_stage ci_stage 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_id =?);
+)
+
 sqlsel_case=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
          sd.sd_descr sd_descr ,
+         xn.xn_name xn_name ,
          cx.cx_text cx_text 
-  FROM  `scendefs` sd INNER JOIN `cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
-        INNER JOIN `casestext` cx ON ( `cases`.`cs_id` = `cx`.`cx_csid` ) 
-  WHERE (cx.cx_csid =?) AND (cx.cx_xnid =1);
-NB.   SELECT sd.sd_descr cs_descr ,
-NB.          sd.sd_name cs_name ,
-NB.          sd.sd_code cs_code ,
-NB.          cx.cx_intro cx_intro 
-NB.   FROM  `cases` cs INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_id` ) 
-NB.         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-NB.   WHERE (cs.cs_id =?);
+FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+      INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
+      INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 
+WHERE (cs.cs_id =?) AND (xn.xn_id =?);
 )

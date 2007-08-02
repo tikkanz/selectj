@@ -80,6 +80,39 @@ sqlsel_validcase=: 0 : 0
   WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
 )
 
+sqlins_caseinstance=: 0 : 0
+  INSERT INTO caseinstances (ci_urid,ci_ofid,ci_csid)
+  VALUES(?,?,?);
+)
+
+sqlsel_caseinstance=: 0 : 0
+  SELECT ci.ci_id ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?);
+)
+
+sqlsel_caseinstfolder=: 0 : 0
+  SELECT ur.ur_uname ur_uname ,
+         off_info.cr_code cr_code ,
+         off_info.of_year of_year ,
+      	 off_info.sm_code sm_code ,
+         off_info.dm_code dm_code ,
+         sd.sd_code sd_code ,
+         ci.ci_id ci_id 
+  FROM  `users` ur INNER JOIN `caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
+        INNER JOIN `cases` cases ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `offering_info` off_info ON ( `off_info`.`of_id` = `ci`.`ci_ofid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
+)
+
+sqlsel_scendef=: 0 : 0
+  SELECT sd.sd_code sd_code 
+  FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+  WHERE (cs.cs_id =?);
+)
+
+
 NB. =========================================================
 NB. Admin SQL
 
