@@ -18,8 +18,7 @@ If multiple people log on as Guest at the same time they will have different ss_
 User clicks on caseoffering: (special handling for Guest?)
      -does the user have a current instance of this caseoffering?
      -if not create usercaseoffering instance (special handling for Guest?)
-     -determine progress and load appropriate page
-     -dynamically choose page content depending on caseinstances stage (ci_stage).
+     -determine progress from caseinstances stage (ci_stage) and load appropriate page
              Dynamic display of selection parameters specified for Case
 
 Database table caseinstances maps userid_offeringid_caseid to caseinstanceid.

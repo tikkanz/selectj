@@ -2,6 +2,7 @@ NB. built from project: ~Projects/selectj/selectj
 
 IFJIJX_j_=: 1
 script_z_ '~system\main\convert.ijs'
+script_z_ '~system\main\dir.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
 script_z_ '~system\packages\stats\random.ijs'
@@ -194,9 +195,22 @@ deleteUsers=: 3 : 0
 )
 
 pathdelim=: 4 : '}.;([:x&,,)each y'
+
+deleteDirTree=: 3 : 0
+  try.
+    res=. 1!:55 {."1 dirtree y
+    res=. res,1!:55 |.dirpath y
+  catch.
+    
+    
+    
+    13!:11 ''
+  end.
+)
+
 getFnme=: 4 : 0
   sep=. PATHSEP_j_
-  basefldr=. 'd:\web\selectj\'
+  basefldr=. jpath '~.CGI/' 
   select. x
     case. 'caseinstfolder' do.
     
@@ -223,10 +237,14 @@ Note 'list filenames in tree'
 createCaseInstance=: 3 : 0
   'uid ofid csid'=. y
   ciid=. 'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
-  zippath=. tolower 'scendef' getFnme csid
-  newpath=. tolower 'caseinstfolder' getFnme ciid
-  t=.zippath unzip newpath
+  uz=. createCaseInstFolder csid;ciid
   ciid
+)
+createCaseInstFolder=: 3 : 0
+  'csid ciid'=.y
+  zippath=. 'scendef' getFnme csid
+  newpath=. 'caseinstfolder' getFnme ciid
+  uz=. unzip zippath;newpath  
 )
 getCaseInstance=: 3 : 0
   if. 0=#y do.
@@ -238,8 +256,17 @@ getCaseInstance=: 3 : 0
   if. #ciid do.
     ciid
   else. 
-    createCaseInstance uofcsid
+    ciid=. createCaseInstance uofcsid
   end.
+)
+expireCaseInstance=: 3 : 0
+  'expirecaseinst' updateDBTable_pselectdb_ y
+  deleteCaseInstFolder y
+)
+deleteCaseInstFolder=: 3 : 0
+  delpath=. 'caseinstfolder' getFnme y
+  res=.deleteDirTree delpath
+  if. 1=*./res do. 1 else. 0 end.
 )
 getAllTrtNames=: 3 : 0
   'uid ofid'=. qcookie"0 ;:'UserId CaseID'
@@ -374,7 +401,7 @@ sqlins_caseinstance=: 0 : 0
 sqlsel_caseinstance=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
-  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?);
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
 sqlsel_caseinstfolder=: 0 : 0
@@ -398,6 +425,11 @@ sqlsel_scendef=: 0 : 0
   WHERE (cs.cs_id =?);
 )
 
+sqlupd_expirecaseinst=: 0 : 0
+  UPDATE caseinstances
+  SET ci_status=0
+  WHERE ci_id=?;
+)
 sqlsel_userlist=: 0 : 0
   SELECT ur.ur_id ur_id ,
          ur.ur_status ur_status ,
@@ -496,7 +528,8 @@ sqlsel_coursecases=: 0 : 0
 )
 
 sqlsel_casestage=: 0 : 0
-  SELECT ci.ci_stage ci_stage 
+  SELECT ci.ci_stage ci_stage ,
+         ci.ci_sumry ci_sumry
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_id =?);
 )
@@ -541,9 +574,8 @@ shellcmd=: 3 : 0
     spawn y
   end.
 )
-unzip=: 4 : 0
-  file=.x
-  dir=. y
+unzip=: 3 : 0
+  'file dir'=.y
   e=. 'Unexpected error'
   if. IFUNIX do.
     e=. shellcmd 'tar -xzf ',(dquote file),' -C ',dquote dir

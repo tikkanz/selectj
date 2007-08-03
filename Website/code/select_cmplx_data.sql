@@ -23,10 +23,10 @@ insert into roles (rl_id,rl_name,rl_code,rl_descr) values (20,'Case Editor', 'CE
 insert into roles (rl_id,rl_name,rl_code,rl_descr) values (22,'Case Owner', 'COWNER', 'User created the case and can assign additonal Case Editors');
 insert into roles (rl_id,rl_name,rl_code,rl_descr) values (50,'Site Administrator', 'SADMIN', 'Super user');
 
-insert into textblocks (xn_name,xn_code) values ('Introduction','intro');
-insert into textblocks (xn_name,xn_code) values ('Instructions','instruct');
-insert into textblocks (xn_name,xn_code) values ('Between Cycles','btwncycles');
-insert into textblocks (xn_name,xn_code) values ('Conclusion','conc');
+insert into textblocks (xn_id,xn_name,xn_code) values (1,'Introduction','intro');
+insert into textblocks (xn_id,xn_name,xn_code) values (11,'Instructions','instruct');
+insert into textblocks (xn_id,xn_name,xn_code) values (21,'Between Cycles','btwncycles');
+insert into textblocks (xn_id,xn_name,xn_code) values (99,'Conclusion','conc');
 
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');
@@ -128,38 +128,38 @@ Intro textc. Lorem ipsum dolor sit amet consectetuer felis et facilisi vitae Aen
 <p>Ac Nunc semper non sodales Vestibulum est neque pulvinar sociis dolor. Pulvinar id enim amet quis orci felis laoreet dolor ultrices ligula. Wisi ante fringilla elit ac Phasellus enim pretium elit vitae leo. Laoreet eget Morbi malesuada pede Nam cursus nulla turpis dui quis. Semper arcu vel.
 ' where cx_csid=3 and cx_xnid=1;
 
-insert into casestext (cx_csid,cx_xnid,cx_text) values (1,2,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (1,11,'
 Instruction texta. Lorem ipsum dolor sit amet consectetuer nibh Ut libero egestas quis. Eget Curabitur pellentesque Sed Nullam tempor Lorem Vestibulum Cras libero laoreet. </p>
 <p>Et fringilla tortor lacinia tincidunt nunc fames magnis est mauris ut. Porttitor Pellentesque elit Morbi nec natoque Cras ut Suspendisse In nascetur. </p>
 <p>Aenean magnis Sed dui at justo et nonummy at augue risus. Molestie massa morbi felis neque ligula pretium a habitasse.
 ');
-insert into casestext (cx_csid,cx_xnid,cx_text) values (1,4,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (1,99,'
 Conclusion texta. Lorem ipsum dolor sit amet consectetuer hendrerit sociis elit Quisque nibh. Consectetuer tortor risus consectetuer Ut Pellentesque tincidunt neque non laoreet egestas. Justo tellus ac id.</p>
 <p>Vestibulum mi metus amet id augue nec condimentum feugiat turpis dui. Nullam justo faucibus pede Vestibulum porttitor tortor lacinia semper tellus auctor. Interdum at tincidunt wisi.</p>
 <p>Pede at ac congue orci elit consectetuer eu pede consequat montes. Pede vel mauris laoreet leo elit quis id nunc metus nulla. Lobortis condimentum pellentesque est Curabitur.
 ');
 
-insert into casestext (cx_csid,cx_xnid,cx_text) values (2,2,' 
+insert into casestext (cx_csid,cx_xnid,cx_text) values (2,11,' 
 Instruction textb. Lorem ipsum dolor sit amet consectetuer Integer at Curabitur amet gravida. Elit dolor Curabitur nec elit Vivamus neque.</p>
 <p>Sed laoreet fringilla Curabitur lacinia semper dignissim senectus nibh nibh Maecenas. Netus consequat Donec quis.</p>
 <p>Pellentesque accumsan eros natoque In eleifend tellus iaculis cursus Maecenas cursus. Risus vel elit at Curabitur justo accumsan.
 ');
-insert into casestext (cx_csid,cx_xnid,cx_text) values (2,4,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (2,99,'
 Conclusion textb. Lorem ipsum dolor sit amet consectetuer at id quis pede laoreet. Integer malesuada et penatibus ligula convallis malesuada ipsum elit vitae consequat. Nunc risus.</p>
 <p>Proin Maecenas risus tincidunt dignissim Aenean facilisi morbi mauris consequat metus. Massa platea Donec tincidunt ridiculus amet leo leo Quisque sem Nulla. Dolor porta.
 ');
 
-insert into casestext (cx_csid,cx_xnid,cx_text) values (3,2,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,11,'
 Instruction textc. Lorem ipsum dolor sit amet consectetuer justo Donec eget Maecenas eu. Vel Sed sollicitudin rhoncus orci eleifend urna et nec nonummy.</p>
 <p>Enim libero tempor nibh Curabitur Nam Curabitur pede convallis mauris Nulla. Quis convallis tristique tellus odio turpis in Aenean tincidunt ac quis. Volutpat.</p>
 <p>In leo urna mauris Aliquam faucibus Suspendisse Praesent at magnis tincidunt. Aliquam quis orci Nam laoreet sapien consectetuer laoreet ante.</p>
 <p>Id congue Sed vitae nec dolor Sed iaculis Nulla et amet. Nisl mauris ante convallis orci justo felis risus interdum id.
 ');
-insert into casestext (cx_csid,cx_xnid,cx_text) values (3,3,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,21,'
 Between cycle textc. Lorem ipsum dolor sit amet consectetuer at lacus odio wisi mauris. Eu tincidunt a id In Vestibulum.</p>
 <p>Neque et eget Nunc id Phasellus penatibus semper mollis risus Suspendisse. Rhoncus id dapibus ut Lorem Pellentesque ipsum tempus.
 ');
-insert into casestext (cx_csid,cx_xnid,cx_text) values (3,4,'
+insert into casestext (cx_csid,cx_xnid,cx_text) values (3,99,'
 Conclusion textc. Lorem ipsum dolor sit amet consectetuer at elit scelerisque Aenean metus. Orci Duis et consequat dapibus id Nulla et ipsum Phasellus.</p>
 <p>Sed feugiat volutpat Quisque non id nisl ac sem lorem et. Vestibulum nascetur Quisque molestie condimentum enim id aliquam ligula amet diam. Pretium Nullam.
 ');

@@ -25,13 +25,16 @@
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
   <h2 id="pageName"><%= sd_name %> </h2>
+
   <div class="story">
-    <h3>Introduction </h3>
+    <h3>Case Objective </h3>
       <p><%= sd_descr %> </p>
-      <p><%=cx_text%></p>
     <h3>Status </h3>
-      <p>Your population has undergone <%= 0 >. CurrYear %> cycles of selection.</p>
-      <p>What do you want to do next? Choose a task from the menu on the right.</p>
+      <p>Your population has undergone <%= 0 >. CurrYear %> out of a total of <%=nCycles %> cycles of selection.</p>
+    <h3><%= xn_name %> </h3>
+      <p><%=cx_text%></p>
+
+    <p>What do you want to do next? Choose a task from the menu on the right.</p>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 

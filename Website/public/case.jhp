@@ -3,22 +3,44 @@ load '~.CGI/code/selectj.ijs'
 try.
   action=. qparam 'action'
   select. action
-	case. 'home' do.
+	case. 'home';'status' do.
 	  if. 0-: uofcsid=. validCase'' do.
 	    DeleteCookie 'CaseID' 
 		redirect 'course.jhp?action=home'
-	    NB. redirect 'course.jhp?action=home'
 	  else.
         page=. '~CGI/case_home.asp'  NB. destination page
 		ciid=. getCaseInstance uofcsid
-		setcolnames 'casestage' getTable_pselectdb_ ciid
+		cistage=. >@{.{: 'casestage' getTable_pselectdb_ ciid
 		'uid ofid csid'=. uofcsid
 	    setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'coursename' getTable_pselectdb_ ofid
-        setcolnames 'case' getTable_pselectdb_ csid;ci_stage
+        setcolnames 'case' getTable_pselectdb_ csid;cistage
+		CurrYear=: 0
+		nCycles=: 10
     	NB. if. isnoun 'of_id' do. of_id=:i.0 0 end.
 	    transfer page
 	  end.
+	case. 'params' do.
+		ciid=. getCaseInstance ''
+		page=. '~CGI/case_params.asp'
+		NB. dynamically create form with controls
+		NB. state of form should reflect previous caseinstance changes
+		NB. transfer page
+		redirect 'course.jhp?action=home' NB. temp for now
+	case. 'reset' do.
+	  ciid=. getCaseInstance ''
+	  'cistage cisumry'=. {: 'casestage' getTable_pselectdb_ ciid
+	  if. (4=cistage) *. -. cisumry do. 
+	    NB. prompt to summarize
+		NB. if yes then summarize
+	  end.
+	  expireCaseInstance ciid
+	  redirect 'case.jhp?action=home'
+	case. 'selectmate' do.
+	  ciid=. getCaseInstance ''
+	  NB. check if need to send selection lists
+	  NB. call AnimalSim
+	  redirect 'course.jhp?action=home' NB. temp for now
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.
@@ -34,8 +56,7 @@ catch.
   Error=: 13!:12''
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
-  println 4!:0 <'uid'
-  println ciid
+  println uid
   println COOKIEKEYS
   println COOKIEVALS
   println '</pre></p></body></html>'
