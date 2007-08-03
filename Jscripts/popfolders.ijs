@@ -4,11 +4,24 @@ NB.  users' flocks/popluation folders
 
 pathdelim=: 4 : '}.;([:x&,,)each y'
 
+deleteDirTree=: 3 : 0
+  try.
+    res=. 1!:55 {."1 dirtree y
+    res=. res,1!:55 |.dirpath y
+  catch.
+    NB. error number 7 is interface error (probably open file)
+    NB. error number 25 is file name error (dir/file doesn't exist)
+    NB. res=. 'Some files and/or directory could not be deleted.'
+    13!:11 ''
+  end.
+)
+
+
 NB.*getFnme v get filename of specified filetype for user,offering,case
 NB. result is string of filename, or numeric _1 if file doesn't exist
 getFnme=: 4 : 0
   sep=. PATHSEP_j_
-  basefldr=. 'd:\web\selectj\'
+  basefldr=. jpath '~.CGI/' NB. 'd:\web\selectj\public\'
   select. x
     case. 'caseinstfolder' do.
     NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
@@ -37,16 +50,24 @@ NB. require 'dir'
 NB.*copyScenDef v copies Scenario Definition folder to caseinstance folder
 
 NB.*createCaseInstance v creates new CaseInstance
-NB. return new caseinstance id, copy Case to user folder
+NB. return new caseinstance id, extract scendef to user folder
 NB. y is optional 3-item boxed list of userid;offeringid;caseid
 NB. if y is '' then reads cookies and updates sessionticket
 createCaseInstance=: 3 : 0
   'uid ofid csid'=. y
   ciid=. 'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
-  zippath=. tolower 'scendef' getFnme csid
-  newpath=. tolower 'caseinstfolder' getFnme ciid
-  t=.zippath unzip newpath
+  uz=. createCaseInstFolder csid;ciid
   ciid
+)
+
+NB.*createCaseInstFolder v extracts Scenario Definition zip to CaseInstance
+NB. returns result of unzip
+NB. y is 2-item list of boxed caseid;caseinstanceid
+createCaseInstFolder=: 3 : 0
+  'csid ciid'=.y
+  zippath=. 'scendef' getFnme csid
+  newpath=. 'caseinstfolder' getFnme ciid
+  uz=. unzip zippath;newpath  NB. ,.uz;zippath;newpath
 )
 
 NB.*getCaseInstance v get CaseInstance info for uid,ofid,csid
@@ -64,11 +85,24 @@ getCaseInstance=: 3 : 0
   if. #ciid do.
     ciid
   else. NB. create new caseinstance
-    createCaseInstance uofcsid
+    ciid=. createCaseInstance uofcsid
   end.
 )
 
 NB.*updateCaseStage
 NB.*summryCaseInstance
-NB.*expireCaseInstance
-NB.*deleteCaseInstanceFolder
+
+NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
+NB. y is caseinstanceid
+expireCaseInstance=: 3 : 0
+  'expirecaseinst' updateDBTable_pselectdb_ y
+  deleteCaseInstFolder y
+)
+
+NB.*deleteCaseInstFolder v deletes user's case instance
+NB. ys is caseinstance id
+deleteCaseInstFolder=: 3 : 0
+  delpath=. 'caseinstfolder' getFnme y
+  res=.deleteDirTree delpath
+  if. 1=*./res do. 1 else. 0 end.
+)

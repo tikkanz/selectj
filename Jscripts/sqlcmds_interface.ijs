@@ -60,7 +60,8 @@ sqlsel_coursecases=: 0 : 0
 )
 
 sqlsel_casestage=: 0 : 0
-  SELECT ci.ci_stage ci_stage 
+  SELECT ci.ci_stage ci_stage ,
+         ci.ci_sumry ci_sumry
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_id =?);
 )

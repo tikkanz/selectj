@@ -88,7 +88,7 @@ sqlins_caseinstance=: 0 : 0
 sqlsel_caseinstance=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
-  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?);
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
 sqlsel_caseinstfolder=: 0 : 0
@@ -112,6 +112,11 @@ sqlsel_scendef=: 0 : 0
   WHERE (cs.cs_id =?);
 )
 
+sqlupd_expirecaseinst=: 0 : 0
+  UPDATE caseinstances
+  SET ci_status=0
+  WHERE ci_id=?;
+)
 
 NB. =========================================================
 NB. Admin SQL

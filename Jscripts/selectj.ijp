@@ -20,6 +20,7 @@ PRIMARYFILES=: 0 : 0
 
 PRIMARYLIBS=: 0 : 0
 convert
+dir
 dll
 files
 random
