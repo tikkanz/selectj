@@ -12,74 +12,79 @@
 -- tables with no foreign keys
 CREATE TABLE institutions (
   in_id    INTEGER NOT NULL PRIMARY KEY,
-  in_name  CHAR(50) NOT NULL,  -- full name for institution eg. Massey University 
-  in_code  CHAR(15) NOT NULL,  -- abbreviation eg. MU
+  in_name  CHAR(64) NOT NULL,  -- full name for institution eg. Massey University 
+  in_code  CHAR(16) NOT NULL,  -- abbreviation eg. MU
   in_descr CHAR(100) DEFAULT NULL, -- description of institution
   in_addr  CHAR(200) DEFAULT NULL, -- institute postal address
   in_contact INTEGER REFERENCES people(pp_id));  --reference contact person in people table
 
 CREATE TABLE delivmodes (
   dm_id    INTEGER NOT NULL PRIMARY KEY,
-  dm_name  CHAR(30) NOT NULL,  -- full name for delivery mode eg. Extramural
-  dm_code  CHAR(10) NOT NULL,  -- abbreviation eg. XM
+  dm_name  CHAR(32) NOT NULL,  -- full name for delivery mode eg. Extramural
+  dm_code  CHAR(16) NOT NULL,  -- abbreviation eg. XM
   dm_descr CHAR(100) );        -- description of delivery mode eg. study by correspondence
 
 CREATE TABLE semesters (
   sm_id    INTEGER NOT NULL PRIMARY KEY,
-  sm_name  CHAR(30) NOT NULL,  -- full name for semester eg. Double Semester
-  sm_code  CHAR(10) NOT NULL,  -- abbreviation eg. 1 or 12
+  sm_name  CHAR(32) NOT NULL,  -- full name for semester eg. Double Semester
+  sm_code  CHAR(16) NOT NULL,  -- abbreviation eg. 1 or 12
   sm_descr CHAR(100) );        -- description/definition of semester
 
 CREATE TABLE roles (
   rl_id    INTEGER NOT NULL PRIMARY KEY,
-  rl_name  CHAR(30) NOT NULL,
-  rl_code  CHAR(10) NOT NULL,  -- abbreviation eg. usr or admin
+  rl_name  CHAR(32) NOT NULL,
+  rl_code  CHAR(16) NOT NULL,  -- abbreviation eg. usr or admin
   rl_descr CHAR(100) );        -- description of roles
 
 CREATE TABLE people (
   pp_id   INTEGER NOT NULL PRIMARY KEY,
-  pp_fname  CHAR(30) NOT NULL,    -- first names
-  pp_lname  CHAR(30) NOT NULL,    -- last names
-  pp_pname  CHAR(30) DEFAULT NULL,-- preferred name
-  pp_initls CHAR(10) DEFAULT NULL,-- initials
-  pp_gendr  CHAR(10) DEFAULT NULL,-- gender
+  pp_fname  CHAR(32) NOT NULL,    -- first names
+  pp_lname  CHAR(32) NOT NULL,    -- last names
+  pp_pname  CHAR(32) DEFAULT NULL,-- preferred name
+  pp_initls CHAR(8) DEFAULT NULL,-- initials
+  pp_gendr  CHAR(8) DEFAULT NULL,-- gender
   pp_dob    INTEGER  DEFAULT NULL,-- date of birth (julianday)
-  pp_email  CHAR(40) NOT NULL);   -- email here instead of user record for uniqueness? 
+  pp_email  CHAR(64) NOT NULL);   -- email here instead of user record for uniqueness? 
 
 CREATE TABLE scendefs (
   sd_id    INTEGER NOT NULL PRIMARY KEY,
-  sd_name  CHAR(30) NOT NULL,  -- full name of scenario
-  sd_code  CHAR(10) NOT NULL,  -- abbreviation for scenario name
+  sd_name  CHAR(32) NOT NULL,  -- full name of scenario
+  sd_code  CHAR(16) NOT NULL,  -- abbreviation for scenario name
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
   sd_filen CHAR(100) ); -- filename of zip file containing scendef. Instead of file name could store files as BLOBS?
 
 CREATE TABLE textblocks ( -- names for blocks of text (not just in cases?)
   xn_id    INTEGER NOT NULL PRIMARY KEY,
-  xn_name  CHAR(50) NOT NULL,  -- name for text block eg. 'Introduction' or 'Materials and Methods'
-  xn_code  CHAR(10) NOT NULL );  -- code for text block eg. 'intro' or 'instruct'   
-  
+  xn_name  CHAR(64) NOT NULL,  -- name for text block eg. 'Introduction' or 'Materials and Methods'
+  xn_code  CHAR(16) NOT NULL );  -- code for text block eg. 'intro' or 'instruct'   
+
+CREATE TABLE caseoptions ( -- names for options a case can have
+  co_id    INTEGER NOT NULL PRIMARY KEY,
+  co_name  CHAR(64) NOT NULL,  -- name for case option eg. 'Population Size' or 'Age Structure'
+  co_code  CHAR(16) NOT NULL );  -- code for case option eg. 'popsz' or 'agestruct'
+
 -- tables with foreign keys  
 CREATE TABLE users (
 	ur_id     INTEGER NOT NULL PRIMARY KEY,
 	ur_ppid   INTEGER NOT NULL REFERENCES people(pp_id),
 	ur_inid   INTEGER DEFAULT 1 REFERENCES institutions(in_id),
-	ur_uname    CHAR(20)  UNIQUE NOT NULL, -- username 
+	ur_uname    CHAR(16)  UNIQUE NOT NULL, -- username 
 	ur_passhash CHAR(32),                  -- hashed (salt + password)
 	ur_salt     INTEGER,                   -- salt for creating hashed password
 	ur_status   INTEGER NOT NULL DEFAULT 1,--status active (1) or not (0)
-	ur_refnum   CHAR(10)  DEFAULT NULL);   --reference number -institution student/staff ID number
+	ur_refnum   CHAR(16)  DEFAULT NULL);   --reference number -institution student/staff ID number
   --	ur_email     CHAR(30)  NOT NULL);  --email address - store in people instead
 
 CREATE TABLE passrecvry (  -- table used to help users recover from forgotten password
   ps_id     INTEGER NOT NULL PRIMARY KEY,
   ps_urid   INTEGER NOT NULL,   -- uid to recover for
-  ps_token  CHAR(30),  -- forgotten password recovery token
+  ps_token  CHAR(32),  -- forgotten password recovery token
   ps_tstamp REAL);   -- timestamp for tokens (julianday.time) 
 
 CREATE TABLE courses (  -- courses offered by each institution
   cr_id     INTEGER NOT NULL PRIMARY KEY,
-  cr_name   CHAR(50) NOT NULL,  -- course name
-  cr_code   CHAR(10) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
+  cr_name   CHAR(64) NOT NULL,  -- course name
+  cr_code   CHAR(16) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
   cr_descr  CHAR(700),          -- course description
   cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id) );
 
@@ -114,12 +119,16 @@ CREATE TABLE sessions (   -- user sessions
 CREATE TABLE cases (
   cs_id    INTEGER NOT NULL PRIMARY KEY,
   cs_sdid  INTEGER NOT NULL REFERENCES scendefs(sd_id),
-  cs_admin INTEGER NOT NULL REFERENCES users(ur_id), -- case admin
-  cs_opt1  INTEGER DEFAULT 1,
-  cs_opt2  INTEGER DEFAULT 1,
-  cs_opt3  INTEGER DEFAULT 1); -- a bunch of boolean fields determining ScenDef options to include
+  cs_admin INTEGER NOT NULL REFERENCES users(ur_id) ); -- case admin
 
-CREATE TABLE casestext (  -- text that applicable to each scenario/case
+
+CREATE TABLE casesoption ( -- option setting for each scenario/case
+  cp_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
+  cp_coid  INTEGER NOT NULL REFERENCES caseoptions(co_id) ,
+  cp_value INTEGER DEFAULT 0 ,  -- value for option for case (0-don't display; 1-display,enabled; 2-display,disabled)
+  PRIMARY KEY(cp_csid,cp_coid) );
+
+CREATE TABLE casestext (  -- text applicable to each scenario/case
   cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
   cx_xnid  INTEGER NOT NULL REFERENCES textblocks(xn_id) ,
   cx_text  CHAR(1024) DEFAULT 'Lorem ipsum dolor sit.' ,  -- text to set scene for scenario
@@ -143,7 +152,7 @@ CREATE TABLE caseinstances (  -- case instance for user offering
   ci_ofid  INTEGER NOT NULL REFERENCES offerings (of_id),
   ci_csid  INTEGER NOT NULL REFERENCES cases (cs_id),
   ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
-  ci_usrdescr CHAR(1000) DEFAULT NULL, -- user's description for CaseInstance
+  ci_usrdescr CHAR(1024) DEFAULT NULL, -- user's description for CaseInstance
   ci_sumry    INTEGER DEFAULT 0,        -- summary saved? 0 no; 1 yes
   ci_stage    INTEGER DEFAULT 1 REFERENCES textblocks(xn_id),   -- stage, 
   ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current

@@ -28,6 +28,17 @@ insert into textblocks (xn_id,xn_name,xn_code) values (11,'Instructions','instru
 insert into textblocks (xn_id,xn_name,xn_code) values (21,'Between Cycles','btwncycles');
 insert into textblocks (xn_id,xn_name,xn_code) values (99,'Conclusion','conc');
 
+insert into caseoptions (co_id,co_name,co_code) values (1,'Selection progress','progress');
+insert into caseoptions (co_id,co_name,co_code) values (10,'Population Size','popsz');
+insert into caseoptions (co_id,co_name,co_code) values (12,'Dams per Sire','dams2sire');
+insert into caseoptions (co_id,co_name,co_code) values (15,'Age Structure','agestruct');
+insert into caseoptions (co_id,co_name,co_code) values (20,'Traits to Record','trt2record');
+insert into caseoptions (co_id,co_name,co_code) values (25,'Traits to Select','trt2select');
+insert into caseoptions (co_id,co_name,co_code) values (26,'Trait REVs','trtrevs');
+insert into caseoptions (co_id,co_name,co_code) values (27,'Selection Method','selmeth');
+insert into caseoptions (co_id,co_name,co_code) values (30,'Traits to Summarize','trt2sum');
+insert into caseoptions (co_id,co_name,co_code) values (35,'Summary Types','sumtypes');
+
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Jason', 'Win', 'onfire@xtra.co.nz');
@@ -99,17 +110,28 @@ insert into enrolments (en_urid, en_ofid, en_rlid) values (2,3,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,1,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,3,1);
 
--- insert into enrolmentroles (el_enid, el_rlid) values (12,10);
--- insert into enrolmentroles (el_enid, el_rlid) values (13,1);
--- insert into enrolmentroles (el_enid, el_rlid) values (14,1);
--- insert into enrolmentroles (el_enid, el_rlid) values (15,1);
--- insert into enrolmentroles (el_enid, el_rlid) values (16,1);
--- insert into enrolmentroles (el_enid, el_rlid) values (17,1);
--- insert into enrolmentroles (el_enid, el_rlid) values (18,1);
+insert into cases (cs_sdid,cs_admin) values (1,1);
+insert into cases (cs_sdid,cs_admin) values (2,1);
+insert into cases (cs_sdid,cs_admin) values (3,1);
 
-insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (1,1,1,1,1);
-insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (2,1,1,1,1);
-insert into cases (cs_sdid,cs_admin,cs_opt1,cs_opt2,cs_opt3) values (3,1,1,1,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (1,1,2);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (1,10,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (1,25,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (2,1,2);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (2,10,2);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (2,25,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (2,26,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (2,27,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,1,2);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,10,2);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,12,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,15,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,20,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,25,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,26,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,27,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,30,1);
+insert into casesoption (cp_csid,cp_coid,cp_value) values (3,35,1);
 
 -- trigger automatially creates casestext entry for intro
 update casestext set cx_text='

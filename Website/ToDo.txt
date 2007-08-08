@@ -11,7 +11,7 @@ Others are:
        Add offering for course (copy from existing?)
 
      
-On CourseHome, Move CaseList to right?
+On course_home.asp, Move CaseList to right of text?
 
 If multiple people log on as Guest at the same time they will have different ss_ids, but the same ur_id. Need to be careful about how/where to write their server data so it doesn't conflict. Maybe if ur_id=5 (guest) then store the server data in a folder that is determined by ur_id and sessionid. Clean up for Guest, but leave for real users.
 
@@ -24,16 +24,25 @@ User clicks on caseoffering: (special handling for Guest?)
 Database table caseinstances maps userid_offeringid_caseid to caseinstanceid.
 When user chooses a case for an offering, a caseinstance is created (if one doesn't already exist.). The scenario definition is copied into the folder userpop/uname/offeringcode/casecode/caseinstanceid/  where caseinstanceid is the string of the caseinstances.ci_id.
 
+Selection details (case.jhp?action=params)
+Presents user with selection details for the scenario definition based on the records in the casesoption table. Dynamically Builds a web form based with form controls based on those options and content/state determined from the settings in the user's caseinstance directory. Changes made to the form will update the settings in the user's caseinstance directory.
+
 Reset case
 When user resets case, they are prompted to save summary (if case completed), or that this will delete current case progress (if case started but not completed). At that stage the summary is saved (if desired by user) and old caseinstancename folder is deleted. The old caseinstance record is made inactive(deleted?) and ci_sumry updated appropriately. A new caseinstancename is generated and a new copy of the scenario definition is made into userpop/uname/offeringcode/casecode/newcaseinstanceid/. 
 
-Summarize case
+Summarize a Case
 Method for choosing to retain results of cases
        Option from conclusion page
        Prompt on "Reset case" if case finished
 Method for summarising multiple retained cases
        Save user scenario definition file (animsim.ini) and summary file (animsummry.csv) for case with user's name and description of case
        Save in userpop/uname/offeringcode/casecode/summary/<caseinstance>.ini <caseinstance>.csv
+
+Defining a Case
+A case is based on a scenario definition. Defining a case involves:
+       - choosing a scenario definition, 
+       - writing appropriate text to introduce, explain and summarise the case,
+       - choosing the desired scenario definition details to be displayed on the Selection Details form and whether they are editable or not.
 
 Users can have multiple roles for the same enrolment, role with highest permissions takes precedence. Precedence from lowest to highest is Student;Course Designer;Course Administrator;Site Administrator
 Can a user access the same enrolment using their different roles or only their highest permissioned one?
@@ -42,4 +51,4 @@ A case gets created from available Scenario Definitions.
 The creator of the case is the COWNER. 
 The COWNER can assign other users to be CEDITs. 
 Cases are available for any OFFEDIT/OFFADMIN to include in their offering. 
-If OFFEDIT/OFFADMIN wants to change/edit the case (and they are not the COWNER/CEDIT), then they need to create a new case (based on the old one) and edit that.  
+If OFFEDIT/OFFADMIN wants to change/edit the case (and they are not the COWNER/CEDIT), then they need to create a new case (based on the old one) and edit that.    

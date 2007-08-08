@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>A CSS-based Form Template</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link rel="stylesheet" type="text/css" href="forms.css"/></head><body>
+
+<div id="wrapper">
+
+	<h2>A CSS-based Form Template</h2>
+
+	<div class="form-container">
+	
+	<p>More information about this template could be found in <a title="Nidahas: Forms markup and CSS - Revisited" href="http://nidahas.com/2006/12/06/forms-markup-and-css-revisited/">this blog article</a>.</p>
+
+	<div class="errors">
+		<p><em>Oops... the following errors were encountered:</em></p>
+		<ul>
+			<li>Username cannot be empty</li>
+			<li>Country cannot be empty</li>
+		</ul>
+		<p>Data has <strong>not</strong> been saved.</p>
+	</div>
+
+	<form method="post" action="#">
+	
+	<p class="legend"><strong>Note:</strong> Required fields are marked with an asterisk (<em>*</em>)</p>
+	
+	<fieldset>
+		<legend>User Details</legend>
+			<div><label class="error" for="uname">Username <em>*</em></label> <input type="text" class="error" value="" name="uname" id="uname"/></div>
+			<div><label for="email">Email Address </label> <input type="text" value="" name="email" id="email"/>
+				<p class="note">We will never sell or disclose your email address to anyone. <strong>This is an example of a note for an input field.</strong></p>
+			</div>
+	
+			<div><label for="fname">First Name <em>*</em></label> <input type="text" size="30" value="" name="fname" id="fname"/>
+			</div>
+			<div><label for="lname">Last Name </label> <input type="text" size="30" value="" name="lname" id="lname"/>
+			</div>
+	</fieldset>
+	
+	<fieldset>
+		<legend>Contact Information</legend>
+			<div><label for="address1">Address 1 <em>*</em></label> <input type="text" size="32" id="address1"/>
+			</div>
+			<div><label for="address2">Address 2</label> <input type="text" size="32" id="address2"/>
+			</div>
+			<div><label class="error" for="country">Country <em>*</em></label> <input type="text" size="12" class="error" value="" name="country" id="country"/>
+				<p class="note">Errors could be highlighted by giving an <code>error</code> class to the input field, as seen here.</p>
+			</div>
+			<div><label for="telephone">Telephone</label> <input type="text" size="3" id="telephone"/> - <input type="text" size="3"/> - <input type="text" size="4"/>
+				<p class="note">(###) - ### - ####</p>
+			</div>
+	</fieldset>
+	
+	<fieldset>
+		<legend>Submission</legend>
+			<div><label for="year">Year (YYYY) <em>*</em></label> <input type="text" maxlength="4" size="4" value="" name="year" id="year"/></div>
+	  <div><label for="date">Month (MM)</label> <input type="text" maxlength="2" size="4" value="" name="date" id="date"/></div>
+            <div><label for="Trts2Select">Traits to Select on</label>
+              <select name="Trts2Select" size="7" multiple="multiple" id="Trts2Select">
+                <option value="NLB">(NLB) Number of Lambs Born</option>
+                <!--<option value="WWT">(WWT) Weaning weight</option> -->
+                <option value="LW8">(LW8) Live weight at 8-mon</option>
+                <option value="FW12">(FW12) Fleece weight at 12-mon</option>
+                <option value="FD">(FD) Ultrasound back fat depth</option>
+                <option value="FAT">(FAT) Carcass Fat content</option>
+                <option value="LEAN">(LEAN) Carcass Lean content</option>
+              </select>
+              <p class="note">(these traits will be available in your selection lists)</p>
+            </div>
+	</fieldset>
+	
+	<fieldset>
+		<legend>Preferences</legend>
+			<div>
+				<label for="type">Type <em>*</em></label>
+				<select id="type" name="type">
+					<optgroup label="Type of Whatever">
+						<option>Corporate</option>
+						<option>Individual</option>
+					</optgroup>
+				</select>
+			</div>
+			<div class="controlset">
+				<label class="controlset">User Status <em>*</em></label>
+				<div><input type="checkbox" name="approved" id="approved" value="1"/> <label for="approved">Approved</label><br/>
+				<input type="checkbox" name="pending" id="pending" value="1"/> <label for="pending">Pending Applications</label><br/>
+				<input type="checkbox" name="actives" id="actives" value="1"/> <label for="actives">Active Service</label></div>
+			</div>			
+
+			<div class="controlset">
+				<label class="controlset">Preferred Location</label>
+				<div><input type="radio" value="1" id="radio1" name="radio1"/> <label for="radio1">Option 1</label><br/>
+				<input type="radio" value="1" id="radio2" name="radio1"/> <label for="radio2">Option 2</label><br/>
+				<input type="radio" value="1" id="radio3" name="radio1"/> <label for="radio3">Option 3</label><br/></div>
+			</div>			
+
+			<div class="controlset">
+				<label class="controlset">Something Else <em>*</em></label>
+				<div>
+					<input type="checkbox" value="1" id="check1" name="approved"/> <label for="check1">Some Option 1</label> <br/>
+					<input type="checkbox" value="1" id="check2" name="pending"/> <label for="check2">Some Option 2</label> <br/>
+					<input type="checkbox" value="1" id="check3" name="actives"/> <label for="check3">Some Option 3</label> <br/>
+				</div>
+			</div>			
+	</fieldset>
+	
+	<fieldset>
+		<legend>Profile</legend>
+			<div>
+				<label for="desc">Description <em>*</em></label>
+				<textarea id="desc" name="desc" cols="30" rows="4"></textarea>
+
+			</div>
+			<div>
+				<label for="info">Additional Info </label>
+				<textarea id="info" name="info" cols="35" rows="5"></textarea>
+			</div>
+	</fieldset>
+	
+	<div class="buttonrow">
+		<input type="submit" value="Save" class="button" />
+
+		<input type="button" value="Discard" class="button" />
+	</div>
+
+	</form>
+	
+	</div><!-- /form-container -->
+	
+	<p id="copyright">Created by <a href="http://nidahas.com/">Prabhath Sirisena</a>. This stuff is in public domain.</p>
+	
+</div><!-- /wrapper -->
+
+</body>
+</html>
+
