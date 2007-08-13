@@ -26,6 +26,13 @@ When user chooses a case for an offering, a caseinstance is created (if one does
 
 Selection details (case.jhp?action=params)
 Presents user with selection details for the scenario definition based on the records in the casesoption table. Dynamically Builds a web form based with form controls based on those options and content/state determined from the settings in the user's caseinstance directory. Changes made to the form will update the settings in the user's caseinstance directory.
+The casesoption table determines which fieldsets to include on the form. Depending on the cp_value, all the controls in a fieldset will be enabled (1) or disabled (0). Each fieldset consists of a legend and a number of controls. Each control has a label and an optional paragraph of class "note".
+Where does the definition of each fieldset reside? HTML includes? Database?
+The information for populating the form controls (items available and selection(s)/state) is derived from the AnimalSim.ini
+
+One idea (for the future) to prevent very long forms, would be to provide a tabbed interface for groups of fieldsets.  
+
+
 
 Reset case
 When user resets case, they are prompted to save summary (if case completed), or that this will delete current case progress (if case started but not completed). At that stage the summary is saved (if desired by user) and old caseinstancename folder is deleted. The old caseinstance record is made inactive(deleted?) and ci_sumry updated appropriately. A new caseinstancename is generated and a new copy of the scenario definition is made into userpop/uname/offeringcode/casecode/newcaseinstanceid/. 

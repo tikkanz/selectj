@@ -71,11 +71,12 @@ ul ul ul{
  list-style-type: none;
 }
 
+/*
 label{
  font: bold 100% Arial,sans-serif;
  color: #334d55;
 }
-				
+*/			
 table{
 	border-top: 1px solid #669900;
 	border-bottom: 1px solid #669900;

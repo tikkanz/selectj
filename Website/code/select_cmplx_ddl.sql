@@ -58,10 +58,17 @@ CREATE TABLE textblocks ( -- names for blocks of text (not just in cases?)
   xn_name  CHAR(64) NOT NULL,  -- name for text block eg. 'Introduction' or 'Materials and Methods'
   xn_code  CHAR(16) NOT NULL );  -- code for text block eg. 'intro' or 'instruct'   
 
-CREATE TABLE caseoptions ( -- names for options a case can have
-  co_id    INTEGER NOT NULL PRIMARY KEY,
-  co_name  CHAR(64) NOT NULL,  -- name for case option eg. 'Population Size' or 'Age Structure'
-  co_code  CHAR(16) NOT NULL );  -- code for case option eg. 'popsz' or 'agestruct'
+CREATE TABLE fieldsets ( -- fieldsets available to a case form
+  fs_id    INTEGER NOT NULL PRIMARY KEY,
+  fs_name  CHAR(64) NOT NULL,  -- legend for fieldset eg. 'Population Size' or 'Age Structure'
+  fs_code  CHAR(16) NOT NULL );  -- code for fieldset eg. 'popsz' or 'agestruct'
+
+CREATE TABLE params ( -- names for fieldsets available to a case form
+  pr_id    INTEGER NOT NULL PRIMARY KEY,
+  pr_name  CHAR(64) DEFAULT NULL ,  -- default label/name for param eg. 'No. of cycles to select for'
+  pr_note  CHAR(128) DEFAULT NULL ,  -- default note for param eg. 'This does not include female replacements that are too young to mate'
+  pr_code CHAR(16) UNIQUE NOT NULL , -- code for param eg. 'ncycles' or 'trts2select'
+  pr_class CHAR(16) DEFAULT NULL ); -- display as controlset or not   
 
 -- tables with foreign keys  
 CREATE TABLE users (
@@ -122,11 +129,18 @@ CREATE TABLE cases (
   cs_admin INTEGER NOT NULL REFERENCES users(ur_id) ); -- case admin
 
 
-CREATE TABLE casesoption ( -- option setting for each scenario/case
-  cp_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
-  cp_coid  INTEGER NOT NULL REFERENCES caseoptions(co_id) ,
-  cp_value INTEGER DEFAULT 0 ,  -- value for option for case (0-don't display; 1-display,enabled; 2-display,disabled)
-  PRIMARY KEY(cp_csid,cp_coid) );
+CREATE TABLE casefieldsets ( -- fieldsets and setting for each scenario/case
+  cf_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
+  cf_fsid  INTEGER NOT NULL REFERENCES fieldsets(fs_id) ,
+  cf_value INTEGER DEFAULT 1 ,  -- value for option for case (-1 don't display; 1 display,enabled; 0 display,disabled)
+  PRIMARY KEY(cf_csid,cf_fsid) );
+
+CREATE TABLE fieldsetparams ( -- params and label for each fieldset
+  fp_fsid  INTEGER NOT NULL REFERENCES fieldsets(fs_id) ,
+  fp_prid  INTEGER NOT NULL REFERENCES params(pr_id) ,
+  fp_label CHAR(32) DEFAULT NULL ,  -- label to use for param in this fieldset
+  fp_note  CHAR(128) DEFAULT NULL ,  -- note to use for param in this fieldset
+  PRIMARY KEY(fp_fsid,fp_prid) );
 
 CREATE TABLE casestext (  -- text applicable to each scenario/case
   cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,

@@ -1,7 +1,7 @@
 @charset "utf-8";
 /* CSS Document */
 
-/*body {
+body {
 background-color:#FFFFFF;
 color:#111111;
 font-family:Arial,Helvetica,sans-serif;
@@ -13,7 +13,16 @@ line-height:1.5;
 margin:0pt;
 padding:0pt;
 }
-*/
+h2 {
+background-color:#CCCCCC;
+border-bottom:2px solid #BBBBBB;
+color:#FFFFFF;
+font-family:Georgia,"Times New Roman",Times,serif;
+font-size:200%;
+font-weight:normal;
+margin:0px;
+padding:10px;
+}
 p#copyright {
 color:#999999;
 font-size:90%;
@@ -22,7 +31,7 @@ margin:20px 10px;
 div.form-container {
 background-color:#FFFFFF;
 border:1px solid #EEEEEE;
-margin:10px 10px 10px 0px;
+margin:10px;
 padding:5px;
 }
 p.legend {
@@ -52,30 +61,30 @@ margin:0pt;
 div.form-container form p.note {
 color:#333333;
 font-size:90%;
-margin-left:12.2222em;
+margin-left:140px;
 }
 div.form-container form fieldset {
-border:1px solid #DDDDDD;
-float:left;
-margin:0px 5px 10px 5pt;
-padding:10px 10px 10px 0px;
-width:380px;
+	border:1px solid #DDDDDD;
+	float:left;
+	margin: 0px 10px 10px 0pt;
+	padding:10px;
+	width:36em;
 }
 div.form-container form legend {
 color:#666666;
 font-weight:bold;
 }
 div.form-container form fieldset div {
-padding:0.35em 0pt;
+padding:0.25em 0pt;
 }
 div.form-container label {
 display:block;
 float:left;
-margin-right:0.5em;
-padding-right:0.5em;
+margin-right:10px;
+padding-right:10px;
 position:relative;
 text-align:right;
-width:10em;
+width:120px;
 }
 div.form-container label.error, div.form-container span.error {
 color:#CC0000;
@@ -104,7 +113,7 @@ display:block;
 float:left;
 }
 div.form-container div.controlset div {
-margin-left:14em;
+margin-left:140px;
 }
 div.form-container div.buttonrow {
 clear:left;

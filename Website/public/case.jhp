@@ -21,12 +21,20 @@ try.
 	    transfer page
 	  end.
 	case. 'params' do.
-		ciid=. getCaseInstance ''
+	  if. 0-: uofcsid=. validCase'' do.
+	    DeleteCookie 'CaseID' 
+		redirect 'case.jhp?action=home'
+	  else.
+   		ciid=. getCaseInstance uofcsid  NB. maybe change to output uofcsciid if y-:''
 		page=. '~CGI/case_params.asp'
+		'uid ofid csid'=. uofcsid
+	    setcolnames 'greeting' getTable_pselectdb_ uid
+	    setcolnames 'coursename' getTable_pselectdb_ ofid
 		NB. dynamically create form with controls
 		NB. state of form should reflect previous caseinstance changes
-		NB. transfer page
-		redirect 'course.jhp?action=home' NB. temp for now
+		transfer page
+		NB. redirect 'course.jhp?action=home' NB. temp for now
+	  end.
 	case. 'reset' do.
 	  ciid=. getCaseInstance ''
 	  'cistage cisumry'=. {: 'casestage' getTable_pselectdb_ ciid

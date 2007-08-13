@@ -49,7 +49,7 @@
       <dd><a href="case.jhp?action=selectmate">Breed your flock</a></dd> 
       <dd><a href="case.jhp?action=reset">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
-    </dl> &nbsp;
+    </dl>&nbsp;
   </div> 
 </div>
 <!--end navbar --> 

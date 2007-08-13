@@ -43,11 +43,11 @@ SelectJ
 Main=
 Selected=code\select_cmplx_data.sql
 [ToDo.txt]
-TopLine=23
-Caret=193,28
+TopLine=20
+Caret=124,31
 [code\select_cmplx_ddl.sql]
-TopLine=45
-Caret=70,54
+TopLine=114
+Caret=35,138
 [code\select_cmplx_data.sql]
-TopLine=287
-Caret=59,168
+TopLine=138
+Caret=67,155
