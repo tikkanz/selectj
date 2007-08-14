@@ -63,12 +63,14 @@ CREATE TABLE fieldsets ( -- fieldsets available to a case form
   fs_name  CHAR(64) NOT NULL,  -- legend for fieldset eg. 'Population Size' or 'Age Structure'
   fs_code  CHAR(16) NOT NULL );  -- code for fieldset eg. 'popsz' or 'agestruct'
 
+-- could have multiple entries with same
 CREATE TABLE params ( -- names for fieldsets available to a case form
   pr_id    INTEGER NOT NULL PRIMARY KEY,
   pr_name  CHAR(64) DEFAULT NULL ,  -- default label/name for param eg. 'No. of cycles to select for'
   pr_note  CHAR(128) DEFAULT NULL ,  -- default note for param eg. 'This does not include female replacements that are too young to mate'
-  pr_code CHAR(16) UNIQUE NOT NULL , -- code for param eg. 'ncycles' or 'trts2select'
-  pr_class CHAR(16) DEFAULT NULL ); -- display as controlset or not   
+  pr_code  CHAR(16) NOT NULL , -- code for param eg. 'ncycles' or 'trts2select'
+  pr_class CHAR(16) DEFAULT NULL , -- display as controlset or not
+  pr_ctype CHAR(8)  DEFAULT 'input'  ); -- form control type 'input';'select';'textarea'   
 
 -- tables with foreign keys  
 CREATE TABLE users (

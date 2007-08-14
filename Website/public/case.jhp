@@ -25,15 +25,16 @@ try.
 	    DeleteCookie 'CaseID' 
 		redirect 'case.jhp?action=home'
 	  else.
-   		ciid=. getCaseInstance uofcsid  NB. maybe change to output uofcsciid if y-:''
 		page=. '~CGI/case_params.asp'
+   		ciid=. getCaseInstance uofcsid  NB. maybe change to output uofcsciid if y-:''
+		cistage=. >@{.{: 'casestage' getTable_pselectdb_ ciid
 		'uid ofid csid'=. uofcsid
 	    setcolnames 'greeting' getTable_pselectdb_ uid
 	    setcolnames 'coursename' getTable_pselectdb_ ofid
-		NB. dynamically create form with controls
+        setcolnames 'case' getTable_pselectdb_ csid;11
+		caseform=: buildForm csid NB. dynamically create form with controls
 		NB. state of form should reflect previous caseinstance changes
 		transfer page
-		NB. redirect 'course.jhp?action=home' NB. temp for now
 	  end.
 	case. 'reset' do.
 	  ciid=. getCaseInstance ''

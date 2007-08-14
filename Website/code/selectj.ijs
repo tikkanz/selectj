@@ -546,6 +546,389 @@ FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` )
 WHERE (cs.cs_id =?) AND (xn.xn_id =?);
 )
 
+sqlsel_param=: 0 : 0
+  SELECT pr.pr_class pr_class ,
+         pr.pr_name pr_name ,
+         fp.fp_label fp_label ,
+         pr.pr_note pr_note ,
+         fp.fp_note fp_note ,
+         pr.pr_ctype pr_ctype ,
+         pr.pr_code pr_code 
+  FROM `params` pr INNER JOIN `fieldsetparams` fp ON ( `pr`.`pr_id` = `fp`.`fp_prid` ) 
+  WHERE (fp.fp_fsid=? AND fp.fp_prid =?);
+)
+
+sqlsel_fieldset=: 0 : 0
+  SELECT fs.fs_name fs_name ,
+         fp.fp_fsid fs_id ,
+         fp.fp_prid pr_id 
+  FROM  `fieldsets` fs INNER JOIN `fieldsetparams` fp ON ( `fs`.`fs_id` = `fp`.`fp_fsid` ) 
+  WHERE (fs.fs_id =?);
+)
+
+
+sqlsel_paramform=: 0 : 0
+  SELECT cf.cf_fsid fs_id ,
+         cf.cf_value cf_value 
+  FROM  `cases` cs INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
+  WHERE (cs.cs_id =?);
+)
+
+coclass 'pwebforms'
+vals_trts2select=: ;:'NLB LW8 FW12 FD FAT LEAN'
+nmes=. '(FAT) Carcass Fat content';'(LEAN) Carcass Lean content '
+nmes=. '(FW12) Fleece weight at 12-mon';'(FD) Ultrasound backfat depth';nmes
+nmes_trts2select=: '(NLB) No. of Lambs Born';'(LW8) Live weight at 8-mon';nmes
+seld_trts2select=:  'NLB';'FAT'
+
+vals_popsizes=: <&>(100,200*>:i.5), 1500 2000 4000
+seld_popsizes=:  200
+
+vals_ncycles=: 10
+vals_currcycle=: 3
+
+vals_dams2sire=: 50
+vals_cullage=: <&> 7 8
+vals_mateage=: <&> 1 2
+vals_allelefreq=: <&> 0.1 0.9
+vals_objectvrevs=:<&> 1 3 _4 5 3 0.5
+nmes_objectvrevs=: ;:'NLB LW8 FW12 FD FAT LEAN'
+vals_selnmeth=: ;:'phen genD genDe'
+nmes_selnmeth=: 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+seld_selnmeth=: 'genD'
+vals_summtype=: vals_selnmeth
+nmes_summtype=: nmes_selnmeth
+seld_summtype=: ;:'phen genDe'
+vals_trts2summ=: vals_trts2select
+nmes_trts2summ=: nmes_trts2select
+seld_trts2summ=: ;:'NLB FAT LEAN LW8'
+vals_trtsrecorded=: ;:'NLB LW8 FW12 FD'
+nmes=. '(FW12) Fleece weight at 12-mon';'(FD) Ultrasound backfat depth'
+nmes_trtsrecorded=:'(NLB) No. of Lambs Born';'(LW8) Live weight at 8-mon';nmes
+ctrlprops_allelefreq=: 0 : 0
+ type 'text' size '5'
+)
+
+ctrlprops_cullage=: ctrlprops_allelefreq
+
+ctrlprops_currcycle=: 0 : 0
+ type 'text' maxlength '3' size '4'
+)
+
+ctrlprops_dams2sire=: ctrlprops_allelefreq
+
+ctrlprops_mateage=: ctrlprops_allelefreq
+
+ctrlprops_ncycles=: ctrlprops_currcycle
+
+ctrlprops_objectvrevs=: ctrlprops_allelefreq
+
+ctrlprops_popsizes=: ''
+
+ctrlprops_revs=: 0 : 0
+ type 'text' size '7'
+)
+
+ctrlprops_selnmeth=: 0 : 0
+ type 'radio'
+)
+
+ctrlprops_summtype=: 0 : 0
+ type 'checkbox'
+)
+
+ctrlprops_trts2select=: 0 : 0
+ onchange 'REVStatus' multiple 'multiple' size '6'
+)
+
+ctrlprops_trts2summ=:  0 : 0
+ multiple 'multiple' size '6'
+)
+
+ctrlprops_trtsrecorded=: ctrlprops_trts2summ
+
+coclass 'pwebforms'
+buildButtons=: 3 : 0
+  bt=. INPUT class 'button' type 'submit' onclick 'formsubmit()' value 'Save Changes' ''
+  bt=. bt,LF, INPUT class 'button' type 'reset' value 'Discard Changes' ''
+  DIV class 'buttonrow' bt
+)
+buildForm=: 3 : 0
+  info=. 'paramform' getTable_pselectdb_ y  
+  'hdr dat'=. split info
+  (hdr)=. |:dat                   
+  lgd=. P class 'legend' 'This is the legend for my form'
+  fsts=. cf_value buildFieldset each fs_id
+  frm=. LF join lgd;fsts, boxopen buildButtons ''
+  frm=. FORM id 'params' name 'params' enctype 'multipart/form-data' method 'post' action 'case.jhp?action=chgparams' frm
+  DIV class 'form-container' frm
+)
+buildFieldset=: 3 : 0
+  1 buildFieldset y
+:
+  info=. 'fieldset' getTable_pselectdb_ y 
+  'hdr dat'=. split info
+  (hdr)=. |:dat                   
+  lgd=. LEGEND {.fs_name        
+  pdvs=. buildParamDiv each boxitemidx <"0 each fs_id;pr_id
+  fst=. FIELDSET LF join lgd;pdvs
+  dsabld=. (x<1)#'disabled="disabled"'
+  fst=. ('disabled';dsabld) stringreplace fst
+)
+buildParamDiv=: 3 : 0
+  info=. 'param' getTable_pselectdb_ y  
+  'hdr dat'=. split info
+  (hdr)=. ,dat                   
+  if. #fp_label do. pr_name=. fp_label end. 
+  if. #fp_note  do. pr_note=. fp_note  end. 
+  info=. getParamState pr_code 
+  'seld vals nms'=. 3{. info
+  ctrlprops=. <LF-.~".'ctrlprops_',pr_code 
+  ctrlprops=. (#vals)#ctrlprops
+  idx=. makeidx (<:^:(=1:)) #vals 
+  if. 'select'-: pr_ctype do. idx=.a: end. 
+  if. pr_class-:'controlset' do.
+    lbl=. LABEL class 'controlset' pr_name
+    ctrls=.seld buildControlset  ctrlprops;vals;nms;<idx
+    ctrls=.boxopen DIV ctrls
+    nte=. buildNote pr_note
+    pdv=. DIV class 'controlset' LF join lbl;ctrls,<nte
+  else.
+    lbl=. 'pr_code' buildLabel pr_name;{.idx
+    select. pr_ctype  
+      case. 'select' do.
+        if. -.a:-:nms do. vals=.boxitemidx vals;<nms end.
+        ctrls=.boxopen seld buildSelect (0{::ctrlprops);<vals
+      case. 'textarea' do.
+        ctrls=. buildTextarea ctrlprops;<vals
+      case. 'input' do.
+        ctrls=. seld&buildInput each boxitemidx ctrlprops;vals;<idx
+    end.
+    nte=. buildNote pr_note
+    pdv=. DIV LF join lbl;ctrls,<nte
+  end.
+  pdv=. ('pr_code';pr_code) stringreplace pdv
+)
+buildControlset=: 3 : 0
+  '' buildControlset y
+:
+  'cprops vals nms idx'=. 4{.y
+  ctrls=. x&buildInput each boxitemidx cprops;vals;<idx
+  lbls=.  buildLabel each boxitemidx nms;<idx
+  LF join ,ctrls,.lbls,.<BR ''
+)
+buildInput=: 3 : 0
+ '' buildInput y
+:
+  'Ctrlprops Val Idx'=. 3{.y
+  Val=. ,8!:2 Val
+  x=. 8!:0 x
+  Pcode=.'pr_code'
+  Chk=. 'checked="checked"'
+  ". '((x e.~ <Val)#Chk) INPUT id (Pcode,Idx) value Val name Pcode disabled ',Ctrlprops,' '''''
+)
+buildLabel=: 3 : 0
+  'pr_code' buildLabel y
+:
+  'nme idx'=. 2{. boxopen y
+  Pcode=. x 
+  LABEL for (Pcode,idx) nme
+)
+buildNote=: 3 : 0
+  if. #y do.
+    P class 'note' y
+  else. y end.
+)
+buildOption=: 3 : 0
+  '' buildOption y
+:
+  'Val Descr'=. 2$y
+  sel=. 'selected="selected"'
+  ((x e.~ <Val)#sel) OPTION value Val Descr
+)
+buildSelect=: 3 : 0
+  '' buildSelect y
+:
+  'Ctrlprops opts'=. 2{. y
+  opts=. ,each (<"0^:(L.=1:)) opts 
+  opts=. 8!:0 each opts
+  x=. boxopen 8!:0 x
+  Pcode=.'pr_code'
+  opts=. x&buildOption each opts
+  opts=. LF join opts
+  ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
+)
+getParamState=: 3 : 0
+  seld=. boxopen ".'seld_',y
+  vals=. boxopen ".'vals_',y
+  nms=.  boxopen ".'nmes_',y
+seld;vals;<nms
+)
+dict=: 3 : 0
+)
+unquote=: 3 : 0
+  y-.'"'
+)
+unquot=: 3 : 0
+'" ' charsub y
+)
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+makeidx=:[: 8!:0 i.
+
+boxitemidx=:<"1@:|:@:>
+Note 'useful code'
+('pr_code';'nCycles';'disabled';tst1) stringreplace INPUT id 'pr_code' name 'pr_code' type 'text' disabled ''
+('checked="checked" ') INPUT value (y) name 'pr_code' id 'pr_code' ''
+LABEL for 'pr_code' 'pr_name'
+each control has its own verb that creates the control
+verb that calls the control verb for each value or value, name pair
+
+Once the controls are created for the param, do the string replace for
+pr_code
+
+Once the fieldset is created do a stringreplace for disabled that will
+sort out all the controls in the fieldset
+)
+Note 'tests'
+tst=: ('Dollar';'$')
+rarg=:('Dollar';'$');(<'Kroner';'DKK')
+larg=:''
+selectoptions rarg
+larg selectoptions rarg
+rarg=: ('VISA';'MasterCard')
+larg=: 'MasterCard'
+larg selectoptions rarg
+rarg=: dict 'Basic="$20"';'Plus="$40"'
+larg=:'$40'
+larg selectoptions rarg
+rarg=:  'VISA';'MasterCard';'Discover'
+larg=:  'VISA';'Discover'
+larg selectoptions rarg
+rarg=:  ('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece weight at 12-mon';'FW12');(<'Ultrasound backfat depth';'FD')
+larg=:  'NLB';'FD'
+larg selectoptions rarg
+)
+
+buildForm_z_=: buildForm_pwebforms_
+addpath_z_=: adverb def '(copath~ ~.@(x&;)@copath)@(coname^:(0:=#)) :. ((copath~ copath -. (<x)"_)@(coname^:(0:=#)))'
+webdefs_z_=: 'jweb' addpath
+webdefs ''         
+cocurrent 'jweb'   
+tag=: adverb def 'verb def ((''''''<'',x,''>'''',y,''''</'',x,''>'''''');'':'';(''''''<'',x,'' '''',x,''''>'''',y,''''</'',x,''>''''''))'
+maketag=: verb def 'empty ".y,''=: '''''',(tolower y),'''''' tag'''
+maketag@> ;:noun define-.LF
+   HTML HEAD TITLE BODY LINK
+   P PRE BLOCKQUOTE BASE
+   STYLE SPAN DIV ADDRESS
+   A OBJECT APPLET AREA
+   H1 H2 H3 H4 H5 H6 DEL INS
+   FONT BASEFONT TT B I BIG SMALL STRIKE U
+   XMP CODE SAMP EM STRONG Q CITE
+   KBD VAR ABBR ACRONYM DFN SUB SUP
+   UL OL LI DIR MENU DL DT DD
+   TABLE CAPTION THEAD TFOOT TBODY
+   COLGROUP COL TH TR TD
+   FRAMESET NOFRAMES IFRAME
+   FORM BUTTON SELECT FIELDSET LEGEND
+   OPTGROUP OPTION TEXTAREA LABEL
+   SCRIPT NOSCRIPT
+)
+parm=: adverb def 'conjunction def ((''('''''',x,''='''' glue v) u y'');'':'';(''(('''''',x,''='''' glue v),'''' '''',x) u y''))'
+makeparm=: verb def 'empty ".y,''=: '''''',y,'''''' parm'''
+makeparm@> ;:noun define-.LF
+   size width height align href face bgcolor
+   text alink vlink border color src alt
+   longdesc span hspace vspace usemap clear
+   classid codebase codetype archive standby
+   start value summary rowspan colspan rows cols
+   char charoff headers scope abbr axis
+   frame rules cellspacing cellpadding
+   name content rel type id class title
+   lang dir style datetime onload onunload
+   onclick ondblclick onmousedown onmouseup
+   onmouseover onmousemove onmouseout
+   onkeypress onkeydown onkeyup cite data
+   link rel rev charset hreflang accesskey
+   tabindex onfocus onblur shape coords media
+   valuetype object scrolling frameborder
+   marginwidth marginheight target for
+   action method enctype onsubmit accept
+   maxlength onselect onchange prompt
+   language onreset checked readonly multiple
+   selected
+)
+
+enquote=: ('"'&,)@(,&'"')^:('"'&~:@{.@(1&{.))
+glue=: , enquote@":
+parm0=: adverb def 'adverb def (('''''''',x,'''''' u y'');'':'';(''('''''',x,'' '''',x) u y''))'
+makeparm0=: verb def 'empty ".y,''=: '''''',y,'''''' parm0'''
+makeparm0@> ;:noun define-.LF
+   ismap compact nowrap declare nohref noshade
+   noresize disabled
+)
+point=: adverb def 'verb def ((''''''<'',x,'' />'''''');'':'';(''''''<'',x,'' '''',x,'''' />''''''))'
+makepoint=: verb def 'empty ".y,''=: '''''',(tolower y),'''''' point'''
+makepoint@> ;:noun define-.LF
+  IMG BR HR PARAM MAP ISINDEX META INPUT
+)
+makecolor=: verb def 'empty ".y,''=: '''''',y,'''''''''
+makecolor@> ;:noun define-.LF
+   Black  Silver Gray   White
+   Maroon Red    Purple Fuchsia
+   Green  Lime   Olive  Yellow
+   Navy   Blue   Teal   Aqua
+)
+
+splice=: 2 : '; @ (<@u ;. n)'
+
+decorate=: adverb define
+:
+c=. <;._1 y [ d=. {.y            
+g=. (+: 0: , }:) mt=. (0: = #@>) c  
+c=. g <@; ;. 1 c,&.>mt<@#"0 d      
+(1#~#c) (u{~x i. {.@>c)@> splice 1 }.&.>c
+)
+ftext=: verb def '''_*%~@'' (]`B`I`CODE`link) decorate y'
+fdecor=: adverb def (':';'(''_*%~@'',x) (]`B`I`CODE`LINE`U) decorate y')
+link=: verb define
+i=. y i. PATHSEP_j_
+A href (i{.y) (}.i}.y)
+)
+
+image=: verb def ('IMG src y 0';':';'x IMG src y 0')
+jsite=: link@('http://www.jsoftware.com/'&,)
+spread=: ;@({.&.>&1)   
+upon=: 2 : '(u@:v) : (u v)'
+by=: ,&LF : (, LF&,)
+onbox=: ;@:(by&.>) :.<
+
+table=: TABLE upon (onbox@:(TR&.onbox"1)@:(TD@by&.>))
+all=: 2 : '; @ (((by@x)&.>) @ y)'
+boxes=: ]
+lines=: <;._2
+paras=: (_1&|.&((2#LF)&E.) <;._2 ])@by
+words=: (#~ *@#@>) @ (<;._1) @ (' '&,)
+'ents plain'=: <"0 |: (({. ; }.@}.)~ i.&' ');._2 noun define
+lt <
+gt >
+amp &
+quot "
+)
+
+pfe=. ;@(((entcvt@{. , }.@}.)~ i.&';')&.>@(<;._1)) &. ('&amp;'&, :. }.)
+entcvt=. (ents"_ i. <) >@{ plain"_ , <
+entcvt=. (entcvt f.) :. ((plain"_ i. <@,) >@{ (('&'&,@(,&';')&.>ents)"_ , <))
+efp=. ; @: (entcvt^:_1&.>)
+entities=: pfe :. efp f.
+asciibox=: (,(179 180 191 192 193 194 195 196 197 217 218{a.),.'|++++++-+++')&charsub
+pdecorate=: adverb def (':';'u@}.@.(x"_ i. {.) all paras y')
+fparas=: '>]"''-'&(ftitle`fraw`(P@ftext)`fpre`(P@flist) pdecorate)
+fpdecor=: adverb def (':';'(''>]"''''-'',x) (ftitle`fraw`(p@ftext)`fpre`(p@flist)`u) pdecorate y')
+fpre=: PRE@(LF&,)
+ftitle=: verb def '(''H'',{.y)tag }.}:y'
+fraw=: ]
+flist=: UL@(LI all lines)
+
 coclass 'punzip'
 
 3 : 0 ''
