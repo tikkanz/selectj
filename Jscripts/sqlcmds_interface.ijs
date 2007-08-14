@@ -78,19 +78,21 @@ FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` )
 WHERE (cs.cs_id =?) AND (xn.xn_id =?);
 )
 
-sqsel_param=: 0 : 0
+sqlsel_param=: 0 : 0
   SELECT pr.pr_class pr_class ,
          pr.pr_name pr_name ,
          fp.fp_label fp_label ,
          pr.pr_note pr_note ,
          fp.fp_note fp_note ,
+         pr.pr_ctype pr_ctype ,
          pr.pr_code pr_code 
   FROM `params` pr INNER JOIN `fieldsetparams` fp ON ( `pr`.`pr_id` = `fp`.`fp_prid` ) 
-  WHERE (pr.pr_id =?);
+  WHERE (fp.fp_fsid=? AND fp.fp_prid =?);
 )
 
 sqlsel_fieldset=: 0 : 0
   SELECT fs.fs_name fs_name ,
+         fp.fp_fsid fs_id ,
          fp.fp_prid pr_id 
   FROM  `fieldsets` fs INNER JOIN `fieldsetparams` fp ON ( `fs`.`fs_id` = `fp`.`fp_fsid` ) 
   WHERE (fs.fs_id =?);
@@ -101,5 +103,5 @@ sqlsel_paramform=: 0 : 0
   SELECT cf.cf_fsid fs_id ,
          cf.cf_value cf_value 
   FROM  `cases` cs INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
-  WHERE (cs.cs_id =1);
+  WHERE (cs.cs_id =?);
 )

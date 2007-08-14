@@ -13,7 +13,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
 ~Projects/selectj/fieldsets
-~Projects/utils/jrails
+~Projects/selectj/jrails
 ~Projects/utils/webxhtml
 ~Projects/utils/extractzip
 ~addons/data/sqlite/sqlite
