@@ -24,6 +24,7 @@ SelectJ
 		public\course_home.asp
 		public\case_home.asp
 		public\animalsim.css
+		public\case_params.asp
 	+SQL
 		code\select_cmplx_ddl.sql
 		code\select_cmplx_data.sql
@@ -46,8 +47,8 @@ Selected=code\select_cmplx_data.sql
 TopLine=20
 Caret=124,31
 [code\select_cmplx_ddl.sql]
-TopLine=114
-Caret=35,138
+TopLine=50
+Caret=1,73
 [code\select_cmplx_data.sql]
-TopLine=138
-Caret=67,155
+TopLine=44
+Caret=190,55
