@@ -191,6 +191,8 @@ unquot=: 3 : 0
 )
 
 NB.*join v unbox and delimit a list of boxed items y with x
+NB. from forum post
+NB. http://www.jsoftware.com/pipermail/programming/2007-June/007077.html
 NB. eg. '","' join 'item1';'item2'
 NB. eg. LF join 'item1';'item2'
 NB. eg. 99 join <&> i.8

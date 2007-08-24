@@ -55,12 +55,6 @@ updateDBTable=: dyad sdefine
   r=. (boxopen y) apply__db ". 'sqlupd_',x
 )
 
-NB. insertDBTable=: 4 : 0
-NB.   if. (L. = 0:) x do.
-NB.     sql=. ". 'sqlins_',x
-NB.   else. NB. insert blobs
-NB.     'x blb'=. x
-NB.     sql=. (". 'sqlins_',x);blb
-NB.   end.
-NB.   y apply__db sql
-NB. )
+execSQL=: dyad sdefine
+  r=. exec__db y
+)

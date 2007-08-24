@@ -57,3 +57,9 @@ NB. suggested by Chris Burke JForum June 2007
 NB. (listatom 5) -: ,5
 NB. (listatom i.4 3) -: i.4 3
 listatom=: 1&#
+
+NB. loc returns the full path of the script calling it.
+NB. could be useful for relative calling?
+NB. from the forums
+NB. http://www.jsoftware.com/pipermail/general/2003-May/015265.html
+loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'

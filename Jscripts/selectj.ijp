@@ -16,6 +16,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jrails
 ~Projects/utils/webxhtml
 ~Projects/utils/extractzip
+~Projects/utils/inifiles
 ~addons/data/sqlite/sqlite
 ~addons/data/sqlite/def
 ~addons/convert/misc/md5
