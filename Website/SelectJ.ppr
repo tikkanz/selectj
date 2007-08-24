@@ -37,15 +37,11 @@ SelectJ
 		public\user.jhp
 		ToDo.txt
 [Open project files]
-0=ToDo.txt
-1=code\select_cmplx_ddl.sql
-2=code\select_cmplx_data.sql
+0=code\select_cmplx_ddl.sql
+1=code\select_cmplx_data.sql
 [Selected Project Files]
 Main=
 Selected=code\select_cmplx_data.sql
-[ToDo.txt]
-TopLine=20
-Caret=124,31
 [code\select_cmplx_ddl.sql]
 TopLine=50
 Caret=1,73
