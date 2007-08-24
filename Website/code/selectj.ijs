@@ -60,6 +60,7 @@ coercetxt=: 3 : 0
   if. -.isboxed do. >y end. 
 )
 listatom=: 1&#
+loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
 createSalt=: ([: _2&(3!:4) a. {~ [: ? 256 $~ ])&4
 randpwd=: 3 : 0
 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' randpwd y
@@ -318,6 +319,10 @@ insertDBTable=: dyad sdefine
 
 updateDBTable=: dyad sdefine
   r=. (boxopen y) apply__db ". 'sqlupd_',x
+)
+
+execSQL=: dyad sdefine
+  r=. exec__db y
 )
 
 coclass 'pselectdb'
@@ -978,6 +983,85 @@ unzip=: 3 : 0
 
 unzip_z_=: unzip_punzip_
 
+require 'winapi strings'
+coclass 'pini'
+getPPAllSections=: 3 : 0
+  snmes=. getPPSectionNames y
+  keys=. getPPSection each <"1 (boxopen y),.snmes
+  nkys=. #@> keys       
+  keys=. ;(nkys>0)#keys 
+  (nkys#snmes),.keys
+)
+getPPSection=: 3 : 0
+  'fnme snme'=. y
+  len=. #str=. 32767$' '
+  'len val'=. 0 2{'GetPrivateProfileSectionA'win32api snme;str;len;fnme
+  val=. ({.a.),len{.val  
+  val=. <;._1 val
+  val=. dtb each '#' taketo each val
+  msk=. 0< #@> val 
+  val=. msk#val
+  ><;._1 each '=',each val
+)
+getPPSectionNames=: 3 : 0
+  fnme=. y
+  len=. #str=. 32767$' '
+  'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
+  <;._2 val=. len{.val
+)
+getPPString=: 3 : 0
+  'fnme snme knme'=. y
+  len=. #str=. 32767$' '
+  'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
+  val=. len{.val
+)
+getPPValue=: 3 : 0
+  '#' getPPValue y  
+  :
+  rval=. getPPString y   
+  rval=. dtb x taketo rval  
+)
+getPPVals=: 3 : 0
+  '#' getPPVals y  
+  :
+  'delim err'=. 2{.!.(<_999999) boxopen x
+  val=. delim getPPValue y   
+  err makeVals val
+)
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+makeString=:[: ' '&join 8!:0
+makeVals=: 3 : 0
+  _999999 makeVals y
+  :
+  err=. x
+  val=. ', ' charsub y  
+  if. -.+./err= nums=. err&". val do. val=. nums end.
+  if. ' ' e. val do. val=. <;._1 ' ',deb val end.
+  val
+)
+writePPString=: 3 : 0
+  'fnme snme knme val'=. y
+  val=. makeString val
+  res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
+  0{:: res
+)
+writePPSection=: 3 : 0
+  'fnme snme keys'=. y
+  null={.a.
+  keys=. (makeString each 1{"1 keys) (1)}"0 1 keys 
+  keys=. '=' join each <"1 keys  
+  keys=. null,~ null join keys 
+  
+  res=. 'WritePrivateProfileSectionA'win32api snme;keys;fnme
+  0{:: res
+)
+
+
+getPPAllSections_z_=: getPPAllSections_pini_
+getPPString_z_=: getPPString_pini_
+getPPVals_z_=: getPPVals_pini_
+writePPString_z_=: writePPString_pini_
+
 require 'files'
 require '~addons/data/sqlite/def.ijs'
 
@@ -1279,7 +1363,7 @@ require 'dll strings'
 coclass 'psqlite'
 
 ADDONDIR=: jpath '~addons/data/sqlite/'
-d=. (<jhostpath ADDONDIR,'lib/') ,&.> cut 'sqlite-3.3.17.so sqlite3.dll '
+d=. (<jhostpath ADDONDIR,'lib/') ,&.> cut 'sqlite-3.4.2.so sqlite3.dll '
 d=. ({.d),('/usr/lib/libsqlite3.dylib');{:d
 LIBSQLITE=: '"','" ',~ (#.IFWIN32,'Darwin'-:UNAME){::d
 cdsq=: 1 : '(deb LIBSQLITE,m)&cd'

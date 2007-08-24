@@ -94,7 +94,7 @@ CREATE TABLE courses (  -- courses offered by each institution
   cr_id     INTEGER NOT NULL PRIMARY KEY,
   cr_name   CHAR(64) NOT NULL,  -- course name
   cr_code   CHAR(16) NOT NULL,  -- course number/code eg. '117.010' or 'ANS-110'
-  cr_descr  CHAR(700),          -- course description
+  cr_descr  TEXT,          -- course description
   cr_inid   INTEGER NOT NULL REFERENCES institutions(in_id) );
 
 CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery mode and semester
@@ -108,7 +108,7 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
 
 CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_id     INTEGER NOT NULL PRIMARY KEY REFERENCES offerings(of_id),
-  ox_intro  CHAR(1024) DEFAULT NULL );  -- text for start of course_home.asp
+  ox_intro  TEXT DEFAULT NULL );  -- text for start of course_home.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_urid   INTEGER REFERENCES users(ur_id),
@@ -147,7 +147,7 @@ CREATE TABLE fieldsetparams ( -- params and label for each fieldset
 CREATE TABLE casestext (  -- text applicable to each scenario/case
   cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
   cx_xnid  INTEGER NOT NULL REFERENCES textblocks(xn_id) ,
-  cx_text  CHAR(1024) DEFAULT 'Lorem ipsum dolor sit.' ,  -- text to set scene for scenario
+  cx_text  TEXT DEFAULT 'Lorem ipsum dolor sit.' ,  -- text to set scene for scenario
   PRIMARY KEY(cx_csid,cx_xnid) );
 
 CREATE TABLE caseroles (
@@ -168,7 +168,7 @@ CREATE TABLE caseinstances (  -- case instance for user offering
   ci_ofid  INTEGER NOT NULL REFERENCES offerings (of_id),
   ci_csid  INTEGER NOT NULL REFERENCES cases (cs_id),
   ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
-  ci_usrdescr CHAR(1024) DEFAULT NULL, -- user's description for CaseInstance
+  ci_usrdescr TEXT DEFAULT NULL, -- user's description for CaseInstance
   ci_sumry    INTEGER DEFAULT 0,        -- summary saved? 0 no; 1 yes
   ci_stage    INTEGER DEFAULT 1 REFERENCES textblocks(xn_id),   -- stage, 
   ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current
@@ -227,26 +227,19 @@ BEGIN
 END;
 
 CREATE VIEW `offering_info` AS 
--- this VIEW created by support@osenxpsuite.net [Visual Query Builder - SQLite2007 PRO]
--- created date: 23/07/2007 16:53:35
-SELECT 
-      of.of_id of_id ,
-      cr.cr_id cr_id ,
-      cr.cr_name cr_name ,
-      cr.cr_code cr_code ,
-      of.of_year of_year ,
-      sm.sm_code sm_code ,
-      dm.dm_code dm_code ,
-      of.of_status of_status ,
-      pp.pp_fname pp_adminfname ,
-      pp.pp_lname pp_adminlname 
-
-FROM 
-      `semesters` sm INNER JOIN `offerings` of ON ( `sm`.`sm_id` = `of`.`of_smid` ) 
+SELECT of.of_id of_id ,
+       cr.cr_id cr_id ,
+       cr.cr_name cr_name ,
+       cr.cr_code cr_code ,
+       of.of_year of_year ,
+       sm.sm_code sm_code ,
+       dm.dm_code dm_code ,
+       of.of_status of_status ,
+       pp.pp_fname pp_adminfname ,
+       pp.pp_lname pp_adminlname 
+FROM  `semesters` sm INNER JOIN `offerings` of ON ( `sm`.`sm_id` = `of`.`of_smid` ) 
       INNER JOIN `delivmodes` dm ON ( `dm`.`dm_id` = `of`.`of_dmid` ) 
       INNER JOIN `users` ur ON ( `ur`.`ur_id` = `of`.`of_admin` ) 
       INNER JOIN `courses` cr ON ( `cr`.`cr_id` = `of`.`of_crid` ) 
       INNER JOIN `people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
-
-WHERE 
-      (of.of_status >0);
+WHERE (of.of_status >0);
