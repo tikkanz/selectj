@@ -1,4 +1,4 @@
-coclass 'pselectdb'
+coclass 'psqliteq'
 
 NB. =========================================================
 NB. Login, validate & register users/sessions

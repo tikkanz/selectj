@@ -9,7 +9,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/adminusers
 ~Projects/selectj/popfolders
 ~Projects/selectj/scenarios
-~Projects/selectj/userdb
+~Projects/utils/sqliteq
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
 ~Projects/selectj/fieldsets

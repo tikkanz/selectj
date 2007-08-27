@@ -19,7 +19,7 @@ buildButtons=: 3 : 0
 NB.*buildForm v builds xhtml form code for a case
 NB. y is cs_id of case
 buildForm=: 3 : 0
-  info=. 'paramform' getTable_pselectdb_ y  NB. gets legend, fs_ids,cf_value
+  info=. 'paramform' getTable_psqliteq_ y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. P class 'legend' 'This is the legend for my form'
@@ -35,7 +35,7 @@ NB. x is cf_value or disabled status (0 disabled, 1 not disabled)
 buildFieldset=: 3 : 0
   1 buildFieldset y
 :
-  info=. 'fieldset' getTable_pselectdb_ y NB. gets fs_name,pr_id
+  info=. 'fieldset' getTable_psqliteq_ y NB. gets fs_name,pr_id
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. LEGEND {.fs_name        NB. repeated for each pr_id
@@ -48,7 +48,7 @@ buildFieldset=: 3 : 0
 NB.*buildParamDiv v builds relevant xhtml div for a parameter in a fieldset
 NB. y is list of fieldsetid,parameterid (fp_fsid,fp_prid)
 buildParamDiv=: 3 : 0
-  info=. 'param' getTable_pselectdb_ y  NB. gets pr_class,pr_name,fp_label,pr_note,fp_note,pr_code
+  info=. 'param' getTable_psqliteq_ y  NB. gets pr_class,pr_name,fp_label,pr_note,fp_note,pr_code
   'hdr dat'=. split info
   (hdr)=. ,dat                   NB. assign hdrnames
   if. #fp_label do. pr_name=. fp_label end. NB. update default label

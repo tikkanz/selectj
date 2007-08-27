@@ -25,7 +25,7 @@ getFnme=: 4 : 0
   select. x
     case. 'caseinstfolder' do.
     NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
-      pathinfo=. 'caseinstfolder' getTableStr_pselectdb_ y
+      pathinfo=. 'caseinstfolder' getTableStr_psqliteq_ y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
@@ -33,7 +33,7 @@ getFnme=: 4 : 0
       fnme=. 'userpop',sep,fnme,sep
     case. 'scendef' do.
     NB. scendefs/scendefcode.zip
-      pathinfo=. 'scendef' getTableStr_pselectdb_ y
+      pathinfo=. 'scendef' getTableStr_psqliteq_ y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       fnme=. 'scendefs',sep,(,sd_code),'.zip'
@@ -53,7 +53,7 @@ NB. y is optional 3-item boxed list of userid;offeringid;caseid
 NB. if y is '' then reads cookies and updates sessionticket
 createCaseInstance=: 3 : 0
   'uid ofid csid'=. y
-  ciid=. 'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
+  ciid=. 'caseinstance' insertDBTable_psqliteq_ uid;ofid;csid
   uz=. createCaseInstFolder csid;ciid
   ciid
 )
@@ -79,7 +79,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. >@{:'caseinstance' getTable_pselectdb_ uofcsid
+  ciid=. >@{:'caseinstance' getTable_psqliteq_ uofcsid
   if. #ciid do.
     ciid
   else. NB. create new caseinstance
@@ -93,7 +93,7 @@ NB.*summryCaseInstance
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
 NB. y is caseinstanceid
 expireCaseInstance=: 3 : 0
-  'expirecaseinst' updateDBTable_pselectdb_ y
+  'expirecaseinst' updateDBTable_psqliteq_ y
   deleteCaseInstFolder y
 )
 
