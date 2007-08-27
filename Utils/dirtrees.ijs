@@ -3,8 +3,11 @@ NB. verbs for copying and deleting directory trees
 require 'dir files'
 NB. needs addPS, dropPS, dircreate, direxist verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
-require '~Projects/utils/dir_add.ijs'
-
+3 : 0 ''
+if. -.IFCONSOLE do.
+require 'd:\jprg\user\projects\utils\dir_add.ijs'
+end.
+)
 coclass 'ptrees'
 
 addPS=: , PATHSEP_j_ -. {:          NB. ensure trailing path separator
@@ -26,7 +29,7 @@ copytree=: 4 : 0
   fromfiles=. {."1 dirtree fromdir
   tofiles=. todir aprf fromdir dprf fromfiles
   resdir=. dircreate todirs
-  resfile=. 0&<@>tofiles fcopy fromfiles
+  resfile=. 0&< @>tofiles fcopy fromfiles
   (+/resdir),+/resfile
 )
 
