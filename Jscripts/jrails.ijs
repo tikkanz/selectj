@@ -171,6 +171,22 @@ getParamState=: 3 : 0
 seld;vals;<nms
 )
 
+Note 'design for getParamState'
+  read whole of ini at once and store in memory (at start of buildform?)
+  Individual params read from memory store.
+  also need to read total possible traits from traitinfo
+  probably select case for params that can handle inidividual
+  should numeric lists be individually boxed?
+)
+Note 'design for updateParamState'
+  read whole of ini at once and store in memory (at start of updateform?)
+  writes params to memory store and then write whole 
+  memory store to file.
+)
+
+
+
+
 NB.dict v parses list of boxed name=value pairs
 NB. returns list of boxed 2-item boxed lists
 NB.     {.item is name, {: item is value

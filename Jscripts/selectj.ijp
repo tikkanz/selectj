@@ -4,7 +4,7 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jhpadd
-~Projects/selectj/passwdhash
+~Projects/utils/passwdhash
 ~Projects/selectj/userlogin
 ~Projects/selectj/adminusers
 ~Projects/selectj/popfolders
@@ -16,6 +16,8 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jrails
 ~Projects/utils/webxhtml
 ~Projects/utils/extractzip
+~Projects/utils/dir_add
+~Projects/utils/dirtrees
 ~Projects/utils/inifiles
 ~addons/data/sqlite/sqlite
 ~addons/data/sqlite/def
@@ -30,6 +32,7 @@ files
 random
 strings
 task
+winapi
 )
 
 DEVFILES=: 0 : 0

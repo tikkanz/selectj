@@ -2,19 +2,19 @@ NB. functions to do with copying/deleting/changing
 NB.  users' flocks/popluation folders
 
 
-pathdelim=: 4 : '}.;([:x&,,)each y'
+pathdelim=: 4 : '}.;([:x&,,)each y'  NB.!Use join instead??
 
-deleteDirTree=: 3 : 0
-  try.
-    res=. 1!:55 {."1 dirtree y
-    res=. res,1!:55 |.dirpath y
-  catch.
-    NB. error number 7 is interface error (probably open file)
-    NB. error number 25 is file name error (dir/file doesn't exist)
-    NB. res=. 'Some files and/or directory could not be deleted.'
-    13!:11 ''
-  end.
-)
+NB. deleteDirTree=: 3 : 0
+NB.   try.
+NB.     res=. 1!:55 {."1 dirtree y
+NB.     res=. res,1!:55 |.dirpath y
+NB.   catch.
+NB.     NB. error number 7 is interface error (probably open file)
+NB.     NB. error number 25 is file name error (dir/file doesn't exist)
+NB.     NB. res=. 'Some files and/or directory could not be deleted.'
+NB.     13!:11 ''
+NB.   end.
+NB. )
 
 
 NB.*getFnme v get filename of specified filetype for user,offering,case
@@ -46,8 +46,6 @@ Note 'list filenames in tree'
 NB. require 'dir'
 ,. ,>"1 (,/"0) 1 dir each (dirpath jpath 'd:/web/selectj/scendefs/popsz')#~ a:=(<'.svn') ss each dirpath jpath 'd:/web/selectj/scendefs/popsz'
 )
-
-NB.*copyScenDef v copies Scenario Definition folder to caseinstance folder
 
 NB.*createCaseInstance v creates new CaseInstance
 NB. return new caseinstance id, extract scendef to user folder
@@ -103,6 +101,6 @@ NB.*deleteCaseInstFolder v deletes user's case instance
 NB. ys is caseinstance id
 deleteCaseInstFolder=: 3 : 0
   delpath=. 'caseinstfolder' getFnme y
-  res=.deleteDirTree delpath
+  res=.deltree delpath
   if. 1=*./res do. 1 else. 0 end.
 )
