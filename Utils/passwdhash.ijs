@@ -3,7 +3,7 @@ require 'random convert/misc/md5'
 
 NB.*createSalt v generates salt as 4-byte integer
 NB. e.g. createSalt '' 
-createSalt=: ([: _2&(3!:4) a. {~ [: ? 256 $~ ])&4
+createSalt=: ([: _2&ic a. {~ [: ? 256 $~ ])&4
 
 NB.*randpwd v generates y character alphanumeric password
 NB. y is integer of number characters for password
@@ -30,6 +30,6 @@ salthash=: 3 : 0
     if. isdefseed'' do. randomize'' end.
     s=. createSalt '' 
   end.
-  h=. md5 y,2&3!:4 s
+  h=. md5 y,2&ic s
   s;h  NB. 4 byte salt conver
 )
