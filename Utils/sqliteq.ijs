@@ -47,6 +47,24 @@ NB. getPhrasesBySec=: verb sdefine
 NB.     r=. (boxopen y) query__db sqlPhrasesBySec
 NB. )
 
+NB.*getDBItem v gets single field from a record in database
+NB. returns single field
+getDBItem=: 3 : 0
+ '' getDBItem y
+:
+ r=. x getTable y
+ r=.>{.{:r
+)
+
+NB.*getDBItemStr v gets single field from a record in database
+NB. returns single field
+getDBItemStr=: 3 : 0
+ '' getDBItemStr y
+:
+ r=. x getTableStr y
+ r=.>{.{:r
+)
+
 NB.*getTable v gets info from database
 NB. returns boxed list of query result. {.is list of boxed field names.
 NB. y is values to look up in database

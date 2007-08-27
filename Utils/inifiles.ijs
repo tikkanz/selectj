@@ -109,6 +109,7 @@ makeVals=: 3 : 0
   _999999 makeVals y
   :
   err=. x
+  if. L.y do. y return. end. NB. already boxed
   val=. ', ' charsub y  NB. values delimited by commas and/or spaces
   if. -.+./err= nums=. err&". val do. val=. nums end.
   if. ' ' e. val do. val=. <;._1 ' ',deb val end.
