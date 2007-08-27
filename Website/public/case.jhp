@@ -31,8 +31,8 @@ try.
 		'uid ofid csid'=. uofcsid
 	    setcolnames 'greeting' getTable_psqliteq_ uid
 	    setcolnames 'coursename' getTable_psqliteq_ ofid
-        setcolnames 'case' getTable_psqliteq_ csid;11
-		caseform=: buildForm csid NB. dynamically create form with controls
+        setcolnames 'case' getTable_psqliteq_ csid;11  NB. 11 is instruct txt
+		caseform=: buildForm ciid NB. dynamically create form with controls
 		NB. state of form should reflect previous caseinstance changes
 		transfer page
 	  end.
