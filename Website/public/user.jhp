@@ -23,8 +23,8 @@ try.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
         page=. '~CGI/user_home.asp'  NB. destination page
-        setcolnames 'greeting' getTable_pselectdb_ uid
-	    setcolnames 'mycourses' getTable_pselectdb_ uid
+        setcolnames 'greeting' getTable_psqliteq_ uid
+	    setcolnames 'mycourses' getTable_psqliteq_ uid
     	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
 		if. 1=#of_id do. NB. if only one course then go direct
 		  redirect 'course.jhp?of_id=',":of_id

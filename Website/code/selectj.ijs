@@ -8,6 +8,7 @@ script_z_ '~system\main\files.ijs'
 script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~system\main\strings.ijs'
 script_z_ '~system\packages\misc\task.ijs'
+script_z_ '~system\packages\winapi\winapi.ijs'
 
 coclass 'pselect'
 
@@ -61,7 +62,8 @@ coercetxt=: 3 : 0
 )
 listatom=: 1&#
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
-createSalt=: ([: _2&(3!:4) a. {~ [: ? 256 $~ ])&4
+require 'random convert/misc/md5'
+createSalt=: ([: _2&ic a. {~ [: ? 256 $~ ])&4
 randpwd=: 3 : 0
 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' randpwd y
 :
@@ -85,18 +87,18 @@ createSession=: 3 : 0
  if. isdefseed'' do. randomize'' end.
  sid=. >:?<:-:2^32 
  sh=. salthash ":sid 
- 'session' insertDBTable_pselectdb_  sid;y;sh
+ 'session' insertDBTable_psqliteq_  sid;y;sh
  tk=. writeTicket sid;{:sh
 )
 expireSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'sessionexpire' updateDBTable_pselectdb_ ".sid
+  'sessionexpire' updateDBTable_psqliteq_ ".sid
 )
 
 GUESTID=:5
 isActive=: 3 : 0
-  s=. {:'status' getTable_pselectdb_ y
+  s=. {:'status' getTable_psqliteq_ y
 )
 readTicket=: 3 : 0
   kVTable=. qsparse y  
@@ -109,29 +111,29 @@ registerUser=: 3 : 0
   'uname fname lname refnum email passwd'=.y
   
   
-  uinfo =. {:'login' getTable_pselectdb_ uname  
+  uinfo =. {:'login' getTable_psqliteq_ uname  
   if. -.uinfo-:'' do. _2 return. end. 
-  pinfo =. {:'email' getTable_pselectdb_  email
+  pinfo =. {:'email' getTable_psqliteq_  email
   if. -.pinfo-:''  do. 
     pid=. 0{::pinfo    
   else.
-    pid=. 'newperson' insertDBTable_pselectdb_ fname;lname;email 
+    pid=. 'newperson' insertDBTable_psqliteq_ fname;lname;email 
   end.
   sph=. salthash passwd 
-  uid=.'newuser' insertDBTable_pselectdb_ pid;uname;refnum;|.sph 
+  uid=.'newuser' insertDBTable_psqliteq_ pid;uname;refnum;|.sph 
   
 )
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'session' updateDBTable_pselectdb_ ".sid
+  'session' updateDBTable_psqliteq_ ".sid
 )
 validCase=: 3 : 0
   if. 0-: uofid=.validEnrolment'' do. 0 return. end.
   uofid validCase y
 :
   if. 0=#y do. y=.0 qcookie 'CaseID' end.
-  vldcs=.'validcase' getTable_pselectdb_ x,<y
+  vldcs=.'validcase' getTable_psqliteq_ x,<y
   if. #vldcs do. x,<y else. 0 end.
 )
 validEnrolment=: 3 : 0
@@ -139,13 +141,13 @@ validEnrolment=: 3 : 0
   uid validEnrolment y
 :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getTable_pselectdb_ x;y
+  enrld=.'enrolled' getTable_psqliteq_ x;y
   if. #enrld do. x;y else. 0 end.
 )
 validLogin=: 3 : 0
  'usrnme passwd'=. y
   if. usrnme -: '' do. _1 return. end. 
-  uinfo =. {:'login' getTable_pselectdb_ usrnme  
+  uinfo =. {:'login' getTable_psqliteq_ usrnme  
   if. ''-: uinfo   do. _2 return. end.   
   'duid dunme dhash dsalt' =. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
@@ -154,17 +156,17 @@ validLogin=: 3 : 0
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'session' getTable_pselectdb_ ".sid
+  sinfo=.'session' getTable_psqliteq_ ".sid
   if. 0=#sinfo do. 0 return. end. 
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   
   
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
-    'sessionexpire' updateDBTable_pselectdb_ ".sid
+    'sessionexpire' updateDBTable_psqliteq_ ".sid
     0
   else.
-    'session' updateDBTable_pselectdb_ ".sid
+    'session' updateDBTable_psqliteq_ ".sid
     ss_urid
   end.
 )
@@ -175,47 +177,34 @@ writeTicket=: 3 : 0
 
 resetUsers=: 3 : 0
   if. *#y do.
-    'resetusers' updateDBTable_pselectdb_ y
+    'resetusers' updateDBTable_psqliteq_ y
     
     ''
   end.
 )
 setUsers=: 3 : 0
   if. *#y do.
-    'setusers' updateDBTable_pselectdb_ y
+    'setusers' updateDBTable_psqliteq_ y
     
     ''
   end.
 )
 deleteUsers=: 3 : 0
   if. *#y do.
-    'deleteusers' updateDBTable_pselectdb_ y
+    'deleteusers' updateDBTable_psqliteq_ y
     
     ''
   end.
 )
 
-pathdelim=: 4 : '}.;([:x&,,)each y'
-
-deleteDirTree=: 3 : 0
-  try.
-    res=. 1!:55 {."1 dirtree y
-    res=. res,1!:55 |.dirpath y
-  catch.
-    
-    
-    
-    13!:11 ''
-  end.
-)
-
+pathdelim=: 4 : '}.;([:x&,,)each y'  
 getFnme=: 4 : 0
   sep=. PATHSEP_j_
   basefldr=. jpath '~.CGI/' 
   select. x
     case. 'caseinstfolder' do.
     
-      pathinfo=. 'caseinstfolder' getTableStr_pselectdb_ y
+      pathinfo=. 'caseinstfolder' getTableStr_psqliteq_ y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
@@ -223,7 +212,7 @@ getFnme=: 4 : 0
       fnme=. 'userpop',sep,fnme,sep
     case. 'scendef' do.
     
-      pathinfo=. 'scendef' getTableStr_pselectdb_ y
+      pathinfo=. 'scendef' getTableStr_psqliteq_ y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       fnme=. 'scendefs',sep,(,sd_code),'.zip'
@@ -237,7 +226,7 @@ Note 'list filenames in tree'
 )
 createCaseInstance=: 3 : 0
   'uid ofid csid'=. y
-  ciid=. 'caseinstance' insertDBTable_pselectdb_ uid;ofid;csid
+  ciid=. 'caseinstance' insertDBTable_psqliteq_ uid;ofid;csid
   uz=. createCaseInstFolder csid;ciid
   ciid
 )
@@ -253,7 +242,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. >@{:'caseinstance' getTable_pselectdb_ uofcsid
+  ciid=. >@{:'caseinstance' getTable_psqliteq_ uofcsid
   if. #ciid do.
     ciid
   else. 
@@ -261,12 +250,12 @@ getCaseInstance=: 3 : 0
   end.
 )
 expireCaseInstance=: 3 : 0
-  'expirecaseinst' updateDBTable_pselectdb_ y
+  'expirecaseinst' updateDBTable_psqliteq_ y
   deleteCaseInstFolder y
 )
 deleteCaseInstFolder=: 3 : 0
   delpath=. 'caseinstfolder' getFnme y
-  res=.deleteDirTree delpath
+  res=.deltree delpath
   if. 1=*./res do. 1 else. 0 end.
 )
 getAllTrtNames=: 3 : 0
@@ -286,11 +275,17 @@ getScenarioInfo=: 3 : 0
   
 )
 require 'data/sqlite'
-
-coclass 'pselectdb'
-ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
+coclass 'psqliteq'
+3 : 0 ''
+  if. 0=4!:0 <'CONNECTSTR_base_' do.
+    ConStr=:  CONNECTSTR_base_  
+  else.
+    
+    ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
+  end.
+)
 lasterr=: [: deb LF -.~ }.@(13!:12)
-usrdberr_z_=: (assert 0=#) f.
+sqldberr_z_=: (assert 0=#) f.
 
 sBegin=: 0 : 0
   r=. 0 0$''
@@ -301,7 +296,7 @@ sBegin=: 0 : 0
 sEnd=: 0 : 0
   catch. msg=. lasterr'' end.
   if. 0=nc<'db' do. destroy__db '' end.
-  usrdberr msg
+  sqldberr msg
   r
 )
 sdefine=: 1 : 'm : (sBegin , (0 : 0) , sEnd)'
@@ -311,12 +306,10 @@ getTable=: dyad sdefine
 getTableStr=: dyad sdefine
   r=.(boxopen y) strquery__db ".'sqlsel_',x
 )
-
 insertDBTable=: dyad sdefine
   sql=. ". 'sqlins_',x
   r=. (boxopen y) apply__db sql
 )
-
 updateDBTable=: dyad sdefine
   r=. (boxopen y) apply__db ". 'sqlupd_',x
 )
@@ -325,7 +318,7 @@ execSQL=: dyad sdefine
   r=. exec__db y
 )
 
-coclass 'pselectdb'
+coclass 'psqliteq'
 sqlsel_login=: 0 : 0
   SELECT users.ur_id ur_id, 
          users.ur_uname ur_uname,
@@ -475,7 +468,7 @@ sqlupd_deleteusers=: 0 : 0
   WHERE ur_id=?
 )
 
-coclass 'pselectdb'
+coclass 'psqliteq'
 sqlsel_greeting=: 0 : 0
   SELECT pp.pp_fname pp_fname,
          pp.pp_lname pp_lname
@@ -659,7 +652,7 @@ buildButtons=: 3 : 0
   DIV class 'buttonrow' bt
 )
 buildForm=: 3 : 0
-  info=. 'paramform' getTable_pselectdb_ y  
+  info=. 'paramform' getTable_psqliteq_ y  
   'hdr dat'=. split info
   (hdr)=. |:dat                   
   lgd=. P class 'legend' 'This is the legend for my form'
@@ -671,7 +664,7 @@ buildForm=: 3 : 0
 buildFieldset=: 3 : 0
   1 buildFieldset y
 :
-  info=. 'fieldset' getTable_pselectdb_ y 
+  info=. 'fieldset' getTable_psqliteq_ y 
   'hdr dat'=. split info
   (hdr)=. |:dat                   
   lgd=. LEGEND {.fs_name        
@@ -681,7 +674,7 @@ buildFieldset=: 3 : 0
   fst=. ('disabled';dsabld) stringreplace fst
 )
 buildParamDiv=: 3 : 0
-  info=. 'param' getTable_pselectdb_ y  
+  info=. 'param' getTable_psqliteq_ y  
   'hdr dat'=. split info
   (hdr)=. ,dat                   
   if. #fp_label do. pr_name=. fp_label end. 
@@ -769,6 +762,22 @@ getParamState=: 3 : 0
   nms=.  boxopen ".'nmes_',y
 seld;vals;<nms
 )
+
+Note 'design for getParamState'
+  read whole of ini at once and store in memory (at start of buildform?)
+  Individual params read from memory store.
+  also need to read total possible traits from traitinfo
+  probably select case for params that can handle inidividual
+  should numeric lists be individually boxed?
+)
+Note 'design for updateParamState'
+  read whole of ini at once and store in memory (at start of updateform?)
+  writes params to memory store and then write whole 
+  memory store to file.
+)
+
+
+
 dict=: 3 : 0
 )
 unquote=: 3 : 0
@@ -983,6 +992,65 @@ unzip=: 3 : 0
 
 unzip_z_=: unzip_punzip_
 
+require 'dir files'
+
+coclass 'pdiradd'
+
+addPS=: , PATHSEP_j_ -. {:          
+dropPS=: }:^:(PATHSEP_j_={:)  
+dircreate=: 3 : 0
+  y=. boxopen y
+  msk=. -.direxist y
+  if. ''-:$msk do. msk=.(#y)#msk end.
+  res=.1!:5 msk#y
+  msk expand ,res
+)
+direxist=: 'd' e."1 [: > [: , [: ({:"1) 1!:0@(fboxname&>)@(dropPS&.>)@boxopen
+ 
+ 
+
+dircreate_z_=: dircreate_pdiradd_
+direxist_z_=: direxist_pdiradd_
+addPS_z_=: addPS_pdiradd_
+dropPS_z_=: dropPS_pdiradd_
+require 'dir files'
+3 : 0 ''
+if. -.IFCONSOLE do.
+require 'd:\jprg\user\projects\utils\dir_add.ijs'
+end.
+)
+coclass 'ptrees'
+
+addPS=: , PATHSEP_j_ -. {:          
+dropPS=: }:^:(PATHSEP_j_={:)  
+copytree=: 4 : 0
+  'todir fromdir'=. addPS each x;y
+  if. -.direxist fromdir do. 0 0 return. end. 
+  dprf=. ] }.&.>~ [: # [  
+  aprf=. ] ,&.>~ [: < [    
+  fromdirs=. dirpath fromdir
+  todirs=. todir aprf fromdir dprf fromdirs
+  todirs=. (}:}.,each/\ <;.2 todir), todirs
+  fromfiles=. {."1 dirtree fromdir
+  tofiles=. todir aprf fromdir dprf fromfiles
+  resdir=. dircreate todirs
+  resfile=. 0&< @>tofiles fcopy fromfiles
+  (+/resdir),+/resfile
+)
+deltree=: 3 : 0
+  try.
+    res=.0< ferase {."1 dirtree y
+    *./ res,0<ferase |.dirpath y
+  catch. 0 end.
+)
+
+fcopy=: 4 : 0
+  dat=. fread each boxopen y
+  dat fwrite each boxopen x
+)
+
+copytree_z_=: copytree_ptrees_
+deltree_z_=: deltree_ptrees_
 require 'winapi strings'
 coclass 'pini'
 getPPAllSections=: 3 : 0
@@ -1061,7 +1129,7 @@ getPPAllSections_z_=: getPPAllSections_pini_
 getPPString_z_=: getPPString_pini_
 getPPVals_z_=: getPPVals_pini_
 writePPString_z_=: writePPString_pini_
-
+makeVals_z_=: makeVals_pini_
 require 'files'
 require '~addons/data/sqlite/def.ijs'
 

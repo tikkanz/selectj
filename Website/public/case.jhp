@@ -10,11 +10,11 @@ try.
 	  else.
         page=. '~CGI/case_home.asp'  NB. destination page
 		ciid=. getCaseInstance uofcsid
-		cistage=. >@{.{: 'casestage' getTable_pselectdb_ ciid
+		cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
 		'uid ofid csid'=. uofcsid
-	    setcolnames 'greeting' getTable_pselectdb_ uid
-	    setcolnames 'coursename' getTable_pselectdb_ ofid
-        setcolnames 'case' getTable_pselectdb_ csid;cistage
+	    setcolnames 'greeting' getTable_psqliteq_ uid
+	    setcolnames 'coursename' getTable_psqliteq_ ofid
+        setcolnames 'case' getTable_psqliteq_ csid;cistage
 		CurrYear=: 0
 		nCycles=: 10
     	NB. if. isnoun 'of_id' do. of_id=:i.0 0 end.
@@ -27,18 +27,18 @@ try.
 	  else.
 		page=. '~CGI/case_params.asp'
    		ciid=. getCaseInstance uofcsid  NB. maybe change to output uofcsciid if y-:''
-		cistage=. >@{.{: 'casestage' getTable_pselectdb_ ciid
+		cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
 		'uid ofid csid'=. uofcsid
-	    setcolnames 'greeting' getTable_pselectdb_ uid
-	    setcolnames 'coursename' getTable_pselectdb_ ofid
-        setcolnames 'case' getTable_pselectdb_ csid;11
+	    setcolnames 'greeting' getTable_psqliteq_ uid
+	    setcolnames 'coursename' getTable_psqliteq_ ofid
+        setcolnames 'case' getTable_psqliteq_ csid;11
 		caseform=: buildForm csid NB. dynamically create form with controls
 		NB. state of form should reflect previous caseinstance changes
 		transfer page
 	  end.
 	case. 'reset' do.
 	  ciid=. getCaseInstance ''
-	  'cistage cisumry'=. {: 'casestage' getTable_pselectdb_ ciid
+	  'cistage cisumry'=. {: 'casestage' getTable_psqliteq_ ciid
 	  if. (4=cistage) *. -. cisumry do. 
 	    NB. prompt to summarize
 		NB. if yes then summarize
