@@ -108,14 +108,25 @@ sqlsel_caseinstfolder=: 0 : 0
 
 sqlsel_scendef=: 0 : 0
   SELECT sd.sd_code sd_code 
-  FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-  WHERE (cs.cs_id =?);
+  FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
 )
 
 sqlupd_expirecaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_status=0
   WHERE ci_id=?;
+)
+
+NB. =========================================================
+NB. Case SQL
+
+sqlsel_animini=: 0 : 0
+  SELECT sd.sd_filen sd_filen 
+  FROM  `cases` cases INNER JOIN `caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
 )
 
 NB. =========================================================

@@ -4,42 +4,36 @@ NB.  users' flocks/popluation folders
 
 pathdelim=: 4 : '}.;([:x&,,)each y'  NB.!Use join instead??
 
-NB. deleteDirTree=: 3 : 0
-NB.   try.
-NB.     res=. 1!:55 {."1 dirtree y
-NB.     res=. res,1!:55 |.dirpath y
-NB.   catch.
-NB.     NB. error number 7 is interface error (probably open file)
-NB.     NB. error number 25 is file name error (dir/file doesn't exist)
-NB.     NB. res=. 'Some files and/or directory could not be deleted.'
-NB.     13!:11 ''
-NB.   end.
-NB. )
-
-
 NB.*getFnme v get filename of specified filetype for user,offering,case
 NB. result is string of filename, or numeric _1 if file doesn't exist
 getFnme=: 4 : 0
   sep=. PATHSEP_j_
-  basefldr=. jpath '~.CGI/' NB. 'd:\web\selectj\public\'
+  basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
+  NB. basefldr=. '~.CGI/' NB. 'd:\web\selectj\'
   select. x
-    case. 'caseinstfolder' do.
-    NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
+    case. 'animini' do.  NB. y is ciid
+      fdir=. 'caseinstfolder' getFnme y
+      fnme=. 'animini' getDBItem_psqliteq_ y
+      fnme=. fdir,fnme
+    case. 'caseinstfolder' do.  NB. y is ciid
+      NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
       pathinfo=. 'caseinstfolder' getTableStr_psqliteq_ y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
       fnme=. sep pathdelim ur_uname;of_code;sd_code;ci_id
-      fnme=. 'userpop',sep,fnme,sep
-    case. 'scendef' do.
-    NB. scendefs/scendefcode.zip
-      pathinfo=. 'scendef' getTableStr_psqliteq_ y
-      'hdr dat'=. split pathinfo
-      (hdr)=. |:dat
-      fnme=. 'scendefs',sep,(,sd_code),'.zip'
+      fnme=. basefldr,'userpop',sep,fnme,sep
+    case. 'scendef' do.  NB. y is ciid
+      NB. scendefs/scendefcode.zip
+      cde=. 'scendef' getDBItem_psqliteq_ y
+      fnme=. basefldr,'scendefs',sep,cde,'.zip'
+    case. 'TrtInfo' do.  NB. y is ciid
+      fdir=. 'caseinstfolder' getFnme y
+      fnme=. 'TrtInfo.xls'
+      fnme=. fdir,fnme
     case. do.
   end.
-  fnme=. basefldr,fnme
+  fnme=. jpath fnme
 )
 
 Note 'list filenames in tree'
@@ -52,9 +46,8 @@ NB. return new caseinstance id, extract scendef to user folder
 NB. y is optional 3-item boxed list of userid;offeringid;caseid
 NB. if y is '' then reads cookies and updates sessionticket
 createCaseInstance=: 3 : 0
-  'uid ofid csid'=. y
-  ciid=. 'caseinstance' insertDBTable_psqliteq_ uid;ofid;csid
-  uz=. createCaseInstFolder csid;ciid
+  ciid=. 'caseinstance' insertDBTable_psqliteq_ y
+  uz=. createCaseInstFolder ciid
   ciid
 )
 

@@ -100,8 +100,9 @@ sqlsel_fieldset=: 0 : 0
 
 
 sqlsel_paramform=: 0 : 0
-  SELECT cf.cf_fsid fs_id ,
+  SELECT cf.cf_fsid cf_fsid ,
          cf.cf_value cf_value 
-  FROM  `cases` cs INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
-  WHERE (cs.cs_id =?);
+  FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
+  WHERE (ci.ci_id =?);
 )

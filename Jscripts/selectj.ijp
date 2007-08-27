@@ -22,6 +22,7 @@ PRIMARYFILES=: 0 : 0
 ~addons/data/sqlite/sqlite
 ~addons/data/sqlite/def
 ~addons/convert/misc/md5
+~addons/tables/tara/tara
 )
 
 PRIMARYLIBS=: 0 : 0

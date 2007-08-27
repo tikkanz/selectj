@@ -17,8 +17,10 @@ buildButtons=: 3 : 0
 )
 
 NB.*buildForm v builds xhtml form code for a case
-NB. y is cs_id of case
+NB. y is ci_id of case
 buildForm=: 3 : 0
+  ANIMINI=: }."1 getScenarioInfo y
+  ANIMINI=: ANIMINI,'AllTrts';<getAllTrtNames y
   info=. 'paramform' getTable_psqliteq_ y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
@@ -164,28 +166,13 @@ buildSelect=: 3 : 0
 NB.*getParamState v retrieves parameter state from caseinstance
 NB. returns 2- or 3- item boxed list of selectedvalues;values;valuenames
 NB. y is pr_code (code for parameter eg. 'ncycles')
+NB. this is dummy function until implement proper one - scenarios!!!
 getParamState=: 3 : 0
   seld=. boxopen ".'seld_',y
   vals=. boxopen ".'vals_',y
   nms=.  boxopen ".'nmes_',y
 seld;vals;<nms
 )
-
-Note 'design for getParamState'
-  read whole of ini at once and store in memory (at start of buildform?)
-  Individual params read from memory store.
-  also need to read total possible traits from traitinfo
-  probably select case for params that can handle inidividual
-  should numeric lists be individually boxed?
-)
-Note 'design for updateParamState'
-  read whole of ini at once and store in memory (at start of updateform?)
-  writes params to memory store and then write whole 
-  memory store to file.
-)
-
-
-
 
 NB.dict v parses list of boxed name=value pairs
 NB. returns list of boxed 2-item boxed lists
