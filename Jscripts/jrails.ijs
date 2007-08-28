@@ -19,8 +19,9 @@ buildButtons=: 3 : 0
 NB.*buildForm v builds xhtml form code for a case
 NB. y is ci_id of case
 buildForm=: 3 : 0
-  ANIMINI=: }."1 getScenarioInfo y
-  ANIMINI=: ANIMINI,'AllTrts';<getAllTrtNames y
+  ANIMINI_z_=: }."1 'animini' getScenarioInfo y
+  ANIMINI_z_=: (tolower each {."1 ANIMINI) (0)}"0 1 ANIMINI
+  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
   info=. 'paramform' getTable_psqliteq_ y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
@@ -167,7 +168,7 @@ NB.*getParamState v retrieves parameter state from caseinstance
 NB. returns 2- or 3- item boxed list of selectedvalues;values;valuenames
 NB. y is pr_code (code for parameter eg. 'ncycles')
 NB. this is dummy function until implement proper one - scenarios!!!
-getParamState=: 3 : 0
+getParamStateX=: 3 : 0
   seld=. boxopen ".'seld_',y
   vals=. boxopen ".'vals_',y
   nms=.  boxopen ".'nmes_',y

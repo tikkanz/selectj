@@ -12,10 +12,10 @@ seld_trts2select=:  'NLB';'FAT'
 vals_popsizes=: <&>(100,200*>:i.5), 1500 2000 4000
 seld_popsizes=:  200
 
-vals_ncycles=: 10
-vals_currcycle=: 3
+vals_ncycles=: <10
+vals_currcycle=: <3
 
-vals_dams2sire=: 50
+vals_dams2sire=: <50
 vals_cullage=: <&> 7 8
 vals_mateage=: <&> 1 2
 vals_allelefreq=: <&> 0.1 0.9

@@ -53,11 +53,10 @@ createCaseInstance=: 3 : 0
 
 NB.*createCaseInstFolder v extracts Scenario Definition zip to CaseInstance
 NB. returns result of unzip
-NB. y is 2-item list of boxed caseid;caseinstanceid
+NB. y is caseinstanceid
 createCaseInstFolder=: 3 : 0
-  'csid ciid'=.y
-  zippath=. 'scendef' getFnme csid
-  newpath=. 'caseinstfolder' getFnme ciid
+  zippath=. 'scendef' getFnme y
+  newpath=. 'caseinstfolder' getFnme y
   uz=. unzip zippath;newpath  NB. ,.uz;zippath;newpath
 )
 

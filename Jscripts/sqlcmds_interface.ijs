@@ -100,7 +100,7 @@ sqlsel_fieldset=: 0 : 0
 
 
 sqlsel_paramform=: 0 : 0
-  SELECT cf.cf_fsid cf_fsid ,
+  SELECT cf.cf_fsid fs_id ,
          cf.cf_value cf_value 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
