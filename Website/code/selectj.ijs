@@ -237,9 +237,8 @@ createCaseInstance=: 3 : 0
   ciid
 )
 createCaseInstFolder=: 3 : 0
-  'csid ciid'=.y
-  zippath=. 'scendef' getFnme csid
-  newpath=. 'caseinstfolder' getFnme ciid
+  zippath=. 'scendef' getFnme y
+  newpath=. 'caseinstfolder' getFnme y
   uz=. unzip zippath;newpath  
 )
 getCaseInstance=: 3 : 0
@@ -264,35 +263,106 @@ deleteCaseInstFolder=: 3 : 0
   res=.deltree delpath
   if. 1=*./res do. 1 else. 0 end.
 )
-getAllTrtNames=: 3 : 0
-  xlfnme=. 'TrtInfo' getFnme y
-  }.,1{."1 'tDefn' readexcel xlfnme
-)
 getScenarioInfo=: 3 : 0
   'animini' getScenarioInfo y
   :
-  for_ityp. boxopen x do.
-    select. ityp
-      case. <'animini' do.
+  infotyp=. boxopen x
+  select. infotyp
+    case. <'animini' do.
       fnme=. 'animini' getFnme y
       res=. getPPAllSections fnme
-    end.
+    case. <'alltrtinfo' do.
+      xlfnme=. 'TrtInfo' getFnme y
+      'tDefn' readexcel xlfnme
   end.
 )
+getParamState=: 3 : 0
+ '' getParamState y
+:
+  seld=. vals=. nmes=. a:  
+  select. y
+    case. 'hrdsizes'    do.
+      vals=. makeVals 'flksizes' keyval ANIMINI
+      if. 1 do. 
+        seld=. boxopen vals
+        vals=. <"0 (100,200*>:i.5), 1500 2000 4000
+      end.
+    case. 'selnmeth'    do.
+      'seld vals nmes'=. getParamState 'coltypes'
+      tmp=. makeVals 'selectlistcols' keyval ANIMINI
+      tmp=. (({.@> tmp) e. 'pg')#tmp 
+      tmp=. {:>{:tmp  
+      seld=. ('ed' i. tmp){ |.vals 
+    case. 'summtype'    do.
+      'seld vals nmes'=. getParamState 'coltypes'
+      tmp=. makeVals 'respons2outpt' keyval ANIMINI
+      tmp=. (({.@> tmp) e. 'pg')#tmp 
+      tmp=. ~.{:@>tmp   
+      tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  
+      seld=. tmp#vals   
+    case. 'coltypes' do.
+      seld=. <'phen'
+      vals=. ;:'phen genD genDe'
+      nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+    case. 'trts2select';'trts2summ' do.
+      vals=. makeVals 'trtsavail' keyval ANIMINI
+      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
+      nmes=. 'TrtCaption' getTrtInfo vals
+      nmes=. ('(',each vals ,each <') '),each nmes
+      tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
+      tmp=. makeVals tmp keyval ANIMINI
+      tmp=. (({.@> tmp) e. 'pg')#tmp 
+      tmp=. tmp -. each <'pdge' 
+      seld=. ~. tmp 
+    case. 'objectvrevs' do.
+      nmes=. makeVals 'trtsavail' keyval ANIMINI
+      vals=. (#nmes)#a:
+      tmpv=. <"0 makeVals y keyval ANIMINI
+      tmpn=. 0{:: getParamState 'trts2select'
+      vals=. tmpv (nmes i. tmpn)}vals
+    case. 'trtsrecorded' do.
+      vals=. makeVals 'trtsavail' keyval ANIMINI
+      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
+      msk=. 9999&~:@>'AOM' getTrtInfo vals 
+      vals=. msk#vals
+      nmes=. 'TrtCaption' getTrtInfo vals
+      seld=. makeVals y keyval ANIMINI
 
-
+    
+    
+    case. 'dams2hrdsire' do.
+      'seld vals nmes' =. getParamState 'flkdams2sire'
+    case. 'usesiresxhrd' do. 
+      'seld vals nmes' =. getParamState 'usesiresxflk'
+    case. 'samplehrdeffects' do. 
+      'seld vals nmes' =. getParamState 'sampleflkeffects'
+    case. 'hrdspecfnme' do. 
+      'seld vals nmes' =. getParamState 'flkspecfnme'
+    case. 'currcycle' do. 
+      'seld vals nmes' =. getParamState 'curryear'
+    case. do. 
+      
+      
+      vals=. makeVals y keyval ANIMINI
+      if. isnum vals do. vals=. <"0 vals end.
+      vals=. boxopen vals  
+  end.
+  seld;vals;<nmes
+)
 Note 'design for getParamState'
-  read whole of ini at once and store in memory (at start of buildform?)
-  Individual params read from memory store.
-  makeVals key keyval }."1 animini
-  also need to read total possible traits from traitinfo
-  probably select case for params that can handle inidividual
-  should numeric lists be individually boxed?
+read whole of ini at once and store in memory (at start of buildform?)
+Individual params read from memory store.
+makeVals key keyval }."1 animini
+also need to read total possible traits from traitinfo
+probably select case for params that can handle inidividual
+should numeric lists be individually boxed?
+TRTINFO {~[:<col1 i.];row1 i.[:<[
+
 )
 Note 'design for updateParamState'
-  read whole of ini at once and store in memory (at start of updateform?)
-  writes params to memory store and then write whole 
-  memory store to file.
+read whole of ini at once and store in memory (at start of updateform?)
+writes params to memory store and then write whole
+memory store to file.
 )
 
 
@@ -607,7 +677,7 @@ sqlsel_fieldset=: 0 : 0
 
 
 sqlsel_paramform=: 0 : 0
-  SELECT cf.cf_fsid cf_fsid ,
+  SELECT cf.cf_fsid fs_id ,
          cf.cf_value cf_value 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
@@ -624,10 +694,10 @@ seld_trts2select=:  'NLB';'FAT'
 vals_popsizes=: <&>(100,200*>:i.5), 1500 2000 4000
 seld_popsizes=:  200
 
-vals_ncycles=: 10
-vals_currcycle=: 3
+vals_ncycles=: <10
+vals_currcycle=: <3
 
-vals_dams2sire=: 50
+vals_dams2sire=: <50
 vals_cullage=: <&> 7 8
 vals_mateage=: <&> 1 2
 vals_allelefreq=: <&> 0.1 0.9
@@ -694,8 +764,9 @@ buildButtons=: 3 : 0
   DIV class 'buttonrow' bt
 )
 buildForm=: 3 : 0
-  ANIMINI=: }."1 getScenarioInfo y
-  ANIMINI=: ANIMINI,'AllTrts';<getAllTrtNames y
+  ANIMINI_z_=: }."1 'animini' getScenarioInfo y
+  ANIMINI_z_=: (tolower each {."1 ANIMINI) (0)}"0 1 ANIMINI
+  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
   info=. 'paramform' getTable_psqliteq_ y  
   'hdr dat'=. split info
   (hdr)=. |:dat                   
@@ -800,7 +871,7 @@ buildSelect=: 3 : 0
   opts=. LF join opts
   ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
 )
-getParamState=: 3 : 0
+getParamStateX=: 3 : 0
   seld=. boxopen ".'seld_',y
   vals=. boxopen ".'vals_',y
   nms=.  boxopen ".'nmes_',y
@@ -1607,11 +1678,6 @@ d174ab98d277d9f5a5611c2c9f419d9f
 57edf4a22be3c955ac49da2e2107b67a
 )
 
-smoutput 0 : 0
-'dd/mm/yyyy' in the following line is locale specific
-if. 2=#y do. y=. y, <'dd/mm/yyyy' end. 
-change it to 'mm/dd/yyyy' for US, or other value for your own locale
-)
 cocurrent 'oleutlfcn'
 oledate2local=: 3 : 0
 86400000* _72682+86400%~10000000%~(8#256)#. a.i.y
