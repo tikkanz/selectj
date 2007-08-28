@@ -349,16 +349,8 @@ getParamState=: 3 : 0
   end.
   seld;vals;<nmes
 )
-Note 'design for getParamState'
-read whole of ini at once and store in memory (at start of buildform?)
-Individual params read from memory store.
-makeVals key keyval }."1 animini
-also need to read total possible traits from traitinfo
-probably select case for params that can handle inidividual
-should numeric lists be individually boxed?
-TRTINFO {~[:<col1 i.];row1 i.[:<[
 
-)
+
 Note 'design for updateParamState'
 read whole of ini at once and store in memory (at start of updateform?)
 writes params to memory store and then write whole
@@ -661,7 +653,12 @@ sqlsel_param=: 0 : 0
          fp.fp_label fp_label ,
          pr.pr_note pr_note ,
          fp.fp_note fp_note ,
+         pr.pr_class pr_class ,
+         fp.fp_class fp_class ,
          pr.pr_ctype pr_ctype ,
+         fp.fp_ctype fp_ctype ,
+         pr.pr_cprops pr_cprops ,
+         fp.fp_cprops fp_cprops ,
          pr.pr_code pr_code 
   FROM `params` pr INNER JOIN `fieldsetparams` fp ON ( `pr`.`pr_id` = `fp`.`fp_prid` ) 
   WHERE (fp.fp_fsid=? AND fp.fp_prid =?);
@@ -748,7 +745,7 @@ ctrlprops_summtype=: 0 : 0
 )
 
 ctrlprops_trts2select=: 0 : 0
- onchange 'REVStatus' multiple 'multiple' size '6'
+ onchange 'REVStatus()' multiple 'multiple' size '6'
 )
 
 ctrlprops_trts2summ=:  0 : 0
@@ -759,7 +756,7 @@ ctrlprops_trtsrecorded=: ctrlprops_trts2summ
 
 coclass 'pwebforms'
 buildButtons=: 3 : 0
-  bt=. INPUT class 'button' type 'submit' onclick 'formsubmit()' value 'Save Changes' ''
+  bt=. INPUT class 'button' type 'submit' value 'Save Changes' ''
   bt=. bt,LF, INPUT class 'button' type 'reset' value 'Discard Changes' ''
   DIV class 'buttonrow' bt
 )
@@ -771,9 +768,10 @@ buildForm=: 3 : 0
   'hdr dat'=. split info
   (hdr)=. |:dat                   
   lgd=. P class 'legend' 'This is the legend for my form'
+  lgd=. lgd, INPUT class 'input' type 'hidden' name 'action' id 'action' value 'chgparams' ''
   fsts=. cf_value buildFieldset each fs_id
   frm=. LF join lgd;fsts, boxopen buildButtons ''
-  frm=. FORM id 'params' name 'params' enctype 'multipart/form-data' method 'post' action 'case.jhp?action=chgparams' frm
+  frm=. FORM id 'params' name 'params' method 'post' action 'case.jhp' frm
   DIV class 'form-container' frm
 )
 buildFieldset=: 3 : 0
@@ -794,9 +792,12 @@ buildParamDiv=: 3 : 0
   (hdr)=. ,dat                   
   if. #fp_label do. pr_name=. fp_label end. 
   if. #fp_note  do. pr_note=. fp_note  end. 
+  if. #fp_class do. pr_class=. fp_class end. 
+  if. #fp_ctype do. pr_ctype=. fp_ctype end. 
+  if. #fp_cprops do. pr_cprops=. fp_cprops end. 
   info=. getParamState pr_code 
   'seld vals nms'=. 3{. info
-  ctrlprops=. <LF-.~".'ctrlprops_',pr_code 
+  ctrlprops=. boxopen pr_cprops
   ctrlprops=. (#vals)#ctrlprops
   idx=. makeidx (<:^:(=1:)) #vals 
   if. 'select'-: pr_ctype do. idx=.a: end. 

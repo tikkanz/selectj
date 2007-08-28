@@ -40,19 +40,19 @@ insert into fieldsets (fs_id,fs_name,fs_code) values (30,'Summarise Selection','
 insert into fieldsets (fs_id,fs_name,fs_code) values (31,'Summarise Selection','selsumm2');
 insert into fieldsets (fs_id,fs_name,fs_code) values (35,'Summary Types','sumtypes');
 
-insert into params (pr_id,pr_name,pr_code,pr_ctype) values (1,'No. of cycles to select for','ncycles','input');
-insert into params (pr_id,pr_name,pr_code,pr_ctype) values (2,'Current cycle of selection','currcycle','input');
-insert into params (pr_id,pr_name,pr_code,pr_ctype) values (3,'No. of Dams per Sire','dams2hrdsire','input');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (4,'Age to cull at','cullage','Animals older that this age will not appear in selection lists.','input');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (5,'Age at birth','mateage','The parents age when its first progeny is born.','input');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (6,'Allele frequencies','allelefreq','Values must sum to zero.','input');
-insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype) values (7,'Relative Economic Values (REVs)','objectvrevs','controlset','input');
-insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype) values (8,'Select using','selnmeth','controlset','input');
-insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype) values (9,'Summarise','summtype','controlset','input');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (10,'Traits to select on','trts2select','These traits will be available in your selection lists','select');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (11,'Traits to summarise','trts2summ','These traits will be summarised in your final population report','select');
-insert into params (pr_id,pr_name,pr_code,pr_ctype) values (12,'Traits to record','trtsrecorded','select');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype) values (13,'No. of breeding females','hrdsizes','This does not include female replacements that are too young to mate.<br/>&nbsp;','select');
+insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (1,'No. of cycles to select for','ncycles','input','type ''text'' maxlength ''3'' size ''4''');
+insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (2,'Current cycle of selection','currcycle','input','type ''text'' maxlength ''3'' size ''4''');
+insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (3,'No. of Dams per Sire','dams2hrdsire','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (4,'Age to cull at','cullage','Animals older that this age will not appear in selection lists.','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (5,'Age at birth','mateage','The parents age when its first progeny is born.','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (6,'Allele frequencies','allelefreq','Values must sum to zero.','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype,pr_cprops) values (7,'Relative Economic Values (REVs)','objectvrevs','controlset','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype,pr_cprops) values (8,'Select using','selnmeth','controlset','input','type ''radio''');
+insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype,pr_cprops) values (9,'Summarise','summtype','controlset','input','type ''checkbox''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (10,'Traits to select on','trts2select','These traits will be available in your selection lists','select','onchange ''REVStatus()'' multiple ''multiple'' size ''6''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (11,'Traits to summarise','trts2summ','These traits will be summarised in your final population report','select','multiple ''multiple'' size ''6''');
+insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (12,'Traits to record','trtsrecorded','select','multiple ''multiple'' size ''6''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (13,'No. of breeding females','hrdsizes','This does not include female replacements that are too young to mate.<br/>&nbsp;','select','');
 
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');

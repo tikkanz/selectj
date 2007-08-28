@@ -53,8 +53,8 @@ function AddtoOne()
 	*/
 	}
 function REVStatus() {
-	var x=document.getElementsByName("ObjectvREVs")
-	var y=document.getElementById("Trts2Select")
+	var x=document.getElementsByName("objectvrevs")
+	var y=document.getElementById("trts2select")
 	for (i=0;i<y.length;++ i) {  //cycle through each option in Trts2Select listbox
 		if (y[i].selected==true) {
 			x[i].disabled=false;
@@ -64,22 +64,6 @@ function REVStatus() {
 			}
 		}
 	}
-
-function formSubmit() {
-	var frm=document.getElementByTagName("form")[0];
-	//var flds=new Array("id","FlkSizes","nCycles","CurrYear");
-	//for each fld in flds: frm.fld[i].disabled=false
-	frm.id.disabled=false;
-	frm.FlkSizes.disabled=false;
-	frm.nCycles.disabled=false;
-	frm.CurrYear.disabled=false;
-	/*document.getElementById("id").disabled=false;
-	document.getElementById("FlkSizes").disabled=false;
-	document.getElementById("nCycles").disabled=false;
-	document.getElementById("CurrYear").disabled=false;
-	document.getElementById("ViewFlkParams").submit();*/
-	frm.submit();
-    }
 
 function upldSelctdList() {
 	//check that files specified in selected dams & selected sires, err msg box if not, otherwise submit

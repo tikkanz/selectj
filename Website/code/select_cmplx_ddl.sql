@@ -67,10 +67,11 @@ CREATE TABLE fieldsets ( -- fieldsets available to a case form
 CREATE TABLE params ( -- names for fieldsets available to a case form
   pr_id    INTEGER NOT NULL PRIMARY KEY,
   pr_name  CHAR(64) DEFAULT NULL ,  -- default label/name for param eg. 'No. of cycles to select for'
+  pr_code  CHAR(16) NOT NULL , -- code for param eg. 'ncycles' or 'trts2select'  
   pr_note  CHAR(128) DEFAULT NULL ,  -- default note for param eg. 'This does not include female replacements that are too young to mate'
-  pr_code  CHAR(16) NOT NULL , -- code for param eg. 'ncycles' or 'trts2select'
-  pr_class CHAR(16) DEFAULT NULL , -- display as controlset or not
-  pr_ctype CHAR(8)  DEFAULT 'input'  ); -- form control type 'input';'select';'textarea'   
+  pr_class CHAR(16) DEFAULT NULL , -- default display as controlset or not
+  pr_ctype CHAR(8)  DEFAULT 'input' , -- default form control type 'input';'select';'textarea'
+  pr_cprops CHAR(128) DEFAULT NULL ); -- default form control properties for parameter
 
 -- tables with foreign keys  
 CREATE TABLE users (
@@ -138,10 +139,13 @@ CREATE TABLE casefieldsets ( -- fieldsets and setting for each scenario/case
   PRIMARY KEY(cf_csid,cf_fsid) );
 
 CREATE TABLE fieldsetparams ( -- params and label for each fieldset
-  fp_fsid  INTEGER NOT NULL REFERENCES fieldsets(fs_id) ,
-  fp_prid  INTEGER NOT NULL REFERENCES params(pr_id) ,
-  fp_label CHAR(32) DEFAULT NULL ,  -- label to use for param in this fieldset
-  fp_note  CHAR(128) DEFAULT NULL ,  -- note to use for param in this fieldset
+  fp_fsid   INTEGER NOT NULL REFERENCES fieldsets(fs_id) ,
+  fp_prid   INTEGER NOT NULL REFERENCES params(pr_id) ,
+  fp_label  CHAR(32) DEFAULT NULL ,  -- label to use for param in this fieldset
+  fp_note   CHAR(128) DEFAULT NULL ,  -- note to use for param in this fieldset
+  fp_class  CHAR(16)  DEFAULT NULL ,  -- class to use for param in this fieldset
+  fp_ctype  CHAR(8)   DEFAULT NULL ,  -- control type to use for param in this fieldset
+  fp_cprops CHAR(128) DEFAULT NULL ,  -- control properties to use for param in this fieldset
   PRIMARY KEY(fp_fsid,fp_prid) );
 
 CREATE TABLE casestext (  -- text applicable to each scenario/case

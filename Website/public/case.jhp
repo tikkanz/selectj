@@ -2,42 +2,40 @@
 load '~.CGI/code/selectj.ijs'
 try.
   action=. qparam 'action'
+  if. -.''-:action do.  NB. if action specified check user/case/offering is valid
+  	 if. 0-: uofcsid=. validCase'' do.
+	   DeleteCookie 'CaseID' 
+	   redirect 'course.jhp?action=home'
+	   return.
+     end.
+  end.
   select. action
 	case. 'home';'status' do.
-	  if. 0-: uofcsid=. validCase'' do.
-	    DeleteCookie 'CaseID' 
-		redirect 'course.jhp?action=home'
-	  else.
-        page=. '~CGI/case_home.asp'  NB. destination page
-		ciid=. getCaseInstance uofcsid
-		cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
-		'uid ofid csid'=. uofcsid
-	    setcolnames 'greeting' getTable_psqliteq_ uid
-	    setcolnames 'coursename' getTable_psqliteq_ ofid
-        setcolnames 'case' getTable_psqliteq_ csid;cistage
-		CurrYear=: 0
-		nCycles=: 10
-    	NB. if. isnoun 'of_id' do. of_id=:i.0 0 end.
-	    transfer page
-	  end.
+       page=. '~CGI/case_home.asp'  NB. destination page
+	   ciid=. getCaseInstance uofcsid
+	   cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
+	   'uid ofid csid'=. uofcsid
+	   setcolnames 'greeting' getTable_psqliteq_ uid
+	   setcolnames 'coursename' getTable_psqliteq_ ofid
+       setcolnames 'case' getTable_psqliteq_ csid;cistage
+	   CurrYear=: 0  NB.! replace with lookup to INI file
+	   nCycles=: 10
+	   transfer page
+	case. 'chgparams' do.
+	   NB. do stuff here to update caseinstance directory info from submitted form
+	   transfer 'page'  NB. causes error & lets me see CGIKEYS & CGIVALS
 	case. 'params' do.
-	  if. 0-: uofcsid=. validCase'' do.
-	    DeleteCookie 'CaseID' 
-		redirect 'case.jhp?action=home'
-	  else.
-		page=. '~CGI/case_params.asp'
-   		ciid=. getCaseInstance uofcsid  NB. maybe change to output uofcsciid if y-:''
-		cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
-		'uid ofid csid'=. uofcsid
-	    setcolnames 'greeting' getTable_psqliteq_ uid
-	    setcolnames 'coursename' getTable_psqliteq_ ofid
-        setcolnames 'case' getTable_psqliteq_ csid;11  NB. 11 is instruct txt
-		caseform=: buildForm ciid NB. dynamically create form with controls
-		NB. state of form should reflect previous caseinstance changes
-		transfer page
-	  end.
+	  page=. '~CGI/case_params.asp'
+   	  ciid=. getCaseInstance uofcsid
+	  cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
+	  'uid ofid csid'=. uofcsid
+	  setcolnames 'greeting' getTable_psqliteq_ uid
+	  setcolnames 'coursename' getTable_psqliteq_ ofid
+      setcolnames 'case' getTable_psqliteq_ csid;11  NB. 11 is instruct txt
+	  caseform=: buildForm ciid NB. dynamically create form with controls
+	  transfer page
 	case. 'reset' do.
-	  ciid=. getCaseInstance ''
+	  ciid=. getCaseInstance uofcsid
 	  'cistage cisumry'=. {: 'casestage' getTable_psqliteq_ ciid
 	  if. (4=cistage) *. -. cisumry do. 
 	    NB. prompt to summarize
@@ -45,8 +43,8 @@ try.
 	  end.
 	  expireCaseInstance ciid
 	  redirect 'case.jhp?action=home'
-	case. 'selectmate' do.
-	  ciid=. getCaseInstance ''
+    case. 'selectmate' do.
+	  ciid=. getCaseInstance uofcsid
 	  NB. check if need to send selection lists
 	  NB. call AnimalSim
 	  redirect 'course.jhp?action=home' NB. temp for now
@@ -54,10 +52,10 @@ try.
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.
     	DeleteCookie 'CaseID'
-	    redirect 'course.jhp?action=home'
+        redirect 'course.jhp?action=home'
 	  else.
     	csid SetCookie 'CaseID'
-	    redirect 'case.jhp?action=home'
+		redirect 'case.jhp?action=home'
 	  end.
   end.
 catch.
@@ -66,6 +64,8 @@ catch.
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
   println uid
+  println CGIKEYS
+  println CGIVALS
   println COOKIEKEYS
   println COOKIEVALS
   println '</pre></p></body></html>'
