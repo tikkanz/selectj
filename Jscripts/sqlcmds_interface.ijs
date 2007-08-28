@@ -84,7 +84,12 @@ sqlsel_param=: 0 : 0
          fp.fp_label fp_label ,
          pr.pr_note pr_note ,
          fp.fp_note fp_note ,
+         pr.pr_class pr_class ,
+         fp.fp_class fp_class ,
          pr.pr_ctype pr_ctype ,
+         fp.fp_ctype fp_ctype ,
+         pr.pr_cprops pr_cprops ,
+         fp.fp_cprops fp_cprops ,
          pr.pr_code pr_code 
   FROM `params` pr INNER JOIN `fieldsetparams` fp ON ( `pr`.`pr_id` = `fp`.`fp_prid` ) 
   WHERE (fp.fp_fsid=? AND fp.fp_prid =?);

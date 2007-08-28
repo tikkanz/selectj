@@ -71,7 +71,7 @@ ctrlprops_summtype=: 0 : 0
 )
 
 ctrlprops_trts2select=: 0 : 0
- onchange 'REVStatus' multiple 'multiple' size '6'
+ onchange 'REVStatus()' multiple 'multiple' size '6'
 )
 
 ctrlprops_trts2summ=:  0 : 0

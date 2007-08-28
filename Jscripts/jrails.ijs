@@ -11,7 +11,7 @@ NB. verbs for building dynamic form for on case.jhp?action=params
 NB.*buildButtons v builds xhtml div code for form submit/reset buttons
 NB. y is ''
 buildButtons=: 3 : 0
-  bt=. INPUT class 'button' type 'submit' onclick 'formsubmit()' value 'Save Changes' ''
+  bt=. INPUT class 'button' type 'submit' value 'Save Changes' ''
   bt=. bt,LF, INPUT class 'button' type 'reset' value 'Discard Changes' ''
   DIV class 'buttonrow' bt
 )
@@ -26,9 +26,10 @@ buildForm=: 3 : 0
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. P class 'legend' 'This is the legend for my form'
+  lgd=. lgd, INPUT class 'input' type 'hidden' name 'action' id 'action' value 'chgparams' ''
   fsts=. cf_value buildFieldset each fs_id
   frm=. LF join lgd;fsts, boxopen buildButtons ''
-  frm=. FORM id 'params' name 'params' enctype 'multipart/form-data' method 'post' action 'case.jhp?action=chgparams' frm
+  frm=. FORM id 'params' name 'params' method 'post' action 'case.jhp' frm
   DIV class 'form-container' frm
 )
 
@@ -56,9 +57,12 @@ buildParamDiv=: 3 : 0
   (hdr)=. ,dat                   NB. assign hdrnames
   if. #fp_label do. pr_name=. fp_label end. NB. update default label
   if. #fp_note  do. pr_note=. fp_note  end. NB. update default note
-  info=. getParamState pr_code NB.! get seld,nms,vals,idx
+  if. #fp_class do. pr_class=. fp_class end. NB. update default class
+  if. #fp_ctype do. pr_ctype=. fp_ctype end. NB. update default control type
+  if. #fp_cprops do. pr_cprops=. fp_cprops end. NB. update default control properties
+  info=. getParamState pr_code NB. get seld,nms,vals
   'seld vals nms'=. 3{. info
-  ctrlprops=. <LF-.~".'ctrlprops_',pr_code NB. get ctrlprops
+  ctrlprops=. boxopen pr_cprops
   ctrlprops=. (#vals)#ctrlprops
   idx=. makeidx (<:^:(=1:)) #vals NB. a: if 1=#val
   if. 'select'-: pr_ctype do. idx=.a: end. NB. otherwise mismatch label id for select
