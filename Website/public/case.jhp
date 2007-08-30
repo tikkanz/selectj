@@ -22,8 +22,10 @@ try.
 	   nCycles=: 10
 	   transfer page
 	case. 'chgparams' do.
-	   NB. do stuff here to update caseinstance directory info from submitted form
-	   transfer 'page'  NB. causes error & lets me see CGIKEYS & CGIVALS
+      ciid=. getCaseInstance uofcsid
+	  updateSelnDetails ciid NB. do stuff here to update caseinstance directory info from submitted form
+      NB.transfer 'page'
+	  redirect 'case.jhp?action=home'
 	case. 'params' do.
 	  page=. '~CGI/case_params.asp'
    	  ciid=. getCaseInstance uofcsid
@@ -63,7 +65,6 @@ catch.
   Error=: 13!:12''
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
-  println uid
   println CGIKEYS
   println CGIVALS
   println COOKIEKEYS
