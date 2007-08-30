@@ -19,8 +19,7 @@ buildButtons=: 3 : 0
 NB.*buildForm v builds xhtml form code for a case
 NB. y is ci_id of case
 buildForm=: 3 : 0
-  ANIMINI_z_=: }."1 'animini' getScenarioInfo y
-  ANIMINI_z_=: (tolower each {."1 ANIMINI) (0)}"0 1 ANIMINI
+  ANIMINI_z_=: 'animini' getScenarioInfo y
   TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
   info=. 'paramform' getTable_psqliteq_ y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
