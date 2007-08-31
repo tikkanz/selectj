@@ -42,13 +42,13 @@ SelectJ
 2=c:\program files\animalsim\eg\job1\AnimalSim.ini
 [Selected Project Files]
 Main=
-Selected=c:\program files\animalsim\eg\job1\AnimalSim.ini
+Selected=code\select_cmplx_data.sql
 [code\select_cmplx_ddl.sql]
 TopLine=103
 Caret=1,120
 [code\select_cmplx_data.sql]
-TopLine=59
-Caret=96,59
+TopLine=118
+Caret=1,140
 [c:\program files\animalsim\eg\job1\AnimalSim.ini]
-TopLine=7
+TopLine=24
 Caret=1,10

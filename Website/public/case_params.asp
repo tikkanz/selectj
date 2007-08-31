@@ -10,9 +10,9 @@
 </script>
 <link rel="stylesheet" href="animalsim.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" --><link rel="stylesheet" href="forms.css" type="text/css" /><!-- InstanceEndEditable -->
-<!-- InstanceParam name="bodyOnload" type="text" value="" -->
+<!-- InstanceParam name="bodyOnload" type="text" value="REVStatus()" -->
 </head>
-<body onload="">
+<body onload="REVStatus()">
 <div id="masthead">
   <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
   <h1 id="siteName">AnimalSim  - <span class="small"><%=pp_fname%> <%=pp_lname%> logged in</span></h1> 

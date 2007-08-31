@@ -287,101 +287,6 @@ updateScenarioInfo=: 3 : 0
     res=. writePPString"1 fnme,.ANIMINI
   end.
 )
-
-getTrtBase=: ((<'pgde') -.&.>~ ])
-getTrtsOnly=: ] #~ 'pg' e.~ {.@>
-getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
-getIniVals=: [: makeVals getIniStr
-getIniStr=: 4 : 0
-  i=.x getIniIdx y
-  if. ''-:i do.
-    i else.  (<i,2) {:: y end.
-)
-getIniIdx=: ''&$: : (4 : 0)
-  if. (#y) > i=. (tolower each 1{"1 y) i. <,>tolower x do.
-  i else. '' end.
-)
-prefsuf=: [:,(>@{.@[,],>@{:@[)&.>"0 _
-getParamState=: 3 : 0
-  '' getParamState y
-  :
-  seld=. vals=. nmes=. a:  
-  select. y
-    case. 'hrdsizes'    do.
-      vals=. 'flksizes' getIniVals ANIMINI
-      if. 1 do. 
-        seld=. boxopen vals
-        vals=. <"0 (100,200*>:i.5), 1500 2000 4000
-      end.
-    case. 'selnmeth'    do.
-      'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. 'selectlistcols' getIniVals ANIMINI
-      tmp=. getTrtsOnly tmp 
-      tmp=. {:>{:tmp  
-      seld=. ('ed' i. tmp){ |.vals 
-    case. 'summtype'    do.
-      'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. 'respons2outpt' getIniVals ANIMINI
-      tmp=. getTrtsOnly tmp 
-      tmp=. ~.{:@>tmp   
-      tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  
-      seld=. tmp#vals   
-    case. 'coltypes' do.
-      seld=. <'phen'
-      vals=. ;:'phen genD genDe'
-      nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
-    case. 'trts2select';'trts2summ' do.
-      vals=. 'trtsavail' getIniVals ANIMINI
-      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
-      nmes=. 'TrtCaption' getTrtInfo vals
-      nmes=. ('(',each vals ,each <') '),each nmes
-      tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
-      tmp=. tmp getIniVals ANIMINI
-      tmp=. getTrtsOnly tmp  
-      tmp=. tmp -. each <'pdge' 
-      seld=. ~. tmp 
-    case. 'objectvrevs' do.
-      nmes=. 'trtsavail' getIniVals ANIMINI
-      vals=. (#nmes)#a:
-      tmpv=. <"0 y getIniVals ANIMINI
-      tmpn=. 0{:: getParamState 'trts2select'
-      vals=. tmpv (nmes i. tmpn)}vals
-    case. 'trtsrecorded' do.
-      vals=. 'trtsavail' getIniVals ANIMINI
-      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
-      msk=. 9999&~:@>'AOM' getTrtInfo vals 
-      vals=. msk#vals
-      nmes=. 'TrtCaption' getTrtInfo vals
-      seld=. y getIniVals ANIMINI
-      
-    
-    
-    case. 'dams2hrdsire' do.
-      'seld vals nmes'=. getParamState 'flkdams2sire'
-    case. 'usesiresxhrd' do.
-      'seld vals nmes'=. getParamState 'usesiresxflk'
-    case. 'samplehrdeffects' do.
-      'seld vals nmes'=. getParamState 'sampleflkeffects'
-    case. 'hrdspecfnme' do.
-      'seld vals nmes'=. getParamState 'flkspecfnme'
-    case. 'currcycle' do.
-      'seld vals nmes'=. getParamState 'curryear'
-    case. do. 
-    
-    
-      vals=. y getIniVals ANIMINI
-      if. isnum vals do. vals=. <"0 vals end.
-      vals=. boxopen vals  
-  end.
-  seld;vals;<nmes
-)
-translateNewNames=: 3 : 0
-  new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
-  old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
-  msk=.(#CGIKEYS)>idx=.CGIKEYS i. new
-  CGIKEYS=:(msk#old) (msk#idx)}CGIKEYS
-)
-
 updateSelnDetails=: 3 : 0
   translateNewNames '' 
   ANIMINI_z_=: 'animini' getScenarioInfo y
@@ -395,28 +300,109 @@ updateSelnDetails=: 3 : 0
   ANIMINI_z_=: (; keys2upd8 getIniIdx each <ANIMINI){ANIMINI 
   'animini' updateScenarioInfo y 
 )
+translateNewNames=: 3 : 0
+  new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
+  old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
+  msk=.(#CGIKEYS)>idx=.CGIKEYS i. new
+  CGIKEYS=:(msk#old) (msk#idx)}CGIKEYS
+)
+getIniVals=: [: makeVals getIniStr
+getIniStr=: 4 : 0
+  i=.x getIniIdx y
+  if. ''-:i do.
+    i else.  (<i,2) {:: y end.
+)
+getIniIdx=: ''&$: : (4 : 0)
+  if. (#y) > i=. (tolower each 1{"1 y) i. <,>tolower x do.
+  i else. '' end.
+)
+prefsuf=: [:,<@;@(1&C.)@,"1 0/
+
+getTrtBase=: ((<'pgde') -.&.>~ ])
+getTrtsOnly=: ] #~ 'pg' e.~ {.@>
+getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
+getParamState=: 3 : 0
+  '' getParamState y
+  :
+  seld=. vals=. nmes=. a:  
+  select. y
+    case. 'coltypes' do.
+      seld=. <'phen'
+      vals=. ;:'phen genD genDe'
+      nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+    case. 'cullage' do.
+      vals=. <"0 y getIniVals ANIMINI
+      nmes=. 'Female';'Male'
+    case. 'hrdsizes'    do.
+      vals=. 'flksizes' getIniVals ANIMINI
+      if. 1 do. 
+        seld=. boxopen vals
+        vals=. <"0 (100,200*>:i.5), 1500 2000 4000
+      end.
+    case. 'mateage' do.
+      vals=. <"0 y getIniVals ANIMINI
+      nmes=. 'Female';'Male'
+    case. 'objectvrevs' do.
+      nmes=. 'trtsavail' getIniVals ANIMINI
+      vals=. (#nmes)#a:
+      tmpv=. <"0 y getIniVals ANIMINI
+      tmpn=. 0{:: getParamState 'trts2select'
+      vals=. tmpv (nmes i. tmpn)}vals
+    case. 'selnmeth'    do.
+      'seld vals nmes'=. getParamState 'coltypes'
+      tmp=. 'selectlistcols' getIniVals ANIMINI
+      tmp=. getTrtsOnly tmp 
+      tmp=. {:>{:tmp  
+      seld=. ('ed' i. tmp){ |.vals 
+    case. 'summtype'    do.
+      'seld vals nmes'=. getParamState 'coltypes'
+      tmp=. 'respons2outpt' getIniVals ANIMINI
+      tmp=. getTrtsOnly tmp 
+      tmp=. ~.{:@>tmp   
+      tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  
+      seld=. tmp#vals   
+    case. 'trtsrecorded' do.
+      vals=. 'trtsavail' getIniVals ANIMINI
+      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
+      msk=. 9999&~:@>'AOM' getTrtInfo vals 
+      vals=. msk#vals
+      nmes=. 'TrtCaption' getTrtInfo vals
+      seld=. y getIniVals ANIMINI
+    case. 'trts2select';'trts2summ' do.
+      vals=. 'trtsavail' getIniVals ANIMINI
+      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
+      nmes=. 'TrtCaption' getTrtInfo vals
+      nmes=. ('(',each vals ,each <') '),each nmes
+      tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
+      tmp=. tmp getIniVals ANIMINI
+      tmp=. getTrtsOnly tmp  
+      tmp=. tmp -. each <'pdge' 
+      seld=. ~. tmp 
+      
+    
+    
+    case. 'currcycle' do.
+      'seld vals nmes'=. getParamState 'curryear'
+    case. 'dams2hrdsire' do.
+      'seld vals nmes'=. getParamState 'flkdams2sire'
+    case. 'hrdspecfnme' do.
+      'seld vals nmes'=. getParamState 'flkspecfnme'
+    case. 'samplehrdeffects' do.
+      'seld vals nmes'=. getParamState 'sampleflkeffects'
+    case. 'usesiresxhrd' do.
+      'seld vals nmes'=. getParamState 'usesiresxflk'
+    case. do. 
+    
+    
+      vals=. y getIniVals ANIMINI
+      if. isnum vals do. vals=. <"0 vals end.
+      vals=. boxopen vals  
+  end.
+  seld;vals;<nmes
+)
 updateKeyState=: 4 : 0
   key2upd8=. >y
   select. key2upd8
-    case. 'trts2sim' do.
-      
-      frmtrts=. ;:'trtsrecorded trts2select trts2summ'
-      
-      notset=. -. frmtrts e. x
-      initrts=. notset# ;:'trtsrecorded selectlistcols respons2outpt'
-      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
-      frmtrts=. ;qparamList each frmtrts
-      kval=. ~.frmtrts,initrts
-    case. 'phens2sim' do.
-      
-      msk=.(<'phen') e."0 1> qparamList each 'selnmeth';'summtype'
-      frmtrts=. (<'trtsrecorded'),msk#'trts2select';'trts2summ'
-      
-      notset=. -.frmtrts e. x
-      initrts=. notset# (<'trtsrecorded'),msk#'selectlistcols';'respons2outpt'
-      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
-      frmtrts=. ;qparamList each frmtrts
-      kval=. ~.(<'NLB'),frmtrts  
     case. 'ebvs2sim'  do.
       
       msk=.(<'genDe') e."0 1> qparamList each 'selnmeth';'summtype'
@@ -438,39 +424,6 @@ updateKeyState=: 4 : 0
         kval=.+./isebv,(<'genDe') e."0 1> qparamList each frmflds
         key2upd8=. (*./notset){:: key2upd8;'' 
       end.
-    case. 'selectlistcols' do.
-      if. (<'trts2select') e. x do. 
-        trts=. qparamList 'trts2select'
-        if. (<'selnmeth') e. x do. 
-          sm=. qparamList 'selnmeth'
-        else. sm=. <'phen' end. 
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';'');('g';'d');(<'g';'de')
-        trtflds=. ps prefsuf trts 
-        nttrt=.getTrtsNot key2upd8 getIniVals ANIMINI 
-        kval=. nttrt,trtflds
-      else. key2upd8=.'' end.
-    case. 'respons2outpt'  do.
-      if. (<'trts2summ') e. x do. 
-        trts=. qparamList 'trts2summ'
-        if. (<'summtype') e. x do.
-          st=. qparamList 'summtype'
-        else. st=. 'phen';'genD' end. 
-        ps=. ('phen';'genD';'genDe') e. st
-        ps=. ps# ('p';'');('g';'d');(<'g';'de')
-        kval=. ps prefsuf trts 
-      else. key2upd8=.'' end.
-    case. 'objectvtrts'    do.
-      if. (<'trts2select') e. x do. 
-        trts=. qparamList 'trts2select'
-        if. (<'selnmeth') e. x do. 
-          sm=. qparamList 'selnmeth'
-        else. sm=. <'phen' end. 
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';'');('g';'d');(<'g';'de')
-        kval=. ps prefsuf trts 
-        kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
-      else. key2upd8=. '' end. 
     case. 'objectvrevs'    do.
       if. (<'objectvrevs') e. x do.
          kval=. qparamList key2upd8
@@ -479,6 +432,58 @@ updateKeyState=: 4 : 0
           kval=. (# qparamList 'trts2select')#1 
         else. key2upd8=. '' end. 
       end.
+    case. 'objectvtrts'    do.
+      if. (<'trts2select') e. x do. 
+        trts=. qparamList 'trts2select'
+        if. (<'selnmeth') e. x do. 
+          sm=. qparamList 'selnmeth'
+        else. sm=. <'phen' end. 
+        ps=. ('phen';'genD';'genDe') e. sm
+        ps=. ps# ('p';''),('g';'d'),:('g';'de')
+        kval=. ps prefsuf trts 
+        kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
+      else. key2upd8=. '' end. 
+    case. 'phens2sim' do.
+      
+      msk=.(<'phen') e."0 1> qparamList each 'selnmeth';'summtype'
+      frmtrts=. (<'trtsrecorded'),msk#'trts2select';'trts2summ'
+      
+      notset=. -.frmtrts e. x
+      initrts=. notset# (<'trtsrecorded'),msk#'selectlistcols';'respons2outpt'
+      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
+      frmtrts=. ;qparamList each frmtrts
+      kval=. ~.(<'NLB'),frmtrts  
+    case. 'respons2outpt'  do.
+      if. (<'trts2summ') e. x do. 
+        trts=. qparamList 'trts2summ'
+        if. (<'summtype') e. x do.
+          st=. qparamList 'summtype'
+        else. st=. 'phen';'genD' end. 
+        ps=. ('phen';'genD';'genDe') e. st
+        ps=. ps# ('p';''),('g';'d'),:('g';'de')
+        kval=. ps prefsuf trts 
+      else. key2upd8=.'' end.
+    case. 'selectlistcols' do.
+      if. (<'trts2select') e. x do. 
+        trts=. qparamList 'trts2select'
+        if. (<'selnmeth') e. x do. 
+          sm=. qparamList 'selnmeth'
+        else. sm=. <'phen' end. 
+        ps=. ('phen';'genD';'genDe') e. sm
+        ps=. ps# ('p';''),('g';'d'),:('g';'de')
+        trtflds=. ps prefsuf trts 
+        nttrt=.getTrtsNot key2upd8 getIniVals ANIMINI 
+        kval=. nttrt,trtflds
+      else. key2upd8=.'' end.
+    case. 'trts2sim' do.
+      
+      frmtrts=. ;:'trtsrecorded trts2select trts2summ'
+      
+      notset=. -. frmtrts e. x
+      initrts=. notset# ;:'trtsrecorded selectlistcols respons2outpt'
+      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
+      frmtrts=. ;qparamList each frmtrts
+      kval=. ~.frmtrts,initrts
     case. do. 
       kval=. qparamList key2upd8
   end.
@@ -488,17 +493,6 @@ updateKeyState=: 4 : 0
   end.
   ''
 )
-
-Note 'design for updateSelnDetails'
-read whole of ini at once and store in memory (at start of updateform?)
-writes params to memory store and then write whole
-memory store to file.
-
-Have a list of ini keys that should be calculated from form info. The
-rest of the keys are updated directly from the params in the form if
-their paramname matches a keyname in the ini file.
-)
-
 
 require 'data/sqlite'
 coclass 'psqliteq'

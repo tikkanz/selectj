@@ -55,12 +55,14 @@ function AddtoOne()
 function REVStatus() {
 	var x=document.getElementsByName("objectvrevs")
 	var y=document.getElementById("trts2select")
-	for (i=0;i<y.length;++ i) {  //cycle through each option in Trts2Select listbox
-		if (y[i].selected==true) {
-			x[i].disabled=false;
-			}
-		else{
-			x[i].disabled=true
+	if (y.length>0 && x.length>0) {
+		for (i=0;i<y.length;++ i) {  //cycle through each option in Trts2Select listbox
+			if (y[i].selected==true) {
+				x[i].disabled=false;
+				}
+			else{
+				x[i].disabled=true
+				}
 			}
 		}
 	}

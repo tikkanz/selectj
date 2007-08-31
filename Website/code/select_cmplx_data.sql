@@ -32,6 +32,7 @@ insert into fieldsets (fs_id,fs_name,fs_code) values (1,'Selection progress','pr
 insert into fieldsets (fs_id,fs_name,fs_code) values (10,'Population Size','popsz');
 insert into fieldsets (fs_id,fs_name,fs_code) values (12,'Dams per Sire','dams2sire');
 insert into fieldsets (fs_id,fs_name,fs_code) values (15,'Age Structure','agestruct');
+insert into fieldsets (fs_id,fs_name,fs_code) values (16,'Age Structure','agestruct2');
 insert into fieldsets (fs_id,fs_name,fs_code) values (20,'Traits to Record','trt2record');
 insert into fieldsets (fs_id,fs_name,fs_code) values (25,'Traits to Select','trt2select');
 insert into fieldsets (fs_id,fs_name,fs_code) values (26,'Trait REVs','trtrevs');
@@ -43,8 +44,8 @@ insert into fieldsets (fs_id,fs_name,fs_code) values (35,'Summary Types','sumtyp
 insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (1,'No. of cycles to select for','ncycles','input','type ''text'' maxlength ''3'' size ''4''');
 insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (2,'Current cycle of selection','currcycle','input','type ''text'' maxlength ''3'' size ''4''');
 insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (3,'No. of Dams per Sire','dams2hrdsire','input','type ''text'' size ''5''');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (4,'Age to cull at','cullage','Animals older that this age will not appear in selection lists.','input','type ''text'' size ''5''');
-insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (5,'Age at birth','mateage','The parents age when its first progeny is born.','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (4,'Age to cull at','cullage','Females and Males older that this age will not appear in selection lists.','input','type ''text'' size ''5''');
+insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (5,'Age at birth','mateage','The Female and Male parents'' age when their first progeny is born.','input','type ''text'' size ''5''');
 insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (6,'Allele frequencies','allelefreq','Values must sum to zero.','input','type ''text'' size ''5''');
 insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype,pr_cprops) values (7,'Relative Economic Values (REVs)','objectvrevs','controlset','input','type ''text'' size ''5''');
 insert into params (pr_id,pr_name,pr_code,pr_class,pr_ctype,pr_cprops) values (8,'Select using','selnmeth','controlset','input','type ''radio''');
@@ -135,6 +136,8 @@ insert into fieldsetparams (fp_fsid,fp_prid) values (10,13);
 insert into fieldsetparams (fp_fsid,fp_prid) values (12,3);
 insert into fieldsetparams (fp_fsid,fp_prid) values (15,5);
 insert into fieldsetparams (fp_fsid,fp_prid) values (15,4);
+insert into fieldsetparams (fp_fsid,fp_prid,fp_class,fp_note) values (16,4,'controlset','Animals older that this age will not appear in selection lists.');
+insert into fieldsetparams (fp_fsid,fp_prid,fp_class,fp_note) values (16,5,'controlset','The parents'' age when their first progeny is born.');
 insert into fieldsetparams (fp_fsid,fp_prid) values (20,12);
 insert into fieldsetparams (fp_fsid,fp_prid) values (25,10);
 insert into fieldsetparams (fp_fsid,fp_prid) values (26,7);
