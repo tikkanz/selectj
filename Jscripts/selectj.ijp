@@ -28,8 +28,11 @@ PRIMARYFILES=: 0 : 0
 PRIMARYLIBS=: 0 : 0
 convert
 dir
+dirbrowse
 dll
 files
+guid
+misc
 random
 strings
 task

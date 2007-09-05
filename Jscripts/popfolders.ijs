@@ -36,11 +36,6 @@ getFnme=: 4 : 0
   fnme=. jpath fnme
 )
 
-Note 'list filenames in tree'
-NB. require 'dir'
-,. ,>"1 (,/"0) 1 dir each (dirpath jpath 'd:/web/selectj/scendefs/popsz')#~ a:=(<'.svn') ss each dirpath jpath 'd:/web/selectj/scendefs/popsz'
-)
-
 NB.*createCaseInstance v creates new CaseInstance
 NB. return new caseinstance id, extract scendef to user folder
 NB. y is optional 3-item boxed list of userid;offeringid;caseid
@@ -80,6 +75,10 @@ getCaseInstance=: 3 : 0
 )
 
 NB.*updateCaseStage
+NB. y is list of boxed new case stage;ci_id
+updateCaseStage=: 3 : 0
+  'casestage' updateDBTable_psqliteq_ y
+)
 NB.*summryCaseInstance
 
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder

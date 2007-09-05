@@ -57,12 +57,12 @@ sqlsel_session=: 0 : 0
 sqlupd_session=: 0 : 0
   UPDATE sessions
   SET ss_expire=julianday('now','20 minutes')
-  WHERE ss_id=?
+  WHERE ss_id=?;
 )
 sqlupd_sessionexpire=: 0 : 0
   UPDATE sessions
   SET ss_status=0
-  WHERE ss_id=?
+  WHERE ss_id=?;
 )
 
 sqlsel_enrolled=: 0 : 0

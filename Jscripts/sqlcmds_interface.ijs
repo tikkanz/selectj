@@ -66,6 +66,12 @@ sqlsel_casestage=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlupd_casestage=: 0 : 0
+  UPDATE caseinstances
+  SET ci_stage=?
+  WHERE (ci_id=?);
+)
+
 sqlsel_case=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
