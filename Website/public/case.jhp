@@ -1,7 +1,7 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
-  action=. qparam 'action'
+  action=: qparam 'action'
   if. -.''-:action do.  NB. if action specified check user/case/offering is valid
   	 if. 0-: uofcsid=. validCase'' do.
 	   DeleteCookie 'CaseID' 
@@ -10,46 +10,61 @@ try.
      end.
   end.
   select. action
-	case. 'home';'status' do.
-       page=. '~CGI/case_home.asp'  NB. destination page
-	   ciid=. getCaseInstance uofcsid
-	   cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
-	   'uid ofid csid'=. uofcsid
-	   setcolnames 'greeting' getTable_psqliteq_ uid
-	   setcolnames 'coursename' getTable_psqliteq_ ofid
-       setcolnames 'case' getTable_psqliteq_ csid;cistage
-	   CurrYear=: 0  NB.! replace with lookup to INI file
-	   nCycles=: 10
-	   transfer page
-	case. 'chgparams' do.
+    case. 'breed' do.
+      NB.! display progress page - this may take some time, please be patient.
       ciid=. getCaseInstance uofcsid
-	  updateSelnDetails ciid NB. do stuff here to update caseinstance directory info from submitted form
-      NB.transfer 'page'
-	  redirect 'case.jhp?action=home'
-	case. 'params' do.
-	  page=. '~CGI/case_params.asp'
-   	  ciid=. getCaseInstance uofcsid
-	  cistage=. >@{.{: 'casestage' getTable_psqliteq_ ciid
+      stge=. (>:checkCycle ciid){1 21 99
+      if. stge<99 do.   NB. check if cycles complete
+        if. validInput'' do. NB. Manual selection requires selection lists (stge=21)
+          if. ok=. runAnimalSim ciid do.
+            stge=. (>:checkCycle ciid){1 21 99
+            updateCaseStage stge;ciid
+            page=. 'case.jhp?action=cyclefin'
+          else.
+            page=. 'case.jhp?action=ansimerr'
+          end.
+        else. 
+          page=. 'case.jhp?action=valerror'
+        end.
+      else.
+        page=. 'case.jhp?action=status'
+      end.
+      redirect page
+	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'ansimerr' do.
+      page=. '~CGI/case_home.asp'  NB. destination page
+	  ciid=. getCaseInstance uofcsid
+	  cistage=. 'casestage' getDBItem_psqliteq_ ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'greeting' getTable_psqliteq_ uid
 	  setcolnames 'coursename' getTable_psqliteq_ ofid
-      setcolnames 'case' getTable_psqliteq_ csid;11  NB. 11 is instruct txt
+      setcolnames 'case' getTable_psqliteq_ csid;cistage
+	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
+	  transfer page
+	case. 'chgparams' do.
+      ciid=. getCaseInstance uofcsid
+	  updateSelnDetails ciid NB. update caseinstance directory info from submitted form
+      NB. transfer 'page' NB. causes error so can see problem
+	  redirect 'case.jhp?action=chgdparams'
+	case. 'params' do.
+	  page=. '~CGI/case_params.asp'
+   	  ciid=. getCaseInstance uofcsid
+      cistage=. 11  NB. 11 is instruct txt
+	  'uid ofid csid'=. uofcsid
+	  setcolnames 'greeting' getTable_psqliteq_ uid
+	  setcolnames 'coursename' getTable_psqliteq_ ofid
+      setcolnames 'case' getTable_psqliteq_ csid;cistage
+	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
 	  caseform=: buildForm ciid NB. dynamically create form with controls
 	  transfer page
 	case. 'reset' do.
 	  ciid=. getCaseInstance uofcsid
 	  'cistage cisumry'=. {: 'casestage' getTable_psqliteq_ ciid
-	  if. (4=cistage) *. -. cisumry do. 
+	  if. (99=cistage) *. -. cisumry do. 
 	    NB. prompt to summarize
 		NB. if yes then summarize
 	  end.
 	  expireCaseInstance ciid
-	  redirect 'case.jhp?action=home'
-    case. 'selectmate' do.
-	  ciid=. getCaseInstance uofcsid
-	  NB. check if need to send selection lists
-	  NB. call AnimalSim
-	  redirect 'course.jhp?action=home' NB. temp for now
+	  redirect 'case.jhp?action=resetfin'
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.

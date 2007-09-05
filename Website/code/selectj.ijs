@@ -3,8 +3,11 @@ NB. built from project: ~Projects/selectj/selectj
 IFJIJX_j_=: 1
 script_z_ '~system\main\convert.ijs'
 script_z_ '~system\main\dir.ijs'
+script_z_ '~system\packages\winapi\dirbrowse.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
+script_z_ '~system\packages\misc\guid.ijs'
+script_z_ '~system\main\misc.ijs'
 script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~system\main\strings.ijs'
 script_z_ '~system\packages\misc\task.ijs'
@@ -227,10 +230,6 @@ getFnme=: 4 : 0
   end.
   fnme=. jpath fnme
 )
-
-Note 'list filenames in tree'
-,. ,>"1 (,/"0) 1 dir each (dirpath jpath 'd:/web/selectj/scendefs/popsz')#~ a:=(<'.svn') ss each dirpath jpath 'd:/web/selectj/scendefs/popsz'
-)
 createCaseInstance=: 3 : 0
   ciid=. 'caseinstance' insertDBTable_psqliteq_ y
   uz=. createCaseInstFolder ciid
@@ -254,6 +253,9 @@ getCaseInstance=: 3 : 0
     ciid=. createCaseInstance uofcsid
   end.
 )
+updateCaseStage=: 3 : 0
+  'casestage' updateDBTable_psqliteq_ y
+)
 expireCaseInstance=: 3 : 0
   'expirecaseinst' updateDBTable_psqliteq_ y
   deleteCaseInstFolder y
@@ -271,9 +273,14 @@ getScenarioInfo=: 3 : 0
     case. <'animini' do.
       fnme=. 'animini' getFnme y
       res=. getPPAllSections fnme
-    case. <'alltrtinfo' do.
+    case. <'alltrtinfo' do.  
       xlfnme=. 'TrtInfo' getFnme y
       'tDefn' readexcel xlfnme
+    case. <'status' do. 
+      fnme=. 'animini' getFnme y
+      cryr=. getPPVals fnme;'GenCycle';'CurrYear' 
+      ncyc=. getPPVals fnme;'Control';'nCycles'
+      cryr;ncyc
   end.
 )
 
@@ -282,14 +289,42 @@ updateScenarioInfo=: 3 : 0
   :
   infotyp=. boxopen x
   select. infotyp
-  case. <'animini' do.
-    fnme=. <'animini' getFnme y
-    res=. writePPString"1 fnme,.ANIMINI
+    case. <'animini' do.
+      fnme=. <'animini' getFnme y
+      res=. writePPString"1 fnme,.ANIMINI
   end.
+)
+runAnimalSim=: 3 : 0
+  inipath=. 'animini' getFnme y
+  if. -.fexist inipath do. 0 return. end.
+  cryr=. getPPVals key=. inipath;'GenCycle';'CurrYear'
+  _1 fork 'c:\program files\animalsim\animalsim ',inipath
+  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
+    if. cryr< getPPVals key do.
+      writePPString key,<cryr  
+    end.
+    0
+  else.
+    1
+  end.
+)
+checkCycle=: 3 : 0
+  'cryr ncyc'=. 'status' getScenarioInfo y
+  cifldr=. 'caseinstfolder' getFnme y
+  issm=. fexist cifldr,'output',PATHSEP_j_,'animsummary.csv'
+  res=. (issm *. cryr = ncyc)-cryr=0
+)
+validInput=: 3 : 0
+  
+  
+  
+  
+1
 )
 updateSelnDetails=: 3 : 0
   translateNewNames '' 
   ANIMINI_z_=: 'animini' getScenarioInfo y
+  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
   
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
@@ -303,24 +338,35 @@ updateSelnDetails=: 3 : 0
 translateNewNames=: 3 : 0
   new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
   old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
-  msk=.(#CGIKEYS)>idx=.CGIKEYS i. new
-  CGIKEYS=:(msk#old) (msk#idx)}CGIKEYS
+  msk=. (#CGIKEYS)>idx=. CGIKEYS i. new
+  CGIKEYS=: (msk#old) (msk#idx)}CGIKEYS
 )
 getIniVals=: [: makeVals getIniStr
 getIniStr=: 4 : 0
-  i=.x getIniIdx y
+  i=. x getIniIdx y
   if. ''-:i do.
     i else.  (<i,2) {:: y end.
 )
 getIniIdx=: ''&$: : (4 : 0)
   if. (#y) > i=. (tolower each 1{"1 y) i. <,>tolower x do.
-  i else. '' end.
+    i else. '' end.
 )
 prefsuf=: [:,<@;@(1&C.)@,"1 0/
-
 getTrtBase=: ((<'pgde') -.&.>~ ])
 getTrtsOnly=: ] #~ 'pg' e.~ {.@>
 getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
+getTrtInfo=: 3 : 0
+'TrtCaption' getTrtInfo y
+:
+  if. (#{.TRTINFO)=cidx=. ({.TRTINFO) i. boxopen x do. '' return. end.
+  msk=. (#TRTINFO)>ridx=. ({."1 TRTINFO) i. boxopen y
+  ridx=. msk#ridx
+  (<ridx;cidx){TRTINFO
+)
+getTrtsPhn=: 3 : 0
+      msk=. 9999&~:@>'AOM' getTrtInfo y 
+      res=. msk#y
+)
 getParamState=: 3 : 0
   '' getParamState y
   :
@@ -363,14 +409,11 @@ getParamState=: 3 : 0
       seld=. tmp#vals   
     case. 'trtsrecorded' do.
       vals=. 'trtsavail' getIniVals ANIMINI
-      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
-      msk=. 9999&~:@>'AOM' getTrtInfo vals 
-      vals=. msk#vals
+      vals=. getTrtsPhn vals
       nmes=. 'TrtCaption' getTrtInfo vals
       seld=. y getIniVals ANIMINI
     case. 'trts2select';'trts2summ' do.
       vals=. 'trtsavail' getIniVals ANIMINI
-      getTrtInfo=. TRTINFO {~[:<(({."1 TRTINFO) i.]);({.TRTINFO) i.[:<[
       nmes=. 'TrtCaption' getTrtInfo vals
       nmes=. ('(',each vals ,each <') '),each nmes
       tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
@@ -404,29 +447,29 @@ updateKeyState=: 4 : 0
   key2upd8=. >y
   select. key2upd8
     case. 'ebvs2sim'  do.
-      
-      msk=.(<'genDe') e."0 1> qparamList each 'selnmeth';'summtype'
+    
+      msk=. (<'genDe') e."0 1> qparamList each 'selnmeth';'summtype'
       frmtrts=. msk#'trts2select';'trts2summ'
-      
+    
       notset=. -.frmtrts e. x
       initrts=. notset# msk#'selectlistcols';'respons2outpt'
       initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
       frmtrts=. ;qparamList each frmtrts
       kval=. ~.frmtrts,initrts
     case. 'getebvs'   do.
-      
+    
       kval=. qparamList key2upd8
       if. ''-:kval do. 
         frmflds=. 'selnmeth';'summtype'
         notset=. -.frmflds e. x
         iniflds=. notset# 'selectlistcols';'respons2outpt'
         isebv=. 'e' e. {:@>getTrtsOnly ;iniflds getIniVals each <ANIMINI
-        kval=.+./isebv,(<'genDe') e."0 1> qparamList each frmflds
+        kval=. +./isebv,(<'genDe') e."0 1> qparamList each frmflds
         key2upd8=. (*./notset){:: key2upd8;'' 
       end.
     case. 'objectvrevs'    do.
       if. (<'objectvrevs') e. x do.
-         kval=. qparamList key2upd8
+        kval=. qparamList key2upd8
       else.
         if. (<'trts2select') e. x do. 
           kval=. (# qparamList 'trts2select')#1 
@@ -435,7 +478,7 @@ updateKeyState=: 4 : 0
     case. 'objectvtrts'    do.
       if. (<'trts2select') e. x do. 
         trts=. qparamList 'trts2select'
-        if. (<'selnmeth') e. x do. 
+        if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. 
         ps=. ('phen';'genD';'genDe') e. sm
@@ -444,15 +487,18 @@ updateKeyState=: 4 : 0
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
       else. key2upd8=. '' end. 
     case. 'phens2sim' do.
-      
-      msk=.(<'phen') e."0 1> qparamList each 'selnmeth';'summtype'
+    
+      frmtyps=. 'selnmeth';'summtype'
+      notset=. -.frmtyps e. x
+      msk=. (<'phen') e."0 1> qparamList each 'selnmeth';'summtype'
+      msk=. notset +. msk
       frmtrts=. (<'trtsrecorded'),msk#'trts2select';'trts2summ'
-      
+    
       notset=. -.frmtrts e. x
       initrts=. notset# (<'trtsrecorded'),msk#'selectlistcols';'respons2outpt'
       initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
       frmtrts=. ;qparamList each frmtrts
-      kval=. ~.(<'NLB'),frmtrts  
+      kval=. getTrtsPhn ~.(<'NLB'),frmtrts,initrts  
     case. 'respons2outpt'  do.
       if. (<'trts2summ') e. x do. 
         trts=. qparamList 'trts2summ'
@@ -462,23 +508,23 @@ updateKeyState=: 4 : 0
         ps=. ('phen';'genD';'genDe') e. st
         ps=. ps# ('p';''),('g';'d'),:('g';'de')
         kval=. ps prefsuf trts 
-      else. key2upd8=.'' end.
+      else. key2upd8=. '' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. 
         trts=. qparamList 'trts2select'
-        if. (<'selnmeth') e. x do. 
+        if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. 
         ps=. ('phen';'genD';'genDe') e. sm
         ps=. ps# ('p';''),('g';'d'),:('g';'de')
         trtflds=. ps prefsuf trts 
-        nttrt=.getTrtsNot key2upd8 getIniVals ANIMINI 
+        nttrt=. getTrtsNot key2upd8 getIniVals ANIMINI 
         kval=. nttrt,trtflds
-      else. key2upd8=.'' end.
+      else. key2upd8=. '' end.
     case. 'trts2sim' do.
-      
+    
       frmtrts=. ;:'trtsrecorded trts2select trts2summ'
-      
+    
       notset=. -. frmtrts e. x
       initrts=. notset# ;:'trtsrecorded selectlistcols respons2outpt'
       initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
@@ -600,12 +646,12 @@ sqlsel_session=: 0 : 0
 sqlupd_session=: 0 : 0
   UPDATE sessions
   SET ss_expire=julianday('now','20 minutes')
-  WHERE ss_id=?
+  WHERE ss_id=?;
 )
 sqlupd_sessionexpire=: 0 : 0
   UPDATE sessions
   SET ss_status=0
-  WHERE ss_id=?
+  WHERE ss_id=?;
 )
 
 sqlsel_enrolled=: 0 : 0
@@ -769,6 +815,12 @@ sqlsel_casestage=: 0 : 0
          ci.ci_sumry ci_sumry
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_id =?);
+)
+
+sqlupd_casestage=: 0 : 0
+  UPDATE caseinstances
+  SET ci_stage=?
+  WHERE (ci_id=?);
 )
 
 sqlsel_case=: 0 : 0

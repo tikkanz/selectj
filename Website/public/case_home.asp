@@ -29,12 +29,17 @@
   <div class="story">
     <h3>Case Objective </h3>
       <p><%= sd_descr %> </p>
-    <h3>Status </h3>
-      <p>Your population has undergone <%= 0 >. CurrYear %> out of a total of <%=nCycles %> cycles of selection.</p>
-    <h3><%= xn_name %> </h3>
-      <p><%=cx_text%></p>
+    <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
+    <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
+    <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle completed successfully. </p>    
+    <p class="error" style="display:<%=(action-:'ansimerr'){::'none';'block'%>">There was an error running AnimalSim. </p>
 
-    <p>What do you want to do next? Choose a task from the menu on the right.</p>
+    <h3>Status </h3>
+      <p>Your population has undergone <%=currcycle %> out of a total of <%=ncycles %> cycles of selection. </p>
+    <h3><%=xn_name%> </h3>
+      <p><%=cx_text%> </p>
+
+    <p>What do you want to do next? Choose a task from the menu on the right. </p>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 
@@ -46,7 +51,7 @@
 	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
       <dd><a href="case.jhp?action=status">Case status</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=selectmate">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=breed">Breed your flock</a></dd> 
       <dd><a href="case.jhp?action=reset">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;

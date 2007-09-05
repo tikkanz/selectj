@@ -456,3 +456,27 @@ html>body #navBar dd {border-bottom: none;}
 #headlines p{
 	padding: 5px 0px 5px 0px;
 }
+p.warning {
+	background-color: #FFCCCC;
+	padding: 5px 50px;
+	margin: 0 5em;
+	background-image: url(img/warning.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+}
+p.info {
+	background-color: #CCFFAA;
+	padding: 8px 50px;
+	margin: 0 5em;
+	background-image: url(img/tick.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+}
+p.error {
+	background-color: #FFCCCC;
+	padding: 8px 50px;
+	margin: 0 5em;
+	background-image: url(img/err.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+}

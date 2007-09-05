@@ -39,7 +39,6 @@ SelectJ
 [Open project files]
 0=code\select_cmplx_ddl.sql
 1=code\select_cmplx_data.sql
-2=c:\program files\animalsim\eg\job1\AnimalSim.ini
 [Selected Project Files]
 Main=
 Selected=code\select_cmplx_data.sql
@@ -47,8 +46,5 @@ Selected=code\select_cmplx_data.sql
 TopLine=103
 Caret=1,120
 [code\select_cmplx_data.sql]
-TopLine=118
-Caret=1,140
-[c:\program files\animalsim\eg\job1\AnimalSim.ini]
-TopLine=24
-Caret=1,10
+TopLine=16
+Caret=58,29

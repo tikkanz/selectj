@@ -28,6 +28,7 @@
   <div class="story">
      <h3><%= xn_name %> </h3>
       <p><%=cx_text%> </p>
+    <p class="warning" style="display:<%=(0<currcycle){::'none';'block'%>">Editing your selection details once selection has started will often result in strange results and errors.<br/> If you really think you want to do this, check with your course administrator first! </p>
       <%=caseform%>
   </div>
 <!-- InstanceEndEditable --></div> 
@@ -40,7 +41,7 @@
 	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
       <dd><a href="case.jhp?action=status">Case status</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=selectmate">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=breed">Breed your flock</a></dd> 
       <dd><a href="case.jhp?action=reset">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;
