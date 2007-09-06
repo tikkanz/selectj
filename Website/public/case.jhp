@@ -39,7 +39,7 @@ try.
 	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'ansimerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  ciid=. getCaseInstance uofcsid
-	  cistage=. 'casestage' getDBItem_psqliteq_ ciid
+	  cistage=: 'casestage' getDBItem_psqliteq_ ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'greeting' getTable_psqliteq_ uid
 	  setcolnames 'coursename' getTable_psqliteq_ ofid
@@ -71,6 +71,15 @@ try.
 	  end.
 	  expireCaseInstance ciid
 	  redirect 'case.jhp?action=resetfin'
+    case. 'upload' do.
+	  ciid=. getCaseInstance uofcsid
+	  fpth=. jpath qparam 'filepath'
+	  fpth=. ('caseinstfolder' getFnme ciid),fpth
+      qparam 'UploadFileF'
+      qparam 'U
+	  MateAllocNB. create mate allocation list from selection lists
+      NB. write mate allocation list
+	  NB. redirect 'case.jhp?action=breed'
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.

@@ -21,7 +21,7 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp">Login</a> > <span class="current">Register </span><!-- InstanceEndEditable --> </div>
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp">Login</a> &gt; <span class="current">Register </span><!-- InstanceEndEditable --> </div>
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
 

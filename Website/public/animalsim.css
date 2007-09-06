@@ -512,3 +512,34 @@ html>body #navBar dd {border-bottom: none;}
 #headlines p{
 	padding: 5px 0px 5px 0px;
 }
+
+/************** #Upload/Download Forms **************/
+#SelListDwn {
+	width:15em;
+	float:left;
+}
+#SelListDwn fieldset {
+	margin:0 5px;
+}
+#SelListDwn form {
+	margin:0;
+	padding:6px;
+}
+#SelListUp{
+	width:28em;
+	float:left;
+}
+#SelListUp fieldset {
+	margin:0 5px;
+}
+#SelListUp form{
+	margin:0;
+	padding:6px;
+}
+#SelListUp label{
+	padding:0;
+	margin:0;
+}
+#SelListUp input{
+	margin:0 0 7px 0;
+}

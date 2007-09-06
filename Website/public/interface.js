@@ -69,9 +69,9 @@ function REVStatus() {
 
 function upldSelctdList() {
 	//check that files specified in selected dams & selected sires, err msg box if not, otherwise submit
-	var r=document.getElementById("NextSelnCycle");
-    var f=document.getElementById("UploadFileF").value;
-	var m=document.getElementById("UploadFileM").value;
+	var r=document.getElementById("UpldSL");
+    var f=document.getElementById("Upld_fem").value;
+	var m=document.getElementById("Upld_male").value;
 	if (f.length==0 || m.length==0) {  //better to check if file exists at path specifed
 		alert("You must specify the path to both the male and female selection lists");
 		}
