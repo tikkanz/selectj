@@ -24,7 +24,11 @@
 <div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- InstanceEndEditable --></div>
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
-  <h2 id="pageName"><%= sd_name %> </h2>
+  <div id="caseInfo">
+  <div id="caseName"><h2><%= sd_name %> </h2>
+    <p><%= sd_descr %> </p>
+  </div>
+  </div>
   <div class="story">
      <h3><%= xn_name %> </h3>
       <p><%=cx_text%> </p>

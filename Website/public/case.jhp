@@ -30,6 +30,12 @@ try.
         page=. 'case.jhp?action=status'
       end.
       redirect page
+	case. 'download' do.
+	  ciid=. getCaseInstance uofcsid
+	  fpth=. jpath qparam 'filepath'
+	  fpth=. ('caseinstfolder' getFnme ciid),fpth
+	  fnme=. qparam 'filename'
+	  redirect 'download.jhp?filepath=',fpth,'&filename=',fnme
 	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'ansimerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  ciid=. getCaseInstance uofcsid

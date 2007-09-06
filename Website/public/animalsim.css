@@ -160,6 +160,62 @@ table{
 	background-color: #ddffaa;
 	border-bottom: 1px solid #ccc;
 }
+
+#caseInfo{
+	width:584px;	
+	margin-top:8px;
+	background-color:white;
+}
+#caseInfo div {
+	padding:2px;
+}
+#caseInfo p,#caseInfo h3 {
+	padding:4px;
+	margin:0;
+	font-size:80%;
+}
+#caseName{
+	width:580px;
+	float:left;
+}
+#caseName p, #caseName h2{
+	background-color:#ddeeff;
+}
+#caseMsg{
+	float:left;
+	width:288px;
+}
+#caseStatus{
+	float:left;
+	width:288px;
+}
+#caseStatus p,#caseStatus h3{
+	background-color:#FFFFAA;
+	padding:8px 4px;
+}
+#caseMsg .warning, .story .warning {
+	padding:8px 0px 8px 50px;
+	background-color: #FFCCCC;
+	background-image: url(img/warning.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+}
+#caseMsg .info {
+	background-color: #CCFFAA;
+	background-image: url(img/tick.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+	padding: 8px 0px 8px 40px;
+}
+#caseMsg .error {
+	background-color: #FFCCCC;
+	background-image: url(img/err.png);
+	background-position: 4px;
+	background-repeat: no-repeat;
+	padding:8px 0px 8px 40px;
+}
+
+
 /************* #globalNav styles **************/
 
 #globalNav{
@@ -455,28 +511,4 @@ html>body #navBar dd {border-bottom: none;}
 
 #headlines p{
 	padding: 5px 0px 5px 0px;
-}
-p.warning {
-	background-color: #FFCCCC;
-	padding: 5px 50px;
-	margin: 0 5em;
-	background-image: url(img/warning.png);
-	background-position: 4px;
-	background-repeat: no-repeat;
-}
-p.info {
-	background-color: #CCFFAA;
-	padding: 8px 50px;
-	margin: 0 5em;
-	background-image: url(img/tick.png);
-	background-position: 4px;
-	background-repeat: no-repeat;
-}
-p.error {
-	background-color: #FFCCCC;
-	padding: 8px 50px;
-	margin: 0 5em;
-	background-image: url(img/err.png);
-	background-position: 4px;
-	background-repeat: no-repeat;
 }

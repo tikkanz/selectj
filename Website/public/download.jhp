@@ -1,0 +1,4 @@
+load '~.CGI/code/selectj.ijs'
+fpath=.qparam 'filepath'
+fnme=.qparam 'filename'
+transfer fpath;fnme

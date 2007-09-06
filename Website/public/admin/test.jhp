@@ -1,4 +1,4 @@
-<% 
+<% ContentType 'text/html' ] Expires 0
 load '~..CGI/code/selectj.ijs'
 %>
 

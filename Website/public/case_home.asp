@@ -24,22 +24,36 @@
 <div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- InstanceEndEditable --></div>
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
-  <h2 id="pageName"><%= sd_name %> </h2>
-
-  <div class="story">
-    <h3>Case Objective </h3>
-      <p><%= sd_descr %> </p>
+  <div id="caseInfo">
+  <div id="caseName"><h2><%= sd_name %> </h2>
+    <p><%= sd_descr %> </p>
+  </div>
+  <div id="caseMsg">
     <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
     <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
-    <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle completed successfully. </p>    
+    <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
     <p class="error" style="display:<%=(action-:'ansimerr'){::'none';'block'%>">There was an error running AnimalSim. </p>
-
-    <h3>Status </h3>
-      <p>Your population has undergone <%=currcycle %> out of a total of <%=ncycles %> cycles of selection. </p>
+  </div>
+  <div id="caseStatus">
+    <p>Your population is beginning cycle <%=currcycle %> of <%=ncycles %> cycles of selection. </p>
+  </div>
+  </div>
+  <div class="story">
     <h3><%=xn_name%> </h3>
-      <p><%=cx_text%> </p>
+    <p><%=cx_text%> </p>
 
     <p>What do you want to do next? Choose a task from the menu on the right. </p>
+    <div id="casesumry" style="display:<%=('Conclusion'-:,xn_name){::'none';'block'%>">
+  		<form action="case.jhp" method="post" name="DwnldSumry" id="DwnldSumry">
+                <fieldset>
+                <legend>Download detailed population summary </legend>
+                <input type="hidden" id="action" name="action" value="download"/>
+                <input type="hidden" id="filepath" name="filepath" value="Output/AnimSummary.csv"/>
+                <input type="hidden" id="filename" name="filename" value="Summary.csv"/>
+                <input type="submit" id="dwnldsmry" value="Population Summary" />
+                </fieldset>
+  		</form>
+    </div>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 
