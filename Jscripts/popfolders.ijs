@@ -1,5 +1,5 @@
 NB. functions to do with copying/deleting/changing
-NB.  users' flocks/popluation folders
+NB.  users' flock/popluation folders
 
 
 pathdelim=: 4 : '}.;([:x&,,)each y'  NB.!Use join instead??
@@ -23,6 +23,9 @@ getFnme=: 4 : 0
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
       fnme=. sep pathdelim ur_uname;of_code;sd_code;ci_id
       fnme=. basefldr,'userpop',sep,fnme,sep
+    case. 'matealloc' do. NB. y is ciid
+      fdir=. 'caseinstfolder' getFnme y
+      fnme=. fdir,'MateAlloc.csv'
     case. 'scendef' do.  NB. y is ciid
       NB. scendefs/scendefcode.zip
       cde=. 'scendef' getDBItem y

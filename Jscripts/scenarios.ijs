@@ -17,11 +17,11 @@ getScenarioInfo=: 3 : 0
     case. <'alltrtinfo' do.  NB. reads tDefn sheet from TrtInfo.xls
       xlfnme=. 'TrtInfo' getFnme y
       'tDefn' readexcel xlfnme
-    case. <'status' do. NB. returns curryear;ncycles from animalsim.ini
+    case. <'status' do. NB. returns currcycle;ncycles from animalsim.ini
       fnme=. 'animini' getFnme y
-      cryr=. getPPVals fnme;'GenCycle';'CurrYear' 
-      ncyc=. getPPVals fnme;'Control';'nCycles'
-      cryr;ncyc
+      crcyc=. getPPVals fnme;'GenCycle';1&transName 'curryear'
+      ncyc=. getPPVals fnme;'Control';'ncycles'
+      crcyc;ncyc
   end.
 )
 
@@ -42,11 +42,11 @@ NB. y is caseinstance id
 runAnimalSim=: 3 : 0
   inipath=. 'animini' getFnme y
   if. -.fexist inipath do. 0 return. end.
-  cryr=. getPPVals key=. inipath;'GenCycle';'CurrYear'
+  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
   _1 fork 'c:\program files\animalsim\animalsim ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
-    if. cryr< getPPVals key do.
-      writePPString key,<cryr  NB. reset CurrYear
+    if. crcyc< getPPVals key do.
+      writePPString key,<crcyc  NB. reset CurrYear
     end.
     0
   else.
@@ -58,30 +58,16 @@ NB.*checkCycle v Determines 0th, last or other cycle.
 NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
 NB. y is caseinstance id
 checkCycle=: 3 : 0
-  'cryr ncyc'=. 'status' getScenarioInfo y
+  'crcyc ncyc'=. 'status' getScenarioInfo y
   cifldr=. 'caseinstfolder' getFnme y
   issm=. fexist cifldr,'output',PATHSEP_j_,'animsummary.csv'
-  res=. (issm *. cryr = ncyc)-cryr=0
-)
-
-NB.*validInput v Checks that files required (if any) are valid.
-NB. returns 1 for "all good", ??error messages for not??
-NB. 
-validInput=: 3 : 0
-NB. if. stage 21 (Manual selection) then files required
-  NB. if. files are present and files are valid (right number of females & males)
-  NB. then return 1
-  NB. else. return error message.
-  NB. end.
-NB. else. then no files required, return 1
-NB. end.
-1
+  res=. (issm *. crcyc = ncyc)-crcyc=0
 )
 
 NB.*updateSelnDetails v updates INI file configuration based on submitted Selection Details form
 NB. y is caseinstance id
 updateSelnDetails=: 3 : 0
-  translateNewNames '' NB. required until SelectJ and AnimalSim parameter names match
+  CGIKEYS=: 1&transName each CGIKEYS NB. required until SelectJ and AnimalSim parameter names match
   ANIMINI_z_=: 'animini' getScenarioInfo y
   TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
   NB. Names of ini keys that need to be updated by processing form info
@@ -95,37 +81,29 @@ updateSelnDetails=: 3 : 0
   'animini' updateScenarioInfo y NB. write ANIMINI to caseinstance directory
 )
 
-NB. replace any new SelectJ parameter names that occur in CGIKEYS with old AnimalSim names
-translateNewNames=: 3 : 0
- NB. new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
- NB. old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
-  new=. {:"1 TransNames
-  old=. {."1 TransNames
-  msk=. (#CGIKEYS)>idx=. CGIKEYS i. new
-  CGIKEYS=: (msk#old) (msk#idx)}CGIKEYS
-)
-
 NB.*TransNames n Tab-delimited mapping of old to new names.
-TransNames=: 0 : 0
-flksizes	hrdsizes
-flkdams2sire	dams2hrdsire
-usesiresxflk	usesiresxhrd
-sampleflkeffects	samplehrdeffects
-flkspecfnme	hrdspecfnme
-curryear	currcycle
-Flock	Herd
-Flk	Herd
+TransNames=: makeTable 0 : 0
+flksizes         hrdsizes
+flkdams2sire     dams2hrdsire
+usesiresxflk     usesiresxhrd
+sampleflkeffects samplehrdeffects
+flkspecfnme      hrdspecfnme
+curryear         currcycle
+flock            herd
+flk              hrd
 )
 
-3 : 0 ''
-  TransNames=: makeTable TransNames
-)
+NB. transType v Reverses columns of TransNames if y is 1
+transType=: TransNames |."1~]
 
-NB.*transName v returns new name if old name in TransNames
-NB. returns new name if old name exists in TransNames, else returns y
-NB. y is
-NB.! NEED to go both ways old to new & new to old
-transName=: ]keyval&TransNames^:( ({."1 TransNames) e.~ [: boxopen ])
+NB.*transName v Translates between new names and old names
+NB. returns new name if y is old name and x is 0
+NB. returns oldname  if y is new name and x is 1
+NB. returns y if y is not and old/new name
+NB. y is name to translate
+NB. x is 0 or 1. 0 for old to new, 1 for new to old
+NB.! make caseinsensitive??
+transName=: (]keyval [:transType [)^:( (TransNames{"1~[) e.~ [: boxopen ])
 
 
 NB.*getIniVals v returns INI key value(s) from an INI array
@@ -153,7 +131,7 @@ NB. y is 3-column array. 0{"1 INI section names, 1{"1 INI key names, 2{"1 INI ke
 NB. x is INI key name to get key value for
 NB. lookup is case insensitive
 getIniIdx=: ''&$: : (4 : 0)
-  if. (#y) > i=. (tolower each 1{"1 y) i. <,>tolower x do.
+  if. (#y) > i=. (tolower each 1{"1 y) i. <,>1 transName tolower x do.
     i else. '' end.
 )
 
@@ -227,8 +205,8 @@ getParamState=: 3 : 0
       vals=. <"0 y getIniVals ANIMINI
       nmes=. 'Female';'Male'
     case. 'hrdsizes'    do.
-      vals=. 'flksizes' getIniVals ANIMINI
-      if. 1 do. NB. 'select'-:pr_ctype NB. if select control
+      vals=. <"0 y getIniVals ANIMINI
+      if. 1 do. NB.! 'select'-:pr_ctype NB. if select control
         seld=. boxopen vals
         vals=. <"0 (100,200*>:i.5), 1500 2000 4000
       end.
@@ -268,22 +246,8 @@ getParamState=: 3 : 0
       tmp=. getTrtsOnly tmp  NB. only Traits
       tmp=. tmp -. each <'pdge' NB. dropout all of 'pdge'
       seld=. ~. tmp NB. unique traits
-      
-    NB. Next cases just use different names than AnimalSim
-    NB. Once AnimalSim updated to use 'hrd' names, can remove these cases.
-    case. 'currcycle' do.
-      'seld vals nmes'=. getParamState 'curryear'
-    case. 'dams2hrdsire' do.
-      'seld vals nmes'=. getParamState 'flkdams2sire'
-    case. 'hrdspecfnme' do.
-      'seld vals nmes'=. getParamState 'flkspecfnme'
-    case. 'samplehrdeffects' do.
-      'seld vals nmes'=. getParamState 'sampleflkeffects'
-    case. 'usesiresxhrd' do.
-      'seld vals nmes'=. getParamState 'usesiresxflk'
     case. do. NB. no special handling required - just look up ANIMINI
-    NB. 'curryear';'ncycles';'dams2sire';'cullage';'mateage';
-    NB. 'allelefreq';'trtsavail'
+    NB. 'currcycle';'ncycles';'dams2hrdsire';'allelefreq';'trtsavail'
       vals=. y getIniVals ANIMINI
       if. isnum vals do. vals=. <"0 vals end.
       vals=. boxopen vals  NB. box any open string
@@ -291,7 +255,7 @@ getParamState=: 3 : 0
   seld;vals;<nmes
 )
 
-NB.* updateKeyState v updates INI file configuration based on submitted Selection Details form
+NB.*updateKeyState v updates INI file configuration based on submitted Selection Details form
 NB. y is boxed key to update
 NB. x is list of boxed keys set by form
 updateKeyState=: 4 : 0
