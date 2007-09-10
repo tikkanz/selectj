@@ -1,4 +1,4 @@
-coclass 'psqliteq'
+coclass 'rgssqliteq'
 
 NB. =========================================================
 NB. Interface SQL

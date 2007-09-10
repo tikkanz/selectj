@@ -13,11 +13,11 @@ getFnme=: 4 : 0
   select. x
     case. 'animini' do.  NB. y is ciid
       fdir=. 'caseinstfolder' getFnme y
-      fnme=. 'animini' getDBItem_psqliteq_ y
+      fnme=. 'animini' getDBItem y
       fnme=. fdir,fnme
     case. 'caseinstfolder' do.  NB. y is ciid
       NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
-      pathinfo=. 'caseinstfolder' getTableStr_psqliteq_ y
+      pathinfo=. 'caseinstfolder' getDBTableStr y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
@@ -25,7 +25,7 @@ getFnme=: 4 : 0
       fnme=. basefldr,'userpop',sep,fnme,sep
     case. 'scendef' do.  NB. y is ciid
       NB. scendefs/scendefcode.zip
-      cde=. 'scendef' getDBItem_psqliteq_ y
+      cde=. 'scendef' getDBItem y
       fnme=. basefldr,'scendefs',sep,cde,'.zip'
     case. 'TrtInfo' do.  NB. y is ciid
       fdir=. 'caseinstfolder' getFnme y
@@ -41,7 +41,7 @@ NB. return new caseinstance id, extract scendef to user folder
 NB. y is optional 3-item boxed list of userid;offeringid;caseid
 NB. if y is '' then reads cookies and updates sessionticket
 createCaseInstance=: 3 : 0
-  ciid=. 'caseinstance' insertDBTable_psqliteq_ y
+  ciid=. 'caseinstance' insertDBTable y
   uz=. createCaseInstFolder ciid
   ciid
 )
@@ -66,7 +66,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. >@{:'caseinstance' getTable_psqliteq_ uofcsid
+  ciid=. >@{:'caseinstance' getDBTable uofcsid
   if. #ciid do.
     ciid
   else. NB. create new caseinstance
@@ -77,14 +77,14 @@ getCaseInstance=: 3 : 0
 NB.*updateCaseStage
 NB. y is list of boxed new case stage;ci_id
 updateCaseStage=: 3 : 0
-  'casestage' updateDBTable_psqliteq_ y
+  'casestage' updateDBTable y
 )
 NB.*summryCaseInstance
 
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
 NB. y is caseinstanceid
 expireCaseInstance=: 3 : 0
-  'expirecaseinst' updateDBTable_psqliteq_ y
+  'expirecaseinst' updateDBTable y
   deleteCaseInstFolder y
 )
 

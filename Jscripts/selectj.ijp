@@ -4,42 +4,44 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jhpadd
-~Projects/utils/passwdhash
 ~Projects/selectj/userlogin
 ~Projects/selectj/adminusers
 ~Projects/selectj/popfolders
 ~Projects/selectj/scenarios
-~Projects/utils/sqliteq
+~Projects/selectj/mating
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
-~Projects/selectj/fieldsets
 ~Projects/selectj/jrails
 ~Projects/utils/webxhtml
+~Projects/utils/sqliteq
+~Projects/utils/passwdhash
 ~Projects/utils/extractzip
 ~Projects/utils/dir_add
 ~Projects/utils/dirtrees
 ~Projects/utils/inifiles
-~addons/data/sqlite/sqlite
-~addons/data/sqlite/def
-~addons/convert/misc/md5
-~addons/tables/tara/tara
 )
 
 PRIMARYLIBS=: 0 : 0
 convert
+csv
 dir
 dll
 files
+md5
 random
+sqlite
+sqlitedef
 strings
+tara
 task
 winapi
 )
 
 DEVFILES=: 0 : 0
+~Projects/selectj/testdb
 ~addons/web/jhp/jhp
 ~addons/web/jhp/request
-~Projects/selectj/testdb
+~addons/web/jhp/run
 )
 
 DEVLIBS=: ''
@@ -57,7 +59,7 @@ d:/web/selectj/public/user.jhp
 
 TARGETFILE=: 'd:/web/selectj/code/selectj.ijs'
 
-TARGETLOCALE=: 'pselect'
+TARGETLOCALE=: 'rgsselectj'
 
 TARGETHEADER=: ''
 

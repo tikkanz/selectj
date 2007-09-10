@@ -97,11 +97,36 @@ updateSelnDetails=: 3 : 0
 
 NB. replace any new SelectJ parameter names that occur in CGIKEYS with old AnimalSim names
 translateNewNames=: 3 : 0
-  new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
-  old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
+ NB. new=. ;:'hrdsizes dams2hrdsire usesiresxhrd samplehrdeffects hrdspecfnme currcycle'
+ NB. old=. ;:'flksizes flkdams2sire usesiresxflk sampleflkeffects flkspecfnme curryear'
+  new=. {:"1 TransNames
+  old=. {."1 TransNames
   msk=. (#CGIKEYS)>idx=. CGIKEYS i. new
   CGIKEYS=: (msk#old) (msk#idx)}CGIKEYS
 )
+
+NB.*TransNames n Tab-delimited mapping of old to new names.
+TransNames=: 0 : 0
+flksizes	hrdsizes
+flkdams2sire	dams2hrdsire
+usesiresxflk	usesiresxhrd
+sampleflkeffects	samplehrdeffects
+flkspecfnme	hrdspecfnme
+curryear	currcycle
+Flock	Herd
+Flk	Herd
+)
+
+3 : 0 ''
+  TransNames=: makeTable TransNames
+)
+
+NB.*transName v returns new name if old name in TransNames
+NB. returns new name if old name exists in TransNames, else returns y
+NB. y is
+NB.! NEED to go both ways old to new & new to old
+transName=: ]keyval&TransNames^:( ({."1 TransNames) e.~ [: boxopen ])
+
 
 NB.*getIniVals v returns INI key value(s) from an INI array
 NB. returns INI key string as values

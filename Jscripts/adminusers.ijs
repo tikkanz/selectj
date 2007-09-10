@@ -10,7 +10,7 @@ NB. y is list of user ids
 NB. no result?
 resetUsers=: 3 : 0
   if. *#y do.
-    'resetusers' updateDBTable_psqliteq_ y
+    'resetusers' updateDBTable y
     NB. do stuff to reset user scenario data
     ''
   end.
@@ -21,7 +21,7 @@ NB. y is list of user ids
 NB. no result?
 setUsers=: 3 : 0
   if. *#y do.
-    'setusers' updateDBTable_psqliteq_ y
+    'setusers' updateDBTable y
     NB. do stuff to create user scenario data
     ''
   end.
@@ -32,7 +32,7 @@ NB. y is list of user ids
 NB. no result?
 deleteUsers=: 3 : 0
   if. *#y do.
-    'deleteusers' updateDBTable_psqliteq_ y
+    'deleteusers' updateDBTable y
     NB. do stuff to delete user scenario data
     ''
   end.

@@ -3,7 +3,8 @@ NB. =========================================================
 NB. form_options
 NB.    codestroy_jweb_ ''
 NB.   require jpath '~Projects\utils\webxhtml.ijs'
-coclass 'pwebforms'
+coclass 'rgswebforms'
+coinsert COBASE NB. path of rgswebforms is <starting local>;'z'
 
 NB. =========================================================
 NB. verbs for building dynamic form for on case.jhp?action=params
@@ -21,7 +22,7 @@ NB. y is ci_id of case
 buildForm=: 3 : 0
   ANIMINI_z_=: 'animini' getScenarioInfo y
   TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
-  info=. 'paramform' getTable_psqliteq_ y  NB. gets legend, fs_ids,cf_value
+  info=. 'paramform' getDBTable y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. P class 'legend' 'This is the legend for my form'
@@ -38,7 +39,7 @@ NB. x is cf_value or disabled status (0 disabled, 1 not disabled)
 buildFieldset=: 3 : 0
   1 buildFieldset y
 :
-  info=. 'fieldset' getTable_psqliteq_ y NB. gets fs_name,pr_id
+  info=. 'fieldset' getDBTable y NB. gets fs_name,pr_id
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. LEGEND {.fs_name        NB. repeated for each pr_id
@@ -51,7 +52,7 @@ buildFieldset=: 3 : 0
 NB.*buildParamDiv v builds relevant xhtml div for a parameter in a fieldset
 NB. y is list of fieldsetid,parameterid (fp_fsid,fp_prid)
 buildParamDiv=: 3 : 0
-  info=. 'param' getTable_psqliteq_ y  NB. gets pr_class,pr_name,fp_label,pr_note,fp_note,pr_code
+  info=. 'param' getDBTable y  NB. gets pr_class,pr_name,fp_label,pr_note,fp_note,pr_code
   'hdr dat'=. split info
   (hdr)=. ,dat                   NB. assign hdrnames
   if. #fp_label do. pr_name=. fp_label end. NB. update default label
@@ -167,35 +168,9 @@ buildSelect=: 3 : 0
   ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
 )
 
-NB.*getParamState v retrieves parameter state from caseinstance
-NB. returns 2- or 3- item boxed list of selectedvalues;values;valuenames
-NB. y is pr_code (code for parameter eg. 'ncycles')
-NB. this is dummy function until implement proper one - scenarios!!!
-getParamStateX=: 3 : 0
-  seld=. boxopen ".'seld_',y
-  vals=. boxopen ".'vals_',y
-  nms=.  boxopen ".'nmes_',y
-seld;vals;<nms
-)
-
-NB.dict v parses list of boxed name=value pairs
-NB. returns list of boxed 2-item boxed lists
-NB.     {.item is name, {: item is value
-dict=: 3 : 0
-NB.jdj
-)
 
 NB. =========================================================
 NB. Utilities
-
-NB. removes quotes
-unquote=: 3 : 0
-  y-.'"'
-)
-NB. replaces quotes with spaces
-unquot=: 3 : 0
-'" ' charsub y
-)
 
 NB.*join v unbox and delimit a list of boxed items y with x
 NB. from forum post
@@ -213,22 +188,8 @@ NB. makeidx=: ' ' -.~ [: ": i.
 boxitemidx=:<"1@:|:@:>
 
 NB. =========================================================
-Note 'useful code'
-('pr_code';'nCycles';'disabled';tst1) stringreplace INPUT id 'pr_code' name 'pr_code' type 'text' disabled ''
-('checked="checked" ') INPUT value (y) name 'pr_code' id 'pr_code' ''
-LABEL for 'pr_code' 'pr_name'
-each control has its own verb that creates the control
-verb that calls the control verb for each value or value, name pair
-
-Once the controls are created for the param, do the string replace for
-pr_code
-
-Once the fieldset is created do a stringreplace for disabled that will
-sort out all the controls in the fieldset
-)
-
-NB. =========================================================
 Note 'tests'
+NB. tests need to be rewritten to work with above names.
 tst=: ('Dollar';'$')
 rarg=:('Dollar';'$');(<'Kroner';'DKK')
 larg=:''
@@ -262,4 +223,4 @@ NB. <option value="FW12">Fleece weight at 12-mon</option>\n
 NB. <option value="FD" selected="selected">Ultrasound backfat depth</option>
 )
 
-buildForm_z_=: buildForm_pwebforms_
+buildForm_z_=: buildForm_rgswebforms_
