@@ -36,14 +36,14 @@ try.
 	  fpth=. ('caseinstfolder' getFnme ciid),fpth
 	  fnme=. qparam 'filename'
 	  redirect 'download.jhp?filepath=',fpth,'&filename=',fnme
-	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'ansimerr' do.
+	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'slerr';'ansimerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  ciid=. getCaseInstance uofcsid
-	  cistage=: 'casestage' getDBItem_psqliteq_ ciid
+	  cistage=: 'casestage' getDBItem ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'greeting' getTable_psqliteq_ uid
-	  setcolnames 'coursename' getTable_psqliteq_ ofid
-      setcolnames 'case' getTable_psqliteq_ csid;cistage
+	  setcolnames 'greeting' getDBTable uid
+	  setcolnames 'coursename' getDBTable ofid
+      setcolnames 'case' getDBTable csid;cistage
 	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
 	  transfer page
 	case. 'chgparams' do.
@@ -56,30 +56,32 @@ try.
    	  ciid=. getCaseInstance uofcsid
       cistage=. 11  NB. 11 is instruct txt
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'greeting' getTable_psqliteq_ uid
-	  setcolnames 'coursename' getTable_psqliteq_ ofid
-      setcolnames 'case' getTable_psqliteq_ csid;cistage
+	  setcolnames 'greeting' getDBTable uid
+	  setcolnames 'coursename' getDBTable ofid
+      setcolnames 'case' getDBTable csid;cistage
 	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
 	  caseform=: buildForm ciid NB. dynamically create form with controls
 	  transfer page
 	case. 'reset' do.
 	  ciid=. getCaseInstance uofcsid
-	  'cistage cisumry'=. {: 'casestage' getTable_psqliteq_ ciid
+	  'cistage cisumry'=. {: 'casestage' getDBTable ciid
 	  if. (99=cistage) *. -. cisumry do. 
 	    NB. prompt to summarize
 		NB. if yes then summarize
 	  end.
 	  expireCaseInstance ciid
 	  redirect 'case.jhp?action=resetfin'
-    case. 'upload' do.
+    case. 'uploadSL' do.
 	  ciid=. getCaseInstance uofcsid
-	  fpth=. jpath qparam 'filepath'
-	  fpth=. ('caseinstfolder' getFnme ciid),fpth
-      qparam 'UploadFileF'
-      qparam 'U
-	  MateAllocNB. create mate allocation list from selection lists
-      NB. write mate allocation list
-	  NB. redirect 'case.jhp?action=breed'
+      'fcs'=. ,}."1 qparamPrefix 'Upld_' NB. file contents
+      'fns'=. qparamFile each 'Upld_fem';'Upld_male' NB. file names
+      msg=. ciid validateSelectLists fns,.fcs
+      if. 1-:msg do.
+        ciid makeMateAlloc fs;ms NB. create and write mate allocation list
+	    redirect 'case.jhp?action=breed'
+      else.
+        redirect 'case.jhp?action=slerr&err=msg'
+      end.
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.
@@ -95,8 +97,11 @@ catch.
   Error=: 13!:12''
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
+  println 'coname';coname ''
   println CGIKEYS
   println CGIVALS
+  println CGIFILES
+  println CGIMIMES
   println COOKIEKEYS
   println COOKIEVALS
   println '</pre></p></body></html>'

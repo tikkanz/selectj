@@ -23,8 +23,8 @@ try.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
         page=. '~CGI/user_home.asp'  NB. destination page
-        setcolnames 'greeting' getTable_psqliteq_ uid
-	    setcolnames 'mycourses' getTable_psqliteq_ uid
+        setcolnames 'greeting' getDBTable uid
+	    setcolnames 'mycourses' getDBTable uid
     	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
 		if. 1=#of_id do. NB. if only one course then go direct
 		  redirect 'course.jhp?of_id=',":of_id
@@ -41,6 +41,8 @@ catch.
   Error=: 13!:12''
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
+  println 'tkt'
+  println coname''
   println 4!:0 <'uid'
   println '</pre></p></body></html>'
 end.

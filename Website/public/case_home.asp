@@ -65,7 +65,7 @@
     <div id="SelListUp" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
       <fieldset> <legend> Upload .csv files of Selected parents </legend>
       <form action="case.jhp" method="post" enctype="multipart/form-data" name="UpldSL" id="UpldSL">
-          <input name="action" type="hidden" id="action" value="upload" />
+          <input name="action" type="hidden" id="action" value="uploadSL" />
           <label for="Upld_fem">Selected dams </label>
           <input name="Upld_fem" type="file" id="Upld_fem" size="35"/>
           <label for="Upld_male">Selected sires  </label>

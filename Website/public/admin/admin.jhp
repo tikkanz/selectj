@@ -15,10 +15,10 @@ try.
     if. _99-:Index do. Select=:i.#ur_id end.
     tmp=. deleteUsers Select{ur_id
   case. 'Index' do. NB. select & display user record
-    Item=: |:'userrec' getTable_psqliteq_ Index{ur_id
+    Item=: |:'userrec' getDBTable Index{ur_id
   case.  do.
   end.
-  setcolnames 'userlist' getTable_psqliteq_ '' NB. database call to get users
+  setcolnames 'userlist' getDBTable '' NB. database call to get users
   
 catch. Error=: 13!:12'' 
 end.

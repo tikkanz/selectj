@@ -11,9 +11,9 @@ try.
 	  	DeleteCookie 'CaseID'
         page=. '~CGI/course_home.asp'  NB. destination page
 		'uid ofid'=. uofid
-	    setcolnames 'greeting' getTable_psqliteq_ uid
-        setcolnames 'course' getTable_psqliteq_ ofid
-		setcolnames 'coursecases' getTable_psqliteq_ ofid
+	    setcolnames 'greeting' getDBTable uid
+        setcolnames 'course' getDBTable ofid
+		setcolnames 'coursecases' getDBTable ofid
     	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	    transfer page
 	  end.
