@@ -4,11 +4,11 @@ require 'dir files'
 NB. needs addPS, dropPS, dircreate, direxist verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
-if. -.IFCONSOLE do.
-require 'd:\jprg\user\projects\utils\dir_add.ijs'
+if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
+  require 'dir_add' NB. mapped to ~Projects/utils/dir_add.ijs in startup.ijs
 end.
 )
-coclass 'ptrees'
+coclass 'rgstrees'
 
 addPS=: , PATHSEP_j_ -. {:          NB. ensure trailing path separator
 dropPS=: }:^:(PATHSEP_j_={:)  NB. drop trailing path separator
@@ -49,5 +49,5 @@ fcopy=: 4 : 0
   dat fwrite each boxopen x
 )
 
-copytree_z_=: copytree_ptrees_
-deltree_z_=: deltree_ptrees_
+copytree_z_=: copytree_rgstrees_
+deltree_z_=: deltree_rgstrees_

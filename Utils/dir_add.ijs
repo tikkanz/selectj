@@ -2,7 +2,7 @@ NB. verbs for extending the dir.ijs system library
 
 require 'dir files'
 
-coclass 'pdiradd'
+coclass 'rgsdiradd'
 
 addPS=: , PATHSEP_j_ -. {:          NB. ensure trailing path separator
 dropPS=: }:^:(PATHSEP_j_={:)  NB. drop trailing path separator
@@ -23,7 +23,7 @@ direxist=: 'd' e."1 [: > [: , [: ({:"1) 1!:0@(fboxname&>)@(dropPS&.>)@boxopen
  NB.   'd' e."1 >@:,@:({:"1@:(1!:0@(fboxname&>)@:(dropPS&.>)@:boxopen))
  NB.   'd'=[:{."1[: 4&}."1[: > [: , [: ({:"1) 1!:0@(fboxname&>)@(dropPS&.>)@boxopen
 
-dircreate_z_=: dircreate_pdiradd_
-direxist_z_=: direxist_pdiradd_
-addPS_z_=: addPS_pdiradd_
-dropPS_z_=: dropPS_pdiradd_
+dircreate_z_=: dircreate_rgsdiradd_
+direxist_z_=: direxist_rgsdiradd_
+addPS_z_=: addPS_rgsdiradd_
+dropPS_z_=: dropPS_rgsdiradd_

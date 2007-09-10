@@ -3,7 +3,7 @@ NB. literate program from http://www.jsoftware.com/jwiki/Scripts/UnZip#extractzi
 NB. =========================================================
 NB. Extracts Zip archive to desired sub-directory
 
-coclass 'punzip'
+coclass 'rgsunzip'
 
 3 : 0 ''
 if. -.IFUNIX do. require 'task' end.
@@ -61,4 +61,4 @@ unzip=: 3 : 0
   e
 )
 
-unzip_z_=: unzip_punzip_
+unzip_z_=: unzip_rgsunzip_

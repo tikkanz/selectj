@@ -5,11 +5,11 @@ NB. set filename of the sqlite database to noun "CONNECTSTR" located in
 NB.   the base or z locales
 
 require 'data/sqlite'
-coclass 'psqliteq'
+coclass 'rgssqliteq'
 
 NB.! look at using as a class, or coinserting in sqlite class?
 NB. script_z_ '~addons/data/sqlite/sqlite.ijs'
-NB. coclass 'psqliteq'
+NB. coclass 'rgssqliteq'
 NB. coinsert 'psqlite'
 
 NB. get path to database file
@@ -22,7 +22,7 @@ NB. get path to database file
   end.
 )
 
-NB. pselectq methods
+NB. rgsselectq methods
 NB. =========================================================
 lasterr=: [: deb LF -.~ }.@(13!:12)
 sqldberr_z_=: (assert 0=#) f.
@@ -52,7 +52,7 @@ NB. returns single field
 getDBItem=: 3 : 0
  '' getDBItem y
 :
- r=. x getTable y
+ r=. x getDBTable y
  r=.>{.{:r
 )
 
@@ -61,23 +61,23 @@ NB. returns single field
 getDBItemStr=: 3 : 0
  '' getDBItemStr y
 :
- r=. x getTableStr y
+ r=. x getDBTableStr y
  r=.>{.{:r
 )
 
-NB.*getTable v gets info from database
+NB.*getDBTable v gets info from database
 NB. returns boxed list of query result. {.is list of boxed field names.
 NB. y is values to look up in database
 NB. x is string specifying name of noun containing sql to run
-getTable=: dyad sdefine
+getDBTable=: dyad sdefine
   r=.(boxopen y) query__db ".'sqlsel_',x
 )
 
-NB.*getTableStr v gets info from database as strings
+NB.*getDBTableStr v gets info from database as strings
 NB. returns boxed list of query result. {.is list of boxed field names.
 NB. y is values to look up in database
 NB. x is string specifying name of noun containing sql to run
-getTableStr=: dyad sdefine
+getDBTableStr=: dyad sdefine
   r=.(boxopen y) strquery__db ".'sqlsel_',x
 )
 
@@ -101,3 +101,10 @@ updateDBTable=: dyad sdefine
 execSQL=: dyad sdefine
   r=. exec__db y
 )
+
+getDBItem_z_=: getDBItem_rgssqliteq_
+getDBItemStr_z_=: getDBItemStr_rgssqliteq_
+getDBTable_z_=: getDBTable_rgssqliteq_
+getDBTableStr_z_=: getDBTableStr_rgssqliteq_
+insertDBTable_z_=: insertDBTable_rgssqliteq_
+updateDBTable_z_=: updateDBTable_rgssqliteq_

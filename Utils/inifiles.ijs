@@ -1,6 +1,7 @@
 NB.cover functions for winapi functions for reading from & writing to INI files
 require 'winapi strings'
-coclass 'pini'
+coclass 'rgsini'
+
 NB.*getPPAllKeys v Gets all the keynames and values in an INI file
 NB. returns 3 column matrix,
 NB.       0{"1 sectionnames, 1{"1 keynames, 2{"1 keyvalues
@@ -152,8 +153,8 @@ writePPSection=: 3 : 0
 )
 
 
-getPPAllSections_z_=: getPPAllSections_pini_
-getPPString_z_=: getPPString_pini_
-getPPVals_z_=: getPPVals_pini_
-writePPString_z_=: writePPString_pini_
-makeVals_z_=: makeVals_pini_
+getPPAllSections_z_=: getPPAllSections_rgsini_
+getPPString_z_=: getPPString_rgsini_
+getPPVals_z_=: getPPVals_rgsini_
+writePPString_z_=: writePPString_rgsini_
+makeVals_z_=: makeVals_rgsini_

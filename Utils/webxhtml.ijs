@@ -3,7 +3,8 @@ NB. based on web.ijs from system library
 NB. 'c:\program files\j601\system\packages\publish\web.ijs'
 addpath_z_=: adverb def '(copath~ ~.@(x&;)@copath)@(coname^:(0:=#)) :. ((copath~ copath -. (<x)"_)@(coname^:(0:=#)))'
 webdefs_z_=: 'jweb' addpath
-webdefs ''         NB. add jweb to path
+webdefs ''      NB. add jweb to start of path for current locale
+
 cocurrent 'jweb'   NB. populate jweb locale
 
 NB. HTML defines, among other things, Elements and Attributes
