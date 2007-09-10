@@ -15,16 +15,17 @@ try.
       ciid=. getCaseInstance uofcsid
       stge=. (>:checkCycle ciid){1 21 99
       if. stge<99 do.   NB. check if cycles complete
-        if. validInput'' do. NB. Manual selection requires selection lists (stge=21)
+        if. 1-: msg=.ciid validMateAlloc stge do. NB. Manual selection requires selection lists (stge=21)
           if. ok=. runAnimalSim ciid do.
             stge=. (>:checkCycle ciid){1 21 99
             updateCaseStage stge;ciid
             page=. 'case.jhp?action=cyclefin'
           else.
-            page=. 'case.jhp?action=ansimerr'
+            msg=. 'animalsim error message here'
+            page=. 'case.jhp?action=ansimerr&err=',msg
           end.
         else. 
-          page=. 'case.jhp?action=valerror'
+          page=. 'case.jhp?action=valerr&err='msg
         end.
       else.
         page=. 'case.jhp?action=status'
@@ -36,7 +37,7 @@ try.
 	  fpth=. ('caseinstfolder' getFnme ciid),fpth
 	  fnme=. qparam 'filename'
 	  redirect 'download.jhp?filepath=',fpth,'&filename=',fnme
-	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'slerr';'ansimerr' do.
+	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'slerr';'ansimerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  ciid=. getCaseInstance uofcsid
 	  cistage=: 'casestage' getDBItem ciid

@@ -514,7 +514,7 @@ html>body #navBar dd {border-bottom: none;}
 }
 
 /************** #Upload/Download Forms **************/
-#SelListDwn {
+#SelListDwn, #casesumry{
 	width:15em;
 	float:left;
 }
