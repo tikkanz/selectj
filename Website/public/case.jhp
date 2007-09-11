@@ -11,24 +11,15 @@ try.
   end.
   select. action
     case. 'breed' do.
-      NB.! display progress page - this may take some time, please be patient.
+      NB.! display progress page - "this may take some time, please be patient."
       ciid=. getCaseInstance uofcsid
-      stge=. (>:checkCycle ciid){1 21 99
-      if. stge<99 do.   NB. check if cycles complete
-        if. 1-: msg=.ciid validMateAlloc stge do. NB. Manual selection requires selection lists (stge=21)
-          if. ok=. runAnimalSim ciid do.
-            stge=. (>:checkCycle ciid){1 21 99
-            updateCaseStage stge;ciid
-            page=. 'case.jhp?action=cyclefin'
-          else.
-            msg=. 'animalsim error message here'
-            page=. 'case.jhp?action=ansimerr&err=',msg
-          end.
-        else. 
-          page=. 'case.jhp?action=valerr&err='msg
-        end.
+      msg=. breedPopln ciid
+      if. 'boolean'-: datatype msg do.
+        page=. msg{::'case.jhp?action=status';'case.jhp?action=cyclefin'
       else.
-        page=. 'case.jhp?action=status'
+        msg=. '<br/>' join boxopen msg
+        qry=. args ('action';'mateerr'),:'err';msg
+        page=. 'case.jhp?',qry NB.! use post not get
       end.
       redirect page
 	case. 'download' do.
@@ -37,7 +28,7 @@ try.
 	  fpth=. ('caseinstfolder' getFnme ciid),fpth
 	  fnme=. qparam 'filename'
 	  redirect 'download.jhp?filepath=',fpth,'&filename=',fnme
-	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'valerr';'slerr';'ansimerr' do.
+	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  ciid=. getCaseInstance uofcsid
 	  cistage=: 'casestage' getDBItem ciid
@@ -46,6 +37,7 @@ try.
 	  setcolnames 'coursename' getDBTable ofid
       setcolnames 'case' getDBTable csid;cistage
 	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
+      errormsg=: qparam 'err'
 	  transfer page
 	case. 'chgparams' do.
       ciid=. getCaseInstance uofcsid
@@ -73,16 +65,19 @@ try.
 	  expireCaseInstance ciid
 	  redirect 'case.jhp?action=resetfin'
     case. 'uploadSL' do.
+      NB. transfer 'page'
 	  ciid=. getCaseInstance uofcsid
       'fcs'=. ,}."1 qparamPrefix 'Upld_' NB. file contents
       'fns'=. qparamFile each 'Upld_fem';'Upld_male' NB. file names
-      msg=. ciid validateSelectLists fns,.fcs
+      msg=. ciid makeMateAlloc fns,.fcs
       if. 1-:msg do.
-        ciid makeMateAlloc fs;ms NB. create and write mate allocation list
-	    redirect 'case.jhp?action=breed'
+	    page=. 'case.jhp?action=breed'
       else.
-        redirect 'case.jhp?action=slerr&err=msg'
+        msg=. '<br/>' join boxopen msg
+        qry=. args ('action';'slerr'),:'err';msg
+        page=. 'case.jhp?',qry NB.! use post not get
       end.
+      redirect page
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.

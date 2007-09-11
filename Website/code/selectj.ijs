@@ -74,6 +74,14 @@ refresh=: 3 : 0
   println 'Refresh: 0; url=',uri
   ContentType'text/html'
 )
+safe=: (33}.127{.a.)-.'=&%+'
+encode=:  [: toupper ('%',(I.'6'=,3!:3'f') {&, 3!:3)
+urlencode=:  [: ; encode^:(safe -.@e.~ ])&.>
+nvp=: >@{.,'=',urlencode@":@>@{:
+args=: [: }.@; ('&'<@,nvp)"1
+
+
+
 
 boxitem=: ,`(<"_1) @. (0=L.)
 
@@ -93,6 +101,8 @@ coercetxt=: 3 : 0
 )
 listatom=: 1&#
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+
 makeTable=: [: > [: <;._1 each ' ',each [: <;._2 (deb@:toJ ]) , LF -. {:
 MimeMap=: 0 : 0
 .*            application/octet-stream
@@ -427,6 +437,9 @@ getFnme=: 4 : 0
       fdir=. 'caseinstfolder' getFnme y
       fnme=. 'animini' getDBItem y
       fnme=. fdir,fnme
+    case. 'ansumry' do. 
+      fdir=. 'caseinstfolder' getFnme y
+      fnme=. fdir,'Output',sep,'AnimSummary.csv'
     case. 'caseinstfolder' do.  
       
       pathinfo=. 'caseinstfolder' getDBTableStr y
@@ -513,26 +526,6 @@ updateScenarioInfo=: 3 : 0
       fnme=. <'animini' getFnme y
       res=. writePPString"1 fnme,.ANIMINI
   end.
-)
-runAnimalSim=: 3 : 0
-  inipath=. 'animini' getFnme y
-  if. -.fexist inipath do. 0 return. end.
-  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
-  _1 fork 'c:\program files\animalsim\animalsim ',inipath
-  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
-    if. crcyc< getPPVals key do.
-      writePPString key,<crcyc  
-    end.
-    0
-  else.
-    1
-  end.
-)
-checkCycle=: 3 : 0
-  'crcyc ncyc'=. 'status' getScenarioInfo y
-  cifldr=. 'caseinstfolder' getFnme y
-  issm=. fexist cifldr,'output',PATHSEP_j_,'animsummary.csv'
-  res=. (issm *. crcyc = ncyc)-crcyc=0
 )
 updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS 
@@ -746,55 +739,113 @@ updateKeyState=: 4 : 0
   ''
 )
 
-validateSelectLists=: 4 : 0
-  oklen=.*#@> {:"1 y 
-  okext=.'.csv'-:"1 ]_4&{.@> {."1 y  
-  fcs=. fixcsv each toJ each {:"1 y 
-  hdrs=. >{. each fcs 
+makeMateAlloc=: 4 : 0
+  okexist=. -.a:= fnms=. {."1 y  
+  okext=. '.csv'(-:"1) _4&{.@> fnms  
   
-  okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) hdrs
-  if. -.*./*./ok=. oklen,okext,:okhdr do.
-    msg=.'selection list is empty.';'selection list file extension is not ".csv".';'selection list does not contain "Tag" and/or "Flk" column labels.'
-    msg=.(,.'Female ';'Male ') prefsuf msg
-    msg=. (,|:-.ok)#msg
-  else.
-    ANIMINI_z_=. 'animini' getScenarioInfo ciid
-    'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsires';'usesiresxhrd') getIniVals each <ANIMINI
-    nsires=. <.0.5&+ ndams%d2s   
+  msg=. 'selection list doesn''t exist.';'selection list file extension is not ".csv".'
+  msg=. |:2 2$(,.'Female ';'Male ') prefsuf msg
+  if. *./*./ok=. okexist,:okext do. 
+    fcs=. fixcsv each toJ each {:"1 y 
+    hdrs=. {.!.a: each fcs 
+    fcs=. }.each fcs 
     
-    
-    hrds=. 
-    nprnts=. (([: #@> </.~) /: ~.) each hrds 
-    okf=. ndams-:{.nprnts 
-    okm=. *./3>nsires-{:nprnts 
-    if. -.*./okf,okm do.
-      msg=. 'incorrect number of females in selection list';'incorrect number of males in selection list'
-      msg=. (-.okf,okm)#msg
-    else.
-      msg=.1 
+    okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) >hdrs
+    ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
+    msg=. msg, (,.'Female ';'Male ') prefsuf ms
+    if. *./*./ok=. ok,okhdr do. 
+      ANIMINI_z_=. 'animini' getScenarioInfo x
+      'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsire';'usesiresxhrd') getIniVals each <ANIMINI
+      nsires=. <.0.5&+ ndams%d2s   
+      
+      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' 
+      hrds=. idx {"1 each fcs 
+      nprnts=. (([: #@> </.~) /: ~.) each hrds 
+      okf=. (listatom ndams)-: nfems=. 0{::nprnts 
+      okm=. *./3>|nsires- nmales=. _1{::nprnts 
+      ms=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
+      msg=. msg, ms;'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
+      ok=. ok,okf,okm
     end.
   end.
-)
-makeMateAlloc=:4 : 0
-  fpth=. 'matealloc' getFnme x
-  dat=. allocateMatings y
-  dat fwrite fpth
+  if. *./*./ok do. 
+    fpth=. 'matealloc' getFnme x
+    dat=. allocateMatings hdrs,.fcs
+    msg=. *#dat fwrite fpth
+    msg=. 1
+  else.
+    msg=. (,-.ok)#,msg
+  end.
 )
 allocateMatings=: 3 : 0
-
-
+  ''
+)
+breedPopln=: 3 : 0
+  stge=. (>:checkCycle y){1 21 99
+  if. stge<99 do.   
+    msg=. y validMateAlloc stge
+    if. 1-:msg do. 
+      if. okansim=. runAnimalSim y do.
+        stge=. (>:checkCycle y){1 21 99
+        updateCaseStage stge;y
+        msg=. 1
+      else.     
+        msg=. 'There was an error running AnimalSim.'
+      end.
+    end.
+  else. msg=. 0 
+  end.
+  msg
 )
 validMateAlloc=: 4 : 0
   if. y=21 do. 
-    fnme=. 'matealloc' getFnme x 
-    if. fexist fnme do. 
+    okexist=. fexist fnme=. 'matealloc' getFnme x
+    msg=. boxopen 'Mate Allocation list not found.<br/>Did you upload your selected parents?'
+    if. *./ok=. okexist do. 
+      ma=. readcsv fnme
+      oklen=. *# ma 
+      'hdr ma'=. split ma
+      ANIMINI_z_=. 'animini' getScenarioInfo x
+      'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
+      oknmtgs=  (#ma)=+/popsz
       
-      res=. 1
-    else.
-      res=. 'mate allocation file does not exist' 
+      
+      
+      
+      
+      
+      okanims=. 1
+      msg=. msg;'Mate Allocation file is zero length.'
+      msg=. msg;'Incorrect number of matings in Mate Allocation file.'
+      msg=. msg; 'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
+      ok=. ok,oklen,oknmtgs,okanims
     end.
-  else. 
-    res=. 1
+  else. ok=. 1  
+  end.
+  if. *./ok do.
+    msg=. 1
+  else.
+    msg=. (,-.ok)#,msg
+  end.
+)
+checkCycle=: 3 : 0
+  'crcyc ncyc'=. 'status' getScenarioInfo y
+  fnme=. 'ansumry' getFnme y
+  issm=. fexist fnme
+  res=. (issm *. crcyc = ncyc)-crcyc=0
+)
+runAnimalSim=: 3 : 0
+  inipath=. 'animini' getFnme y
+  if. -.fexist inipath do. 0 return. end.
+  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  _1 fork 'c:\program files\animalsim\animalsim ',inipath
+  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
+    if. crcyc< getPPVals key do.
+      writePPString key,<crcyc  
+    end.
+    0
+  else.
+    1
   end.
 )
 
@@ -1190,7 +1241,6 @@ buildSelect=: 3 : 0
   ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
 )
 
-join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
 makeidx=:[: 8!:0 i.
 
 boxitemidx=:<"1@:|:@:>

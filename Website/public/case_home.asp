@@ -32,7 +32,7 @@
     <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
     <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
     <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
-    <p class="error" style="display:<%=(action-:'ansimerr'){::'none';'block'%>">There was an error running AnimalSim. </p>
+    <p class="error" style="display:<%=('err'-: _3{.action){::'none';'block'%>"><%=errormsg %></p>
   </div>
   <div id="caseStatus">
     <p style="display:<%=(cistage=1){::'none';'block'%>">You have not yet started selecting your population. </p>
