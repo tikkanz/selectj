@@ -63,6 +63,22 @@ refresh=: 3 : 0
   ContentType'text/html'
 )
 
+NB. Posted by Raul Miller in J Forum
+NB. http://www.jsoftware.com/pipermail/general/2006-February/026497.html
+
+safe=: (33}.127{.a.)-.'=&%+'
+encode=:  [: toupper ('%',(I.'6'=,3!:3'f') {&, 3!:3)
+urlencode=:  [: ; encode^:(safe -.@e.~ ])&.>
+nvp=: >@{.,'=',urlencode@":@>@{:
+
+NB.*args v Creates urlencoded string of namevaluepairs.
+NB. returns urlencoded string of namevalue pairs for appending to url
+NB. y is rank 2 array of boxed namevaluepairs where 0{"1 is names & 1{"1 is values
+args=: [: }.@; ('&'<@,nvp)"1
+
+
+
+
 boxitem=: ,`(<"_1) @. (0=L.)
 
 setcolnames=: 3 : 0
@@ -94,6 +110,15 @@ NB. could be useful for relative calling?
 NB. from the forums
 NB. http://www.jsoftware.com/pipermail/general/2003-May/015265.html
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
+
+NB.*join v unbox and delimit a list of boxed items y with x
+NB. from forum post
+NB. http://www.jsoftware.com/pipermail/programming/2007-June/007077.html
+NB. eg. '","' join 'item1';'item2'
+NB. eg. LF join 'item1';'item2'
+NB. eg. 99 join <&> i.8
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  NB. ignore $.
+
 
 NB. makeTable=:[: > [: <;._1 each TAB,each [: <;._2 ] , LF -. {:
 makeTable=: [: > [: <;._1 each ' ',each [: <;._2 (deb@:toJ ]) , LF -. {:

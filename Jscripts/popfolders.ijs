@@ -15,6 +15,9 @@ getFnme=: 4 : 0
       fdir=. 'caseinstfolder' getFnme y
       fnme=. 'animini' getDBItem y
       fnme=. fdir,fnme
+    case. 'ansumry' do. NB. y is ciid
+      fdir=. 'caseinstfolder' getFnme y
+      fnme=. fdir,'Output',sep,'AnimSummary.csv'
     case. 'caseinstfolder' do.  NB. y is ciid
       NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
       pathinfo=. 'caseinstfolder' getDBTableStr y

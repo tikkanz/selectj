@@ -36,34 +36,6 @@ updateScenarioInfo=: 3 : 0
   end.
 )
 
-NB.*runAnimalSim v calls AnimalSim for caseinstance
-NB. returns 0 if error, 1 if successful
-NB. y is caseinstance id
-runAnimalSim=: 3 : 0
-  inipath=. 'animini' getFnme y
-  if. -.fexist inipath do. 0 return. end.
-  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
-  _1 fork 'c:\program files\animalsim\animalsim ',inipath
-  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
-    if. crcyc< getPPVals key do.
-      writePPString key,<crcyc  NB. reset CurrYear
-    end.
-    0
-  else.
-    1
-  end.
-)
-
-NB.*checkCycle v Determines 0th, last or other cycle.
-NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
-NB. y is caseinstance id
-checkCycle=: 3 : 0
-  'crcyc ncyc'=. 'status' getScenarioInfo y
-  cifldr=. 'caseinstfolder' getFnme y
-  issm=. fexist cifldr,'output',PATHSEP_j_,'animsummary.csv'
-  res=. (issm *. crcyc = ncyc)-crcyc=0
-)
-
 NB.*updateSelnDetails v updates INI file configuration based on submitted Selection Details form
 NB. y is caseinstance id
 updateSelnDetails=: 3 : 0

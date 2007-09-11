@@ -1,76 +1,144 @@
 NB. =========================================================
-NB. verbs for validation of selection lists, mate allocation (selection?)
+NB. verbs for to do with selection and mate allocation lists, breeding
 
-NB.*validateSelectLists v Checks selection lists are correct.
+NB.*makeMateAlloc v Checks selection lists are correct, creates and writes MateAlloc.csv.
 NB. returns list of boxed error messages if error(s) or 1 if all OK.
 NB. y is 2-row (female, male) by 2-column (filename, filecontents) boxed array
 NB. x is caseinstance id
-validateSelectLists=: 4 : 0
-  oklen=.*#@> {:"1 y NB. not zero length
-  okext=.'.csv'-:"1 ]_4&{.@> {."1 y  NB. have '.csv' extension
-  fcs=. fixcsv each toJ each {:"1 y NB. file contents
-  hdrs=. >{. each fcs NB. headers
-  NB. Headers must contain (Tag or uid) and (Flk or Flock)
-  okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) hdrs
-  if. -.*./*./ok=. oklen,okext,:okhdr do.
-    msg=.'selection list is empty.';'selection list file extension is not ".csv".';'selection list does not contain "Tag" and/or "Flk" column labels.'
-    msg=.(,.'Female ';'Male ') prefsuf msg
-    msg=. (,|:-.ok)#msg
-  else.
-    ANIMINI_z_=. 'animini' getScenarioInfo ciid
-    'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsires';'usesiresxhrd') getIniVals each <ANIMINI
-    nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
-    NB.! add handling for across-herd as well as within-herd mating of sires
-    NB.! get index of flock/Flk columns in selection lists column labels
-    hrds=. NB.! get flock/flk columns from selection lists
-    nprnts=. (([: #@> </.~) /: ~.) each hrds NB. no. of occurences of each flock number (sorted ascending by flock no)
-    okf=. ndams-:{.nprnts NB. check correct number of females listed (for each sub-popln)
-    okm=. *./3>nsires-{:nprnts NB. check approx correct number of males listed (for each sub-popln)
-    if. -.*./okf,okm do.
-      msg=. 'incorrect number of females in selection list';'incorrect number of males in selection list'
-      msg=. (-.okf,okm)#msg
-    else.
-      msg=.1 
+makeMateAlloc=: 4 : 0
+  okexist=. -.a:= fnms=. {."1 y  NB. files were found and uploaded
+  okext=. '.csv'(-:"1) _4&{.@> fnms  NB. have '.csv' extension
+  NB.oklen=.*#@> {:"1 y NB. not zero length
+  msg=. 'selection list doesn''t exist.';'selection list file extension is not ".csv".'
+  msg=. |:2 2$(,.'Female ';'Male ') prefsuf msg
+  if. *./*./ok=. okexist,:okext do. NB. continue checks
+    fcs=. fixcsv each toJ each {:"1 y NB. file contents
+    hdrs=. {.!.a: each fcs NB. headers
+    fcs=. }.each fcs NB. drop headers
+    NB. Headers must contain (Tag or uid) and (Flk or Flock)
+    okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) >hdrs
+    ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
+    msg=. msg, (,.'Female ';'Male ') prefsuf ms
+    if. *./*./ok=. ok,okhdr do. NB. continue checks
+      ANIMINI_z_=. 'animini' getScenarioInfo x
+      'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsire';'usesiresxhrd') getIniVals each <ANIMINI
+      nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
+      NB.! add handling for across-herd as well as within-herd mating of sires
+      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of flock/Flk columns in selection lists column labels
+      hrds=. idx {"1 each fcs NB. get flock/flk columns from selection lists
+      nprnts=. (([: #@> </.~) /: ~.) each hrds NB. no. of occurences of each flock number (sorted ascending by flock no)
+      okf=. (listatom ndams)-: nfems=. 0{::nprnts NB. check correct number of females listed (for each sub-popln)
+      okm=. *./3>|nsires- nmales=. _1{::nprnts NB. check approx correct number of males listed (for each sub-popln)
+      ms=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
+      msg=. msg, ms;'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
+      ok=. ok,okf,okm
     end.
+  end.
+  if. *./*./ok do. NB. passed all checks
+    fpth=. 'matealloc' getFnme x
+    dat=. allocateMatings hdrs,.fcs
+    msg=. *#dat fwrite fpth
+    msg=. 1
+  else.
+    msg=. (,-.ok)#,msg
   end.
 )
 
-NB.*makeMateAlloc v Creates and writes Mate Allocation file.
-makeMateAlloc=:4 : 0
-  fpth=. 'matealloc' getFnme x
-  dat=. allocateMatings y
-  dat fwrite fpth
-)
-
 NB.*allocateMatings v Allocates matings for list of dams and sires.
-NB. returns 2-item boxed list containing 
+NB. returns 2-item boxed list containing
 NB.     0{ list of boxed column labels for array in 1{
 NB. 	1{ 2d array of four columns damtag, damFlkID & siretag, sireFlkID.
 NB. 	   Each row is a mating. Dams should only appear once, sires can appear many times.
-NB. y is 2-item, rank 2, boxed list containing 
+NB. y is 2-item, rank 2, boxed list containing
 NB.     0{   2-item boxed list of female info
 NB.     1{   2-item boxed list of smale info
 NB.     0{"1 lists of boxed column labels for array in 1{"1
 NB.     1{"1 2d array of parent info (row for each parent, column for each label in 0{"1.
 allocateMatings=: 3 : 0
-
-
+  ''
 )
 
-NB.*validMateAlloc v Checks that MateAlloc.csv exists and is valid.
-NB. returns 1 for "all ok", error messages for not
-NB. y is case stage
-NB. x is ciid 
-validMateAlloc=: 4 : 0
-  if. y=21 do. NB. stage 21 (Manual selection) 
-    fnme=. 'matealloc' getFnme x NB. then matealloc.csv file required
-    if. fexist fnme do. NB. file is present 
-      NB.! check is file valid (e.g. right animals/right year - how??)
-      res=. 1
-    else.
-      res=. 'mate allocation file does not exist' NB. return error message.
+NB.*breedPopln v Breeds population if necessary and possible.
+NB. returns 1 for successfully bred, 0 for breeding not required, else error messages
+NB. y is ciid
+breedPopln=: 3 : 0
+  stge=. (>:checkCycle y){1 21 99
+  if. stge<99 do.   NB. check if cycles complete
+    msg=. y validMateAlloc stge
+    if. 1-:msg do. NB. passed all checks
+      if. okansim=. runAnimalSim y do.
+        stge=. (>:checkCycle y){1 21 99
+        updateCaseStage stge;y
+        msg=. 1
+      else.     NB. AnimalSim error
+        msg=. 'There was an error running AnimalSim.'
+      end.
     end.
-  else. NB. mate alloc file not required
-    res=. 1
+  else. msg=. 0 NB. cycles already complete
+  end.
+  msg
+)
+
+NB.*validMateAlloc v Checks if valid Mate Allocation list is present
+NB. returns 1 for "all ok", error messages for not
+NB. y is integer, stage of case instance.
+NB. x is ciid
+validMateAlloc=: 4 : 0
+  if. y=21 do. NB. stage 21 (between cycles Manual selection)
+    okexist=. fexist fnme=. 'matealloc' getFnme x
+    msg=. boxopen 'Mate Allocation list not found.<br/>Did you upload your selected parents?'
+    if. *./ok=. okexist do. NB. continue checks
+      ma=. readcsv fnme
+      oklen=. *# ma NB. not zero length
+      'hdr ma'=. split ma
+      ANIMINI_z_=. 'animini' getScenarioInfo x
+      'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
+      oknmtgs=  (#ma)=+/popsz
+      NB. Arguable as to whether additional checks should be made here or
+      NB.  within AnimalSim. Do here for now.
+      NB.! check that animals in matealloc.csv all present in selection lists.
+      NB. read Tag/uid and Flk/Flock columns from selection lists
+      NB. Tag,Flk all found in femaleSL Tag,Flk
+      NB. Tag,Flk all found in maleSL Tag,Flk
+      okanims=. 1
+      msg=. msg;'Mate Allocation file is zero length.'
+      msg=. msg;'Incorrect number of matings in Mate Allocation file.'
+      msg=. msg; 'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
+      ok=. ok,oklen,oknmtgs,okanims
+    end.
+  else. ok=. 1  NB. Don't need to check Mate Allocation (most probably at stage 1).
+  end.
+  if. *./ok do.
+    msg=. 1
+  else.
+    msg=. (,-.ok)#,msg
+  end.
+)
+
+NB.*checkCycle v Determines 0th, last or other cycle.
+NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
+NB. y is caseinstance id
+checkCycle=: 3 : 0
+  'crcyc ncyc'=. 'status' getScenarioInfo y
+  fnme=. 'ansumry' getFnme y
+  issm=. fexist fnme
+  res=. (issm *. crcyc = ncyc)-crcyc=0
+)
+
+NB.*runAnimalSim v calls AnimalSim for caseinstance
+NB. returns 0 if error, 1 if successful
+NB. y is caseinstance id
+runAnimalSim=: 3 : 0
+  inipath=. 'animini' getFnme y
+  if. -.fexist inipath do. 0 return. end.
+  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  _1 fork 'c:\program files\animalsim\animalsim ',inipath
+  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
+    if. crcyc< getPPVals key do.
+      writePPString key,<crcyc  NB. reset CurrYear
+    end.
+    0
+  else.
+    1
   end.
 )
