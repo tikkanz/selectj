@@ -770,15 +770,31 @@ makeMateAlloc=: 4 : 0
   end.
   if. *./*./ok do. 
     fpth=. 'matealloc' getFnme x
-    dat=. allocateMatings hdrs,.fcs
-    msg=. *#dat fwrite fpth
-    msg=. 1
+    dat=. xhrd allocateMatings hdrs,.fcs
+    ok=. 0<(;dat) writecsv fpth
+    msg=. ok{:: 'Error writing Mate Allocation file';1
   else.
     msg=. (,-.ok)#,msg
   end.
 )
-allocateMatings=: 3 : 0
-  ''
+allocateMatings=: 4 : 0
+  lbls=. >{."1 y
+  csvs=. {:"1 y
+  idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+  parents=. (<"1 idx) {"1 each csvs 
+  if. x do. 
+    nparents=. # @> parents
+  else.     
+    nparents=. (([: #@> </.~) /: ~.) @> 1{"1 each parents 
+  end.
+  nsiremtgs=. <. %/nparents
+  rem=. |/|.nparents 
+  rem=. (,rem,.rem-~{:nparents)# (+:#rem)$1 0
+  mtgs=. rem+({:nparents)#nsiremtgs
+  parents=. parents /: each |."1 each parents  
+  sires=. mtgs#>{:parents
+  sires=. sires /: x}."1 (1{"1 sires),.<"0 (#sires)?@#0 
+  (;:'DTag DFlk STag SFlk');< (>{.parents),.sires
 )
 breedPopln=: 3 : 0
   stge=. (>:checkCycle y){1 21 99
@@ -786,6 +802,10 @@ breedPopln=: 3 : 0
     msg=. y validMateAlloc stge
     if. 1-:msg do. 
       if. okansim=. runAnimalSim y do.
+        if. stge=1 do.
+          inipath=. 'animini' getFnme y
+          writePPString inipath;'Control';'Resume';1
+        end.
         stge=. (>:checkCycle y){1 21 99
         updateCaseStage stge;y
         msg=. 1
@@ -807,7 +827,7 @@ validMateAlloc=: 4 : 0
       'hdr ma'=. split ma
       ANIMINI_z_=. 'animini' getScenarioInfo x
       'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
-      oknmtgs=  (#ma)=+/popsz
+      oknmtgs=. (#ma)=+/popsz
       
       
       
