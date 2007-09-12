@@ -24,7 +24,7 @@ makeMateAlloc=: 4 : 0
       'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsire';'usesiresxhrd') getIniVals each <ANIMINI
       nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
       NB.! add handling for across-herd as well as within-herd mating of sires
-      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of flock/Flk columns in selection lists column labels
+      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of Flock/Flk columns in selection lists column labels
       hrds=. idx {"1 each fcs NB. get flock/flk columns from selection lists
       nprnts=. (([: #@> </.~) /: ~.) each hrds NB. no. of occurences of each flock number (sorted ascending by flock no)
       okf=. (listatom ndams)-: nfems=. 0{::nprnts NB. check correct number of females listed (for each sub-popln)
@@ -36,9 +36,9 @@ makeMateAlloc=: 4 : 0
   end.
   if. *./*./ok do. NB. passed all checks
     fpth=. 'matealloc' getFnme x
-    dat=. allocateMatings hdrs,.fcs
-    msg=. *#dat fwrite fpth
-    msg=. 1
+    dat=. xhrd allocateMatings hdrs,.fcs
+    ok=. 0<(;dat) writecsv fpth
+    msg=. ok{:: 'Error writing Mate Allocation file';1
   else.
     msg=. (,-.ok)#,msg
   end.
@@ -54,8 +54,25 @@ NB.     0{   2-item boxed list of female info
 NB.     1{   2-item boxed list of smale info
 NB.     0{"1 lists of boxed column labels for array in 1{"1
 NB.     1{"1 2d array of parent info (row for each parent, column for each label in 0{"1.
-allocateMatings=: 3 : 0
-  ''
+NB. x is boolean whether selection is across-herd
+allocateMatings=: 4 : 0
+  lbls=. >{."1 y
+  csvs=. {:"1 y
+  idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+  parents=. (<"1 idx) {"1 each csvs NB. just keep Tag & flock columns
+  if. x do. NB. across-herd matings
+    nparents=. # @> parents
+  else.     NB. within-herd matings
+    nparents=. (([: #@> </.~) /: ~.) @> 1{"1 each parents NB. no. of occurences of each flock number (sorted ascending by flock no)
+  end.
+  nsiremtgs=. <. %/nparents
+  rem=. |/|.nparents NB. remainder
+  rem=. (,rem,.rem-~{:nparents)# (+:#rem)$1 0
+  mtgs=. rem+({:nparents)#nsiremtgs
+  parents=. parents /: each |."1 each parents  NB. necessary for matching sires & dams within flock  
+  sires=. mtgs#>{:parents
+  sires=. sires /: x}."1 (1{"1 sires),.<"0 (#sires)?@#0 NB. randomly sort sires within or across flocks
+  (;:'DTag DFlk STag SFlk');< (>{.parents),.sires
 )
 
 NB.*breedPopln v Breeds population if necessary and possible.
@@ -67,6 +84,10 @@ breedPopln=: 3 : 0
     msg=. y validMateAlloc stge
     if. 1-:msg do. NB. passed all checks
       if. okansim=. runAnimalSim y do.
+        if. stge=1 do.
+          inipath=. 'animini' getFnme y
+          writePPString inipath;'Control';'Resume';1
+        end.
         stge=. (>:checkCycle y){1 21 99
         updateCaseStage stge;y
         msg=. 1
@@ -93,7 +114,7 @@ validMateAlloc=: 4 : 0
       'hdr ma'=. split ma
       ANIMINI_z_=. 'animini' getScenarioInfo x
       'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
-      oknmtgs=  (#ma)=+/popsz
+      oknmtgs=. (#ma)=+/popsz
       NB. Arguable as to whether additional checks should be made here or
       NB.  within AnimalSim. Do here for now.
       NB.! check that animals in matealloc.csv all present in selection lists.
