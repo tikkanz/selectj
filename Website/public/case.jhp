@@ -67,7 +67,7 @@ try.
     case. 'uploadSL' do.
       NB. transfer 'page'
 	  ciid=. getCaseInstance uofcsid
-      'fcs'=. ,}."1 qparamPrefix 'Upld_' NB. file contents
+      'fcs'=. ,}."1 qparamPrefix 'Upld_'             NB. file contents
       'fns'=. qparamFile each 'Upld_fem';'Upld_male' NB. file names
       msg=. ciid makeMateAlloc fns,.fcs
       if. 1-:msg do.

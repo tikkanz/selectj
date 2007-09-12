@@ -429,39 +429,44 @@ deleteUsers=: 3 : 0
 
 pathdelim=: 4 : '}.;([:x&,,)each y'  
 getFnme=: 4 : 0
-  sep=. PATHSEP_j_
   basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
   
   select. x
-    case. 'animini' do.  
+    case. 'animini' do.
       fdir=. 'caseinstfolder' getFnme y
       fnme=. 'animini' getDBItem y
       fnme=. fdir,fnme
-    case. 'ansumry' do. 
-      fdir=. 'caseinstfolder' getFnme y
-      fnme=. fdir,'Output',sep,'AnimSummary.csv'
-    case. 'caseinstfolder' do.  
+    case. 'caseinstfolder' do.
       
       pathinfo=. 'caseinstfolder' getDBTableStr y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
-      fnme=. sep pathdelim ur_uname;of_code;sd_code;ci_id
-      fnme=. basefldr,'userpop',sep,fnme,sep
-    case. 'matealloc' do. 
-      fdir=. 'caseinstfolder' getFnme y
-      fnme=. fdir,'MateAlloc.csv'
-    case. 'scendef' do.  
+      fnme=. '/' pathdelim ur_uname;of_code;sd_code;ci_id
+      fnme=. basefldr,'userpop/',fnme,'/'
+    case. 'scendef' do.
       
       cde=. 'scendef' getDBItem y
-      fnme=. basefldr,'scendefs',sep,cde,'.zip'
-    case. 'TrtInfo' do.  
+      fnme=. basefldr,'scendefs/',cde,'.zip'
+    case. keys=. ;:'selnlist pedigree matealloc animsumry' do.
       fdir=. 'caseinstfolder' getFnme y
-      fnme=. 'TrtInfo.xls'
+      inipath=. 'animini' getFnme y
+      fkey=. 1 transName x
+      fnme=. getPPString inipath;'FileNames';fkey
+      if. *#fnme do. 
+        fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
+      end.
+      fnme=.fdir&, @> boxopen fnme
+    case. 'trtinfo' do.
+      fdir=. 'caseinstfolder' getFnme y
+      inipath=. 'animini' getFnme y
+      fkey=. 1 transName x
+      fnme=. getPPString inipath;'quanttrts';fkey
+      if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
     case. do.
   end.
-  fnme=. jpath fnme
+  fnme=. jpath"1 fnme
 )
 createCaseInstance=: 3 : 0
   ciid=. 'caseinstance' insertDBTable y
@@ -507,7 +512,7 @@ getScenarioInfo=: 3 : 0
       fnme=. 'animini' getFnme y
       res=. getPPAllSections fnme
     case. <'alltrtinfo' do.  
-      xlfnme=. 'TrtInfo' getFnme y
+      xlfnme=. 'trtinfo' getFnme y
       'tDefn' readexcel xlfnme
     case. <'status' do. 
       fnme=. 'animini' getFnme y
@@ -542,12 +547,17 @@ updateSelnDetails=: 3 : 0
   'animini' updateScenarioInfo y 
 )
 TransNames=: makeTable 0 : 0
-flksizes         hrdsizes
-flkdams2sire     dams2hrdsire
-usesiresxflk     usesiresxhrd
-sampleflkeffects samplehrdeffects
-flkspecfnme      hrdspecfnme
+animsummaryfnme  animsumry
 curryear         currcycle
+flkdams2sire     dams2hrdsire
+flksizes         hrdsizes
+flkspecfnme      hrdspecfnme
+mateallocfnme    matealloc
+pedigreefnme     pedigree
+sampleflkeffects samplehrdeffects
+selnlistfnme     selnlist
+traitinfofnme    trtinfo
+usesiresxflk     usesiresxhrd
 flock            herd
 flk              hrd
 )
@@ -779,9 +789,9 @@ makeMateAlloc=: 4 : 0
 )
 allocateMatings=: 4 : 0
   lbls=. >{."1 y
-  csvs=. {:"1 y
+  slsts=. {:"1 y
   idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
-  parents=. (<"1 idx) {"1 each csvs 
+  parents=. (<"1 idx) {"1 each slsts 
   if. x do. 
     nparents=. # @> parents
   else.     
@@ -831,13 +841,17 @@ validMateAlloc=: 4 : 0
       
       
       
-      
-      
-      
-      okanims=. 1
-      msg=. msg;'Mate Allocation file is zero length.'
-      msg=. msg;'Incorrect number of matings in Mate Allocation file.'
-      msg=. msg; 'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
+      slsts=. <@readcsv"1 'selnlist' getFnme x
+      lbls=. >{.each slsts 
+      slsts=. }.each slsts 
+      idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+      slsts=. (<"1 idx) {"1 each slsts   
+      okf=. *./( 2{."1 ma) e. 0{:: slsts 
+      okm=. *./(_2{."1 ma) e. 1{:: slsts 
+      okanims=. *./okf,okm
+      msg=. msg,<'Mate Allocation file is zero length.'
+      msg=. msg,<'Incorrect number of matings in Mate Allocation file.'
+      msg=. msg,<'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
       ok=. ok,oklen,oknmtgs,okanims
     end.
   else. ok=. 1  
@@ -850,7 +864,7 @@ validMateAlloc=: 4 : 0
 )
 checkCycle=: 3 : 0
   'crcyc ncyc'=. 'status' getScenarioInfo y
-  fnme=. 'ansumry' getFnme y
+  fnme=. 'animsumry' getFnme y
   issm=. fexist fnme
   res=. (issm *. crcyc = ncyc)-crcyc=0
 )
