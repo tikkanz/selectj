@@ -15,7 +15,7 @@ getScenarioInfo=: 3 : 0
       fnme=. 'animini' getFnme y
       res=. getPPAllSections fnme
     case. <'alltrtinfo' do.  NB. reads tDefn sheet from TrtInfo.xls
-      xlfnme=. 'TrtInfo' getFnme y
+      xlfnme=. 'trtinfo' getFnme y
       'tDefn' readexcel xlfnme
     case. <'status' do. NB. returns currcycle;ncycles from animalsim.ini
       fnme=. 'animini' getFnme y
@@ -55,12 +55,17 @@ updateSelnDetails=: 3 : 0
 
 NB.*TransNames n Tab-delimited mapping of old to new names.
 TransNames=: makeTable 0 : 0
-flksizes         hrdsizes
-flkdams2sire     dams2hrdsire
-usesiresxflk     usesiresxhrd
-sampleflkeffects samplehrdeffects
-flkspecfnme      hrdspecfnme
+animsummaryfnme  animsumry
 curryear         currcycle
+flkdams2sire     dams2hrdsire
+flksizes         hrdsizes
+flkspecfnme      hrdspecfnme
+mateallocfnme    matealloc
+pedigreefnme     pedigree
+sampleflkeffects samplehrdeffects
+selnlistfnme     selnlist
+traitinfofnme    trtinfo
+usesiresxflk     usesiresxhrd
 flock            herd
 flk              hrd
 )

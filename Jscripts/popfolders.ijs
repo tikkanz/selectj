@@ -6,40 +6,47 @@ pathdelim=: 4 : '}.;([:x&,,)each y'  NB.!Use join instead??
 
 NB.*getFnme v get filename of specified filetype for user,offering,case
 NB. result is string of filename, or numeric _1 if file doesn't exist
+NB. y is ciid
+NB. x is string describing file to get
 getFnme=: 4 : 0
-  sep=. PATHSEP_j_
   basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
   NB. basefldr=. '~.CGI/' NB. 'd:\web\selectj\'
   select. x
-    case. 'animini' do.  NB. y is ciid
+    case. 'animini' do.
       fdir=. 'caseinstfolder' getFnme y
       fnme=. 'animini' getDBItem y
       fnme=. fdir,fnme
-    case. 'ansumry' do. NB. y is ciid
-      fdir=. 'caseinstfolder' getFnme y
-      fnme=. fdir,'Output',sep,'AnimSummary.csv'
-    case. 'caseinstfolder' do.  NB. y is ciid
+    case. 'caseinstfolder' do.
       NB. userpop/uname/coursecode_year_sem_dm/scendefcode/caseinstanceid/
       pathinfo=. 'caseinstfolder' getDBTableStr y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
-      fnme=. sep pathdelim ur_uname;of_code;sd_code;ci_id
-      fnme=. basefldr,'userpop',sep,fnme,sep
-    case. 'matealloc' do. NB. y is ciid
-      fdir=. 'caseinstfolder' getFnme y
-      fnme=. fdir,'MateAlloc.csv'
-    case. 'scendef' do.  NB. y is ciid
+      fnme=. '/' pathdelim ur_uname;of_code;sd_code;ci_id
+      fnme=. basefldr,'userpop/',fnme,'/'
+    case. 'scendef' do.
       NB. scendefs/scendefcode.zip
       cde=. 'scendef' getDBItem y
-      fnme=. basefldr,'scendefs',sep,cde,'.zip'
-    case. 'TrtInfo' do.  NB. y is ciid
+      fnme=. basefldr,'scendefs/',cde,'.zip'
+    case. keys=. ;:'selnlist pedigree matealloc animsumry' do.
       fdir=. 'caseinstfolder' getFnme y
-      fnme=. 'TrtInfo.xls'
+      inipath=. 'animini' getFnme y
+      fkey=. 1 transName x
+      fnme=. getPPString inipath;'FileNames';fkey
+      if. *#fnme do. NB. use default names
+        fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
+      end.
+      fnme=.fdir&, @> boxopen fnme
+    case. 'trtinfo' do.
+      fdir=. 'caseinstfolder' getFnme y
+      inipath=. 'animini' getFnme y
+      fkey=. 1 transName x
+      fnme=. getPPString inipath;'quanttrts';fkey
+      if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
     case. do.
   end.
-  fnme=. jpath fnme
+  fnme=. jpath"1 fnme
 )
 
 NB.*createCaseInstance v creates new CaseInstance

@@ -57,9 +57,9 @@ NB.     1{"1 2d array of parent info (row for each parent, column for each label
 NB. x is boolean whether selection is across-herd
 allocateMatings=: 4 : 0
   lbls=. >{."1 y
-  csvs=. {:"1 y
+  slsts=. {:"1 y
   idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
-  parents=. (<"1 idx) {"1 each csvs NB. just keep Tag & flock columns
+  parents=. (<"1 idx) {"1 each slsts NB. just keep Tag & flock columns
   if. x do. NB. across-herd matings
     nparents=. # @> parents
   else.     NB. within-herd matings
@@ -117,14 +117,18 @@ validMateAlloc=: 4 : 0
       oknmtgs=. (#ma)=+/popsz
       NB. Arguable as to whether additional checks should be made here or
       NB.  within AnimalSim. Do here for now.
-      NB.! check that animals in matealloc.csv all present in selection lists.
-      NB. read Tag/uid and Flk/Flock columns from selection lists
-      NB. Tag,Flk all found in femaleSL Tag,Flk
-      NB. Tag,Flk all found in maleSL Tag,Flk
-      okanims=. 1
-      msg=. msg;'Mate Allocation file is zero length.'
-      msg=. msg;'Incorrect number of matings in Mate Allocation file.'
-      msg=. msg; 'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
+      NB. check that animals in matealloc.csv all present in selection lists.
+      slsts=. <@readcsv"1 'selnlist' getFnme x
+      lbls=. >{.each slsts NB. get labels
+      slsts=. }.each slsts NB. drop labels
+      idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+      slsts=. (<"1 idx) {"1 each slsts   NB. just keep Tag & flock columns
+      okf=. *./( 2{."1 ma) e. 0{:: slsts NB. ma Tag,Flk all found in femaleSL Tag,Flk
+      okm=. *./(_2{."1 ma) e. 1{:: slsts NB. ma Tag,Flk all found in maleSL Tag,Flk
+      okanims=. *./okf,okm
+      msg=. msg,<'Mate Allocation file is zero length.'
+      msg=. msg,<'Incorrect number of matings in Mate Allocation file.'
+      msg=. msg,<'There are animals in the Mate allocation list, that were not in the selection lists. Have you uploaded new selection lists for this cycle?'
       ok=. ok,oklen,oknmtgs,okanims
     end.
   else. ok=. 1  NB. Don't need to check Mate Allocation (most probably at stage 1).
@@ -141,7 +145,7 @@ NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
 NB. y is caseinstance id
 checkCycle=: 3 : 0
   'crcyc ncyc'=. 'status' getScenarioInfo y
-  fnme=. 'ansumry' getFnme y
+  fnme=. 'animsumry' getFnme y
   issm=. fexist fnme
   res=. (issm *. crcyc = ncyc)-crcyc=0
 )
