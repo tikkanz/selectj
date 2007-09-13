@@ -1627,7 +1627,7 @@ getPPAllSections=: 3 : 0
 )
 getPPSection=: 3 : 0
   'fnme snme'=. y
-  len=. #str=. 32767$' '
+  len=. #str=. 4096$' '  
   'len val'=. 0 2{'GetPrivateProfileSectionA'win32api snme;str;len;fnme
   val=. ({.a.),len{.val  
   val=. <;._1 val
@@ -1638,13 +1638,13 @@ getPPSection=: 3 : 0
 )
 getPPSectionNames=: 3 : 0
   fnme=. y
-  len=. #str=. 32767$' '
+  len=. #str=. 1024$' '  
   'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
   <;._2 val=. len{.val
 )
 getPPString=: 3 : 0
   'fnme snme knme'=. y
-  len=. #str=. 32767$' '
+  len=. #str=. 1024$' '  
   'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
   val=. len{.val
 )
