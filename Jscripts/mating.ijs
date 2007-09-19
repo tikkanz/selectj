@@ -157,7 +157,7 @@ runAnimalSim=: 3 : 0
   inipath=. 'animini' getFnme y
   if. -.fexist inipath do. 0 return. end.
   crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
-  _1 fork 'c:\program files\animalsim\animalsim ',inipath
+  _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
     if. crcyc< getPPVals key do.
       writePPString key,<crcyc  NB. reset CurrYear

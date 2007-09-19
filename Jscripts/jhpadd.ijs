@@ -6,6 +6,8 @@ COBASE_z_=. coname ''  NB. store name of current locale so can return
 
 coclass 'z'  NB. jhp puts all stuff in z so will do same for jhpadd
 
+NB. APPL_ROOT=: '/selectj/'  NB. root of application for use when using XP
+
 ContentDisp=: 3 : 0
   if. 0 <: nc<'ContentDispSet_j_' do. return. end.
   ContentDispSet_j_=: y
