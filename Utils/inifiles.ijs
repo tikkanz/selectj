@@ -34,7 +34,7 @@ NB. returns list of boxed section names from the INI file
 NB. y is full path to INI file
 getPPSectionNames=: 3 : 0
   fnme=. y
-  len=. #str=. 1024$' '  NB. max ??32767
+  len=. #str=. 512$' '  NB. max ??32767
   'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
   <;._2 val=. len{.val
 )
@@ -48,7 +48,7 @@ NB.         2{ Key Name
 NB. e.g. getPPString 'c:\myini.ini';'Install';'InstallPath'
 getPPString=: 3 : 0
   'fnme snme knme'=. y
-  len=. #str=. 1024$' '  NB. max ??32767
+  len=. #str=. 256$' '  NB. max ??32767
   'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
   val=. len{.val
 )
