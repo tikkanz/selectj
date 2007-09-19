@@ -40,9 +40,8 @@
 
       <tr>
         <th scope="col" >User Name </th>
-        <td scope="col" ><span class="valerr" id="unameErr">User name already in use.
-          <br /> 
-          Please choose another one.<br /></span>
+        <td scope="col" ><span class="valerr" id="unameErr">Please enter a User name.
+<br /></span>
           <input name="uname" type="text" class="box1" id="uname" tabindex="1" title="Choose unique User name" />
           <span class="required">*</span></td>
       </tr>

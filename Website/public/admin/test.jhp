@@ -1,8 +1,9 @@
-<% ContentType 'text/html' ] Expires 0
-load '~..CGI/code/selectj.ijs'
+<% 
+ load '~..CGI/code/selectj.ijs'
+ Expires 0
+ ContentType 'text/html'
 %>
-
-<html><body><div><pre>
+<html><head></head><body><div><pre>
 
 jpath '~..CGI/code/selectj.ijs'
 <%= jpath '~..CGI/code/selectj.ijs'%>
@@ -12,6 +13,14 @@ jpath '~CGI/manageusers.asp'
 
 <%
 NB. println env 'HTTP_CONTENT-BASE'
+println     'AUTH_TYPE'
+println env 'AUTH_TYPE'
+println     'ComSpec'
+println env 'ComSpec'
+println     'CONTENT_LENGTH'
+println env 'CONTENT_LENGTH'
+println     'CONTENT_TYPE'
+println env 'CONTENT_TYPE'
 println     'DOCUMENT_ROOT'
 println env 'DOCUMENT_ROOT'
 println     'GATEWAY_INTERFACE'
@@ -28,14 +37,16 @@ println     'HTTP_HOST'
 println env 'HTTP_HOST'
 println     'HTTP_USER_AGENT'
 println env 'HTTP_USER_AGENT'
-println     'REMOTE_HOST'
-println env 'REMOTE_HOST'
-println     'REMOTE_ADDR'
-println env 'REMOTE_ADDR'
 println     'PATH_INFO'
 println env 'PATH_INFO'
 println     'PATH_TRANSLATED'
 println env 'PATH_TRANSLATED'
+println     'REMOTE_ADDR'
+println env 'REMOTE_ADDR'
+println     'REMOTE_HOST'
+println env 'REMOTE_HOST'
+println     'REMOTE_USER'
+println env 'REMOTE_USER'
 println     'SCRIPT_NAME'
 println env 'SCRIPT_NAME'
 println     'SCRIPT_FILENAME'
@@ -50,6 +61,11 @@ println     'SERVER_SIGNATURE'
 println env 'SERVER_SIGNATURE'
 println     'SERVER_SOFTWARE'
 println env 'SERVER_SOFTWARE'
+println     'SystemRoot'
+println env 'SystemRoot'
+println     'windir'
+println env 'windir'
+
 
 
 %>

@@ -22,7 +22,6 @@ COBASE_z_=. coname ''
 (COBASE,<'z') copath 'base' 
 
 coclass 'z'  
-
 ContentDisp=: 3 : 0
   if. 0 <: nc<'ContentDispSet_j_' do. return. end.
   ContentDispSet_j_=: y
@@ -872,7 +871,7 @@ runAnimalSim=: 3 : 0
   inipath=. 'animini' getFnme y
   if. -.fexist inipath do. 0 return. end.
   crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
-  _1 fork 'c:\program files\animalsim\animalsim ',inipath
+  _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
     if. crcyc< getPPVals key do.
       writePPString key,<crcyc  
@@ -1638,13 +1637,13 @@ getPPSection=: 3 : 0
 )
 getPPSectionNames=: 3 : 0
   fnme=. y
-  len=. #str=. 1024$' '  
+  len=. #str=. 512$' '  
   'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
   <;._2 val=. len{.val
 )
 getPPString=: 3 : 0
   'fnme snme knme'=. y
-  len=. #str=. 1024$' '  
+  len=. #str=. 256$' '  
   'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
   val=. len{.val
 )

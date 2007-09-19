@@ -85,8 +85,8 @@ function callregsubmit() {
 	//validates registration form
 	frm=document.getElementById("regform");
 	//flds=frm.getElementsByTagName("Input");
-    var errs=0 ;
-	var flds=new Array("uname","fname","lname","email","passwd");
+  var errs=0 ;
+	var flds= ['uname','fname','lname','email','passwd'];
 	for (i=0;i<flds.length;++ i) { //cycle through each field	
 		if (document.getElementById(flds[i]).value=="" ) {
 			disp="inline";
