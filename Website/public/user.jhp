@@ -6,15 +6,16 @@ try.
     case. 'login' do.
 	  uid=: validLogin qparam each 'usrname';'passwd'
 	  if. 0>uid do. NB. invalid login
-		redirect 'default.jhp?action=loginfail&uname=',qparam 'usrname'
+        qry=. 'action';'loginfail',:'uname';qparam 'usrname'
+		qry redirect 'default.jhp'
 	  else.
 	    tkt=. createSession uid
     	tkt SetCookie 'SessionTicket'
-		redirect 'user.jhp?action=home'
+		('action';'home') redirect 'user.jhp'
 	  end.
 	case. 'home' do.
 	  if. 0-: uid=.validSession'' do.
-	    redirect 'default.jhp?action=sessionexpire' 
+	    ('action';'sessionexpire')redirect 'default.jhp' 
 	  else.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
@@ -23,7 +24,7 @@ try.
 	    setcolnames 'mycourses' getDBTable uid
     	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
 		if. 1=#of_id do. NB. if only one course then go direct
-		  redirect 'course.jhp?of_id=',":of_id
+		  ('of_id';":of_id) redirect 'course.jhp'
 		else.
 	      transfer page
 		end.

@@ -18,7 +18,7 @@ try.
       else.
   	    tkt=. createSession uid
         tkt SetCookie 'SessionTicket'
-	    redirect 'user.jhp?action=home'
+	    ('action';'home') redirect 'user.jhp'
       end.
     case. do.  NB. default action
       page=. '~CGI/regform.asp'

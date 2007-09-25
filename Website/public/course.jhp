@@ -6,7 +6,7 @@ try.
 	case. 'home' do.
 	  if. 0-: 'uofid'=. validEnrolment'' do. 
 	    DeleteCookie 'OfferingID' 
-	    redirect 'user.jhp?action=home'
+	    ('action';'home') redirect 'user.jhp'
 	  else.
 	  	DeleteCookie 'CaseID'
         page=. '~CGI/course_home.asp'  NB. destination page
@@ -21,10 +21,10 @@ try.
 	  ofid=. 0 qparam 'of_id'
 	  if. 0-: validEnrolment ofid do.
     	DeleteCookie 'OfferingID' 
-	    redirect 'user.jhp?action=home'
+	    ('action';'home') redirect 'user.jhp'
 	  else.
     	ofid SetCookie 'OfferingID'
-	    redirect 'course.jhp?action=home'
+	    ('action';'home') redirect 'course.jhp'
 	  end.
   end.
 catch.

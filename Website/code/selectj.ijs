@@ -61,20 +61,22 @@ CGIMIMES=: <;._1 '||application/csv|application/csv'
 postrequest=: 4 : 0
   uri=. x
   qs=. args y
-  host=. ([:'http://'&-:7&{.) {:: (env 'HTTP_HOST'); 0 ({:: <;._1) 6 }. ]
+  host=. ([:'http://'&-:7&{.) {:: (env 'SERVER_NAME'); 0 ({:: <;._1) 6 }. ]
   path=. ( '/' dropto 7 }. ])^:([:'http://'&-:7&{.)
   println 'POST ',(path uri),' HTTP/1.0'
   println 'Host: ',host uri
   println 'Content-Length: ',":#qs
   Expires 0
   ContentType 'application/x-www-form-urlencoded'
-  
+  stdout qs
 )
 
 redirect=: 3 : 0
-  uri=.y
-  
-  println 'Location: ',uri
+  '' redirect y
+:
+  url=.y
+  qs=. ('?',args)^:(*@#) x
+  println 'Location: ',url,qs
   ContentType'text/html'
 )
 
@@ -514,6 +516,16 @@ getCaseInstance=: 3 : 0
 )
 updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
+)
+Note 'summryCaseInstance'
+Create a folder under course folder called summaries.
+Could think about storing zipped folders/files.
+Update ci_sumry.
+Can see which case instances have summaries by looking up ci_sumry 
+in caseinstances table.
+Store caseinstance folder with animalsim.ini and out/animsummary.csv
+Could store just files renamed as 3.ini and 3.csv , 
+but not as flexible longer-term.
 )
 expireCaseInstance=: 3 : 0
   'expirecaseinst' updateDBTable y
