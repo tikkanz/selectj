@@ -1,23 +1,29 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
-  if. 'GET' -: env 'REQUEST_METHOD' do.
-    page=. '~CGI/regform.asp'
-    usernameErr=: ''
-    transfer page
-  else.
-    uid=. registerUser qparam each qparamKeys''
-    if. 0>uid do. NB. invalid login
-      usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
-      usernameErr=: usernameErr,' Please choose another one.'
-      'fname lname refnum email'=: qparam each ;:'fname lname refnum email'
+  action=: qparam 'action'
+  select. action
+    fcase. 'guest' do.
+      cleanGuests ''
+      CGIKEYS=:CGIKEYS,;:'uname fname lname refnum email passwd'
+      CGIVALS=:CGIVALS,'';'';'';'';'guest@nodomain.com';'home'
+    case. 'newuser' do.
+      uid=. registerUser qparam each qparamKeys''
+      if. 0>uid do. NB. invalid login
+        usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
+        usernameErr=: usernameErr,' Please choose another one.'
+        'fname lname refnum email'=: qparam each ;:'fname lname refnum email'
+        page=. '~CGI/regform.asp'
+	    transfer page
+      else.
+  	    tkt=. createSession uid
+        tkt SetCookie 'SessionTicket'
+	    redirect 'user.jhp?action=home'
+      end.
+    case. do.  NB. default action
       page=. '~CGI/regform.asp'
-	  transfer page
-    else.
-  	  tkt=. createSession uid
-      tkt SetCookie 'SessionTicket'
-	  redirect 'user.jhp?action=home'
-    end.
+      usernameErr=: ''
+      transfer page
   end.
 catch.
   ContentType'text/html'[ Expires 0

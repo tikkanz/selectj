@@ -69,7 +69,6 @@ insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (1,1
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (3,1,'injapan','6530575557447b07e16da4204329c8a8',-865438670);
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (2,3,'tricia','ef5c0caabb090e216e24adfeca4ca316',64988700);
 insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (4,2,'bloggs','8f90eacdc8ffe4e71b52906865d81f4c',-228865924);
-insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (5,1,'guest','02969889acf88057663a97266e9d4728',-900589809);
 
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Sheep Production','117352','All about sheep production including genetics',1);
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Animal Breeding and Genetics','227202','Genetics for vets',1);

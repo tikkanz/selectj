@@ -16,12 +16,13 @@ try.
       msg=. breedPopln ciid
       if. 'boolean'-: datatype msg do.
         page=. msg{::'case.jhp?action=status';'case.jhp?action=cyclefin'
+        redirect page
       else.
         msg=. '<br/>' join boxopen msg
-        qry=. args ('action';'mateerr'),:'err';msg
-        page=. 'case.jhp?',qry NB.! use post not get
+        qry=. ('action';'mateerr'),:'err';msg
+        page=. 'case.jhp' 
+        page postrequest qry
       end.
-      redirect page
 	case. 'download' do.
 	  ciid=. getCaseInstance uofcsid
 	  fpth=. jpath qparam 'filepath'
@@ -61,6 +62,7 @@ try.
 	  if. (99=cistage) *. -. cisumry do. 
 	    NB. prompt to summarize
 		NB. if yes then summarize
+        NB. summryCaseInstance ciid
 	  end.
 	  expireCaseInstance ciid
 	  redirect 'case.jhp?action=resetfin'
@@ -72,12 +74,13 @@ try.
       msg=. ciid makeMateAlloc fns,.fcs
       if. 1-:msg do.
 	    page=. 'case.jhp?action=breed'
+        redirect page
       else.
         msg=. '<br/>' join boxopen msg
-        qry=. args ('action';'slerr'),:'err';msg
-        page=. 'case.jhp?',qry NB.! use post not get
+        qry=. ('action';'slerr'),:'err';msg
+        page=. '/case.jhp' NB.! use post not get
+        page postrequest qry
       end.
-      redirect page
 	case. do.  NB. default action
 	  csid=. 0 qparam 'cs_id'
 	  if. 0-: validCase csid do.

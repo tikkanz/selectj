@@ -12,13 +12,9 @@ try.
     	tkt SetCookie 'SessionTicket'
 		redirect 'user.jhp?action=home'
 	  end.
-	case. 'guest' do.
-	    tkt=. createSession GUESTID
-    	tkt SetCookie 'SessionTicket'
-		redirect 'user.jhp?action=home'
 	case. 'home' do.
 	  if. 0-: uid=.validSession'' do.
-	    redirect 'default.jhp' 
+	    redirect 'default.jhp?action=sessionexpire' 
 	  else.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'

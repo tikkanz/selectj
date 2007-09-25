@@ -41,10 +41,10 @@ SelectJ
 1=code\select_cmplx_data.sql
 [Selected Project Files]
 Main=
-Selected=code\select_cmplx_data.sql
+Selected=code\select_cmplx_ddl.sql
 [code\select_cmplx_ddl.sql]
-TopLine=103
-Caret=1,120
+TopLine=211
+Caret=23,227
 [code\select_cmplx_data.sql]
-TopLine=16
-Caret=58,29
+TopLine=103
+Caret=1,119

@@ -32,6 +32,7 @@
 	 <p class="valerr" style="display:inline"><%= usernameErr %></p>
   </div>
 <form action="register.jhp" method="post" name="regform" id="regform">
+<input name="action" type="hidden" value="newuser" />
   <table border="0" cellspacing="0" class="frmtble" style="width: 340px; height: 230px;">
 
     <caption>

@@ -58,7 +58,18 @@ CGIVALS=: <;._1 '|uploadSL|Tag,Flk,YOB,Mtd,AOD,BR,DOB,pLW8,pFD,pFAT,pLEAN  20040
 CGIFILES=: <;._1 '||SelectLstFEM.csv|SelectLstMALE-1.csv'
 CGIMIMES=: <;._1 '||application/csv|application/csv'
 )
-
+postrequest=: 4 : 0
+  uri=. x
+  qs=. args y
+  host=. ([:'http://'&-:7&{.) {:: (env 'HTTP_HOST'); 0 ({:: <;._1) 6 }. ]
+  path=. ( '/' dropto 7 }. ])^:([:'http://'&-:7&{.)
+  println 'POST ',(path uri),' HTTP/1.0'
+  println 'Host: ',host uri
+  println 'Content-Length: ',":#qs
+  Expires 0
+  ContentType 'application/x-www-form-urlencoded'
+  
+)
 
 redirect=: 3 : 0
   uri=.y
@@ -337,9 +348,8 @@ readTicket=: 3 : 0
 )
 
 registerUser=: 3 : 0
-  'uname fname lname refnum email passwd'=.y
-  
-  
+  'action uname fname lname refnum email passwd'=.y
+  if. action-:'guest' do. uname=. randPassword 16  end.
   uinfo =. {:'login' getDBTable uname  
   if. -.uinfo-:'' do. _2 return. end. 
   pinfo =. {:'email' getDBTable  email
@@ -389,7 +399,6 @@ validSession=: 3 : 0
   if. 0=#sinfo do. 0 return. end. 
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   
-  
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
     'sessionexpire' updateDBTable ".sid
@@ -404,24 +413,34 @@ writeTicket=: 3 : 0
   ('ssid=',":tsid),'&hash=',thash
 )
 
+cleanGuests=: 3 : 0
+  ginfo=. 'expiredguests' getDBTable ''
+  if. 0=#ginfo do. 0 return. end. 
+  'hdr dat'=. split ginfo
+  (hdr)=. |:dat                   
+  'sessionexpire' updateDBTable <"0 ss_id
+  resetUsers <"0 ur_id
+  ''
+)
 resetUsers=: 3 : 0
   if. *#y do.
+    cids=. 'caseinst2expire' getDBField y
+    'expirecaseinst' updateDBTable cids
     'resetusers' updateDBTable y
-    
+    deleteUserFolders y 
     ''
   end.
 )
 setUsers=: 3 : 0
   if. *#y do.
     'setusers' updateDBTable y
-    
     ''
   end.
 )
 deleteUsers=: 3 : 0
   if. *#y do.
     'deleteusers' updateDBTable y
-    
+    deleteUserFolders y 
     ''
   end.
 )
@@ -463,6 +482,9 @@ getFnme=: 4 : 0
       fnme=. getPPString inipath;'quanttrts';fkey
       if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
+    case. 'userfolder' do. 
+      uns=.'username' getDBField y
+      fnme=. (basefldr,'userpop/'),"1 uns
     case. do.
   end.
   fnme=. jpath"1 fnme
@@ -500,6 +522,11 @@ expireCaseInstance=: 3 : 0
 deleteCaseInstFolder=: 3 : 0
   delpath=. 'caseinstfolder' getFnme y
   res=.deltree delpath
+  if. 1=*./res do. 1 else. 0 end.
+)
+deleteUserFolders=: 3 : 0
+  delpath=. 'userfolder' getFnme y
+  res=.deltree"1 delpath
   if. 1=*./res do. 1 else. 0 end.
 )
 getScenarioInfo=: 3 : 0
@@ -898,7 +925,11 @@ sqlsel_status=: 0 : 0
   FROM users
   WHERE users.ur_id=?;
 )
-
+sqlsel_username=: 0 : 0
+  SELECT users.ur_uname ur_uname
+  FROM users
+  WHERE users.ur_id=?;
+)
 sqlsel_email=: 0 : 0
   SELECT pp.pp_id pp_id ,
          pp.pp_fname pp_fname ,
@@ -939,6 +970,16 @@ sqlupd_sessionexpire=: 0 : 0
   UPDATE sessions
   SET ss_status=0
   WHERE ss_id=?;
+)
+
+sqlsel_expiredguests=: 0 : 0
+  SELECT ur.ur_id ur_id ,
+         ss.ss_id ss_id 
+  FROM main.`users` ur INNER JOIN main.`sessions` ss ON ( `ur`.`ur_id` = `ss`.`ss_urid` ) 
+       INNER JOIN main.`people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
+  WHERE (pp.pp_id =5) 
+  AND (ur.ur_status >0)
+  AND ((ss.ss_expire -julianday('now'))<0);
 )
 
 sqlsel_enrolled=: 0 : 0
@@ -989,11 +1030,18 @@ sqlsel_scendef=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlsel_caseinst2expire=: 0 : 0
+  SELECT ci.ci_id ci_id 
+  FROM   main.`users` ur INNER JOIN main.`caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
+  WHERE  (ur.ur_id =?) AND (ci.ci_status >0)
+)
+
 sqlupd_expirecaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_status=0
   WHERE ci_id=?;
 )
+
 sqlsel_animini=: 0 : 0
   SELECT sd.sd_filen sd_filen 
   FROM  `cases` cases INNER JOIN `caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
@@ -1450,6 +1498,12 @@ getDBItem=: 3 : 0
  r=. x getDBTable y
  r=.>{.{:r
 )
+getDBField=: 3 : 0
+ '' getDBField y
+:
+ r=. x getDBTable y
+ r=.>{."1}.r
+)
 getDBItemStr=: 3 : 0
  '' getDBItemStr y
 :
@@ -1474,6 +1528,7 @@ execSQL=: dyad sdefine
   r=. exec__db y
 )
 
+getDBField_z_=: getDBField_rgssqliteq_
 getDBItem_z_=: getDBItem_rgssqliteq_
 getDBItemStr_z_=: getDBItemStr_rgssqliteq_
 getDBTable_z_=: getDBTable_rgssqliteq_
@@ -1485,11 +1540,12 @@ require 'random convert/misc/md5'
 coclass 'rgspasswd'
 createSalt=: ([: _2&ic a. {~ [: ? 256 $~ ])&4
 randPassword=: 3 : 0
-defx=.'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' 
-defx randPassword y
+  defx=.'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' 
+  defx randPassword y
 :
-len=. (*#y){ 8,y  
-len (]{~ [:?[$ [:#]) x
+  if. isdefseed'' do. randomize'' end.
+  len=. (*#y){ 8,y  
+  len (]{~ [:?[$ [:#]) x
 )
 isdefseed=: 3 : '+./({.2{::9!:44'''')=16807 1215910514'
 salthash=: 3 : 0
