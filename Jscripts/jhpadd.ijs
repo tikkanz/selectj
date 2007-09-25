@@ -69,9 +69,11 @@ postrequest=: 4 : 0
 )
 
 redirect=: 3 : 0
-  uri=.y
-  NB. if relative URL, convert to absolute
-  println 'Location: ',uri
+  '' redirect y
+:
+  url=.y
+  qs=. ('?',args)^:(*@#) x
+  println 'Location: ',url,qs
   ContentType'text/html'
 )
 
