@@ -44,6 +44,9 @@ getFnme=: 4 : 0
       fnme=. getPPString inipath;'quanttrts';fkey
       if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
+    case. 'userfolder' do. NB. y is ur_id
+      uns=.'username' getDBField y
+      fnme=. (basefldr,'userpop/'),"1 uns
     case. do.
   end.
   fnme=. jpath"1 fnme
@@ -92,7 +95,18 @@ NB. y is list of boxed new case stage;ci_id
 updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
 )
-NB.*summryCaseInstance
+
+NB.*summryCaseInstance v copies summary info to summary folder 
+Note 'summryCaseInstance'
+Create a folder under course folder called summaries.
+Could think about storing zipped folders/files.
+Update ci_sumry.
+Can see which case instances have summaries by looking up ci_sumry 
+in caseinstances table.
+Store caseinstance folder with animalsim.ini and out/animsummary.csv
+Could store just files renamed as 3.ini and 3.csv , 
+but not as flexible longer-term.
+)
 
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
 NB. y is caseinstanceid
@@ -106,5 +120,12 @@ NB. ys is caseinstance id
 deleteCaseInstFolder=: 3 : 0
   delpath=. 'caseinstfolder' getFnme y
   res=.deltree delpath
+  if. 1=*./res do. 1 else. 0 end.
+)
+NB.*deleteUserFolder v deletes user's folder
+NB. ys is user id
+deleteUserFolders=: 3 : 0
+  delpath=. 'userfolder' getFnme y
+  res=.deltree"1 delpath
   if. 1=*./res do. 1 else. 0 end.
 )

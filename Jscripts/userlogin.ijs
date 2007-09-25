@@ -40,9 +40,8 @@ NB.*registerUser v creates a new user, if successful returns userid
 NB. y is boxed list of strings from registration form
 NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0
-  'uname fname lname refnum email passwd'=.y
-  NB.passwd=._1{::y
-  NB.uname=.0{::y
+  'action uname fname lname refnum email passwd'=.y
+  if. action-:'guest' do. uname=. randPassword 16  end.
   uinfo =. {:'login' getDBTable uname  NB. retrieve data for username
   if. -.uinfo-:'' do. _2 return. end. NB. check usrname not already in use
   pinfo =. {:'email' getDBTable  email
@@ -116,7 +115,6 @@ validSession=: 3 : 0
   if. 0=#sinfo do. 0 return. end. NB. no (active) session
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   NB. assign hdrnames
-  NB. if. -. shash -: ss_hash do. 0 return. end. NB.
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
     'sessionexpire' updateDBTable ".sid

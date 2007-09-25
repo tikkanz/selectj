@@ -50,6 +50,23 @@ CGIFILES=: <;._1 '||SelectLstFEM.csv|SelectLstMALE-1.csv'
 CGIMIMES=: <;._1 '||application/csv|application/csv'
 )
 
+NB.*postrequest v Creates a POST request.
+NB. returns Headers and sends urlencoded args to stdout
+NB. y is rank 2 array of boxed namevaluepairs where 0{"1 is names & 1{"1 is values
+NB. x is bare absolute or relative url
+NB. e.g. url postrequest namevaluepairs
+postrequest=: 4 : 0
+  uri=. x
+  qs=. args y
+  host=. ([:'http://'&-:7&{.) {:: (env 'SERVER_NAME'); 0 ({:: <;._1) 6 }. ]
+  path=. ( '/' dropto 7 }. ])^:([:'http://'&-:7&{.)
+  println 'POST ',(path uri),' HTTP/1.0'
+  println 'Host: ',host uri
+  println 'Content-Length: ',":#qs
+  Expires 0
+  ContentType 'application/x-www-form-urlencoded'
+  stdout qs
+)
 
 redirect=: 3 : 0
   uri=.y

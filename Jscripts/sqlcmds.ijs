@@ -22,7 +22,11 @@ sqlsel_status=: 0 : 0
   FROM users
   WHERE users.ur_id=?;
 )
-
+sqlsel_username=: 0 : 0
+  SELECT users.ur_uname ur_uname
+  FROM users
+  WHERE users.ur_id=?;
+)
 sqlsel_email=: 0 : 0
   SELECT pp.pp_id pp_id ,
          pp.pp_fname pp_fname ,
@@ -63,6 +67,16 @@ sqlupd_sessionexpire=: 0 : 0
   UPDATE sessions
   SET ss_status=0
   WHERE ss_id=?;
+)
+
+sqlsel_expiredguests=: 0 : 0
+  SELECT ur.ur_id ur_id ,
+         ss.ss_id ss_id 
+  FROM main.`users` ur INNER JOIN main.`sessions` ss ON ( `ur`.`ur_id` = `ss`.`ss_urid` ) 
+       INNER JOIN main.`people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
+  WHERE (pp.pp_id =5) 
+  AND (ur.ur_status >0)
+  AND ((ss.ss_expire -julianday('now'))<0);
 )
 
 sqlsel_enrolled=: 0 : 0
@@ -113,11 +127,18 @@ sqlsel_scendef=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlsel_caseinst2expire=: 0 : 0
+  SELECT ci.ci_id ci_id 
+  FROM   main.`users` ur INNER JOIN main.`caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
+  WHERE  (ur.ur_id =?) AND (ci.ci_status >0)
+)
+
 sqlupd_expirecaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_status=0
   WHERE ci_id=?;
 )
+
 
 NB. =========================================================
 NB. Case SQL
