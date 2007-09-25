@@ -10,11 +10,12 @@ NB.*randPassword v Generates alphanumeric password.
 NB. y is optional integer denoting desired password length
 NB. x is optional list of literals valid for use in the password
 randPassword=: 3 : 0
-defx=.'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' 
-defx randPassword y
+  defx=.'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' 
+  defx randPassword y
 :
-len=. (*#y){ 8,y  NB. default length is 8
-len (]{~ [:?[$ [:#]) x
+  if. isdefseed'' do. randomize'' end.
+  len=. (*#y){ 8,y  NB. default length is 8
+  len (]{~ [:?[$ [:#]) x
 )
 
 NB.*isdefseed v Checks if random seed has been reset from J6.01 default.

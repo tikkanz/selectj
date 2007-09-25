@@ -56,6 +56,15 @@ getDBItem=: 3 : 0
  r=.>{.{:r
 )
 
+NB.*getDBField v gets single field from a database query
+NB. returns single field
+getDBField=: 3 : 0
+ '' getDBField y
+:
+ r=. x getDBTable y
+ r=.>{."1}.r
+)
+
 NB.*getDBItemStr v gets single field from a record in database
 NB. returns single field
 getDBItemStr=: 3 : 0
@@ -102,6 +111,7 @@ execSQL=: dyad sdefine
   r=. exec__db y
 )
 
+getDBField_z_=: getDBField_rgssqliteq_
 getDBItem_z_=: getDBItem_rgssqliteq_
 getDBItemStr_z_=: getDBItemStr_rgssqliteq_
 getDBTable_z_=: getDBTable_rgssqliteq_
