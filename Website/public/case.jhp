@@ -28,7 +28,7 @@ try.
 	  fpth=. jpath qparam 'filepath'
 	  fpth=. ('caseinstfolder' getFnme ciid),fpth
 	  fnme=. qparam 'filename'
-      qry=. 'filepath';fpth,:'filename';fnme
+      qry=. ('filepath';fpth),:'filename';fnme
 	  qry redirect page
 	case. 'home';'status';'resetfin';'chgdparams';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
@@ -97,6 +97,12 @@ catch.
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
   println 'coname';coname ''
+  println 'nprnts';nprnts
+  println 'nsires';nsires
+  println 'nmales';nmales
+  println 'ndams';ndams
+  println 'd2s';d2s
+  println $ANIMINI_z_
   println CGIKEYS
   println CGIVALS
   println CGIFILES
