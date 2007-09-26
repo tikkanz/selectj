@@ -15,10 +15,10 @@ PRIMARYFILES=: 0 : 0
 ~Projects/utils/webxhtml
 ~Projects/utils/sqliteq
 ~Projects/utils/passwdhash
-~Projects/utils/extractzip
 ~Projects/utils/dir_add
 ~Projects/utils/dirtrees
 ~Projects/utils/inifiles
+~Projects/utils/ziptrees
 )
 
 PRIMARYLIBS=: 0 : 0
@@ -35,6 +35,7 @@ strings
 tara
 task
 winapi
+zip
 )
 
 DEVFILES=: 0 : 0

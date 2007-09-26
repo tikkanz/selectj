@@ -68,7 +68,7 @@ NB. y is caseinstanceid
 createCaseInstFolder=: 3 : 0
   zippath=. 'scendef' getFnme y
   newpath=. 'caseinstfolder' getFnme y
-  uz=. unzip zippath;newpath  NB. ,.uz;zippath;newpath
+  uz=. newpath unziptree zippath  NB. unzip zippath;newpath
 )
 
 NB.*getCaseInstance v get CaseInstance info for uid,ofid,csid
@@ -99,7 +99,10 @@ updateCaseStage=: 3 : 0
 NB.*summryCaseInstance v copies summary info to summary folder 
 Note 'summryCaseInstance'
 Create a folder under course folder called summaries.
-Could think about storing zipped folders/files.
+nms=. 'sumryfiles' getFnme y NB. get names of Files to store
+zipnm=. 'sumryzip' getFnme y  NB. get name of zip file to store in
+zipnm zipfiles nms
+
 Update ci_sumry.
 Can see which case instances have summaries by looking up ci_sumry 
 in caseinstances table.
