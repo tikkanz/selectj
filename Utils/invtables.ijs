@@ -1,6 +1,6 @@
 NB. Collected Definitions from
 NB. http://www.jsoftware.com/jwiki/Essays/Inverted_Table
-coclass=: 'z'
+coclass 'z'
 
 ifa =: <@(>"1)@|:              NB. inverted from atoms
 afi =: |:@:(<"_1@>)            NB. atoms from inverted
@@ -31,35 +31,37 @@ NB.*tsort1 v sorts inverted table y by tgrade of inverted table x
 NB. eg. ,.each key tsort1 invtble
 NB. eg. ,.each (tnub key) tsort1 tfreqtble key
 NB. tsort1=: ] {&.>~ [: < [: tgrade [
-tsort1=: <@tgrade@[ {&.> ]
+tsort1    =: <@tgrade@[ {&.> ]
 
 NB.*tfreq v frequency of unique rows of inverted table y
 NB.  returns list of frequencies for nub rows of inverted table in order they occur.
 NB.  y is inverted table, usually key columns of a bigger inverted table
 NB. eg. ,.each tfreq key
-tfreq=: #/.~@:|:@:(i.&>)~
+tfreq     =: #/.~@:|:@:(i.&>)~
 
 NB.*tfreqtble v sorted frequency table of unique rows of inverted table y
 NB. returns inverted table with unique rows of y prepended to their frequencies
 NB. y is inverted table
 NB. eg. ,.each tfreqtble key
-tfreqtble=: [: tsort tnub , <@:tfreq
+tfreqtble =: [: tsort tnub , <@:tfreq
 
 NB.*tkeytble v sorted table with prepended unique keys
 NB. y is list or inverted table of data to prepend tnub x to.
 NB. x is inverted table of key columns to prepend to y
 NB. eg. ,.each key tkeytble tfreq key
 NB. eg. ,.each key tkeytble key keysum dat
-tkeytble=: [: tsort1 ([: tnub [) , [: boxopen ]
+tkeytble  =: [: tsort1 ([: tnub [) , [: boxopen ]
 
 NB.*tkeysum v sum inverted table y by unique keys in x
 NB. y is list or inverted table of data 
 NB. x is inverted table of key columns to sum by
 NB. eg. ,.each key keysum dat
 NB. eg. ,.each key tkeytble key keysum dat
-tkeysum=: ] +//.&.>~ <@:tindexof~@:[
+NB. tkeysum   =: ] +//.&.>~ <@:tindexof~@:[
+tkeysum=: <@:tindexof~@:[ +//.&.> ]
 
-tkeyavg=: (tkeysum) %&.> [: < [: tfreq [
+tkeyavg   =: tkeysum % &.> <@:tfreq@:[
+tkeyavg1  =: (+/ % #)tkey  NB. 2x slower 3.5x smaller than tkeyavg
 
 NB.*tkey a inverted table version of /. (key)
 NB. usage. x u tkey y
@@ -69,18 +71,24 @@ NB. u is verb to summarise with
 NB. eg. key  +/tkey dat NB. sums by key
 NB. eg. key >./tkey dat NB. max by key
 NB. eg. key tkeytble key +/tkey dat  NB. prepend sums by key with keys
-tkey=: 1 : '<@tindexof~@[ u/.&.> ]'
+tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
 
 
 Note 'Test animalsim data'
 require 'csv'
 smry=: readcsv jpath '~temp/summary.csv'
 smrysm=:({.smry),(40?<:#smry){ }.smry
-'hdr sm'=:split smrysm
+'hdr sm'=:split smry
 invtble=: ifa sm
 
 key=: 1 3{invtble NB. YOB Sex
 dat=: 0".each 7 10 12{invtble   NB. Freq, pLW8, pFW12
+
+key=: listatom 1{invtble
+dat=: 0". each 9}.invtble
+NB. dat=: 0".each (hdr i. (<'pNLB')-.~ getTrtsOnly hdr){invtble
+
+('year';'freq';9}.hdr),: ,.each key tkeytble (<tfreq key),key tkeyavg dat
 )
 
 Note 'Test generic data'

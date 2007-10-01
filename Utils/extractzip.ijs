@@ -8,12 +8,12 @@ coclass 'rgsunzip'
 3 : 0 ''
 if. -.IFUNIX do. require 'task' end.
 if. IFCONSOLE do.
+  NB.  UNZIP=: '"',(jpath '~install/tools/zip/unzip.exe'),'" -o -C '
   UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
 else.
   UNZIP=: UNZIP_j_
 end.
 )
-
 
 dquote=: '"'&, @ (,&'"')
 hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
@@ -43,10 +43,10 @@ NB. y is 2-item list of boxed strings
 NB.  0{::y filename zip file to extract
 NB.  1{::y name of directory to extract zip file to
 unzip=: 3 : 0
-  'file dir'=.y
+  'file dir'=.dquote each y
   e=. 'Unexpected error'
   if. IFUNIX do.
-    e=. shellcmd 'tar -xzf ',(dquote file),' -C ',dquote dir
+    e=. shellcmd 'tar -xzf ',file,' -C ',dir
   else.
     z=. exequote UNZIP
     if. +./'7z' E. UNZIP do. 
@@ -54,7 +54,7 @@ unzip=: 3 : 0
     else.  NB. assume using Info-Zip unzip
       dirsw=.' -d'
     end.
-    r=. z,' ',(dquote file),dirsw,dquote dir
+    r=. z,' ',file,dirsw,dir
     e=. shellcmd r
     NB. if. 'Ok'-: _2{.e -. CRLF do. e=. 'Ok' end.
   end.

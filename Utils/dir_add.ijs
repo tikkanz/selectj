@@ -10,6 +10,9 @@ dropPS=: }:^:(PATHSEP_j_={:)  NB. drop trailing path separator
 NB.*createdir v Create directory(s)
 NB. y is one or more (boxed) directories to create
 NB. parent-directories must be created before their children
+NB.! problem if user account calling createdir doesn't have 
+NB.! read permission for already existing directories.
+NB.! looks like they don't exist and interface error when try to create
 dircreate=: 3 : 0
   y=. boxopen y
   msk=. -.direxist y
