@@ -68,7 +68,7 @@ NB. y is caseinstanceid
 createCaseInstFolder=: 3 : 0
   zippath=. 'scendef' getFnme y
   newpath=. 'caseinstfolder' getFnme y
-  uz=. newpath unziptree zippath  NB. unzip zippath;newpath
+  uz=. unzip zippath;newpath NB. newpath unziptree zippath 
 )
 
 NB.*getCaseInstance v get CaseInstance info for uid,ofid,csid

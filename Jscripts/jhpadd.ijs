@@ -98,8 +98,6 @@ NB. y is rank 2 array of boxed namevaluepairs where 0{"1 is names & 1{"1 is valu
 args=: [: }.@; ('&'<@,nvp)"1
 
 
-
-
 boxitem=: ,`(<"_1) @. (0=L.)
 
 setcolnames=: 3 : 0
@@ -126,6 +124,8 @@ NB. (listatom 5) -: ,5
 NB. (listatom i.4 3) -: i.4 3
 listatom=: 1&#
 
+matvect=: |:@:,.^:(#&$ = 1:) NB. a vector is made a 1 row matrix
+
 NB. loc returns the full path of the script calling it.
 NB. could be useful for relative calling?
 NB. from the forums
@@ -139,6 +139,9 @@ NB. eg. '","' join 'item1';'item2'
 NB. eg. LF join 'item1';'item2'
 NB. eg. 99 join <&> i.8
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  NB. ignore $.
+
+dquote=: '"'&, @ (,&'"')   NB. enclose in double quotes
+vfms=: [: }. [: , ' ' ,. ] NB. matrix to space-delimited vector
 
 
 NB. makeTable=:[: > [: <;._1 each TAB,each [: <;._2 ] , LF -. {:

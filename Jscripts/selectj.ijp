@@ -11,6 +11,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/mating
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
+~Projects/selectj/summary
 ~Projects/selectj/jrails
 ~Projects/utils/webxhtml
 ~Projects/utils/sqliteq
@@ -18,6 +19,8 @@ PRIMARYFILES=: 0 : 0
 ~Projects/utils/dir_add
 ~Projects/utils/dirtrees
 ~Projects/utils/inifiles
+~Projects/utils/invtables
+~Projects/utils/extractzip
 ~Projects/utils/ziptrees
 )
 
