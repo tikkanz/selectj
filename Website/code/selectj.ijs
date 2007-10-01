@@ -14,6 +14,7 @@ script_z_ '~system\main\strings.ijs'
 script_z_ '~addons\tables\tara\tara.ijs'
 script_z_ '~system\packages\misc\task.ijs'
 script_z_ '~system\packages\winapi\winapi.ijs'
+script_z_ '~addons\arc\zip\zfiles.ijs'
 
 coclass 'rgsselectj'
 
@@ -93,8 +94,6 @@ nvp=: >@{.,'=',urlencode@":@>@{:
 args=: [: }.@; ('&'<@,nvp)"1
 
 
-
-
 boxitem=: ,`(<"_1) @. (0=L.)
 
 setcolnames=: 3 : 0
@@ -112,8 +111,13 @@ coercetxt=: 3 : 0
   if. -.isboxed do. >y end. 
 )
 listatom=: 1&#
+
+matvect=: |:@:,.^:(#&$ = 1:) 
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+
+dquote=: '"'&, @ (,&'"')   
+vfms=: [: }. [: , ' ' ,. ] 
 
 makeTable=: [: > [: <;._1 each ' ',each [: <;._2 (deb@:toJ ]) , LF -. {:
 MimeMap=: 0 : 0
@@ -499,7 +503,7 @@ createCaseInstance=: 3 : 0
 createCaseInstFolder=: 3 : 0
   zippath=. 'scendef' getFnme y
   newpath=. 'caseinstfolder' getFnme y
-  uz=. unzip zippath;newpath  
+  uz=. unzip zippath;newpath 
 )
 getCaseInstance=: 3 : 0
   if. 0=#y do.
@@ -519,7 +523,10 @@ updateCaseStage=: 3 : 0
 )
 Note 'summryCaseInstance'
 Create a folder under course folder called summaries.
-Could think about storing zipped folders/files.
+nms=. 'sumryfiles' getFnme y 
+zipnm=. 'sumryzip' getFnme y  
+zipnm zipfiles nms
+
 Update ci_sumry.
 Can see which case instances have summaries by looking up ci_sumry 
 in caseinstances table.
@@ -1215,6 +1222,107 @@ sqlsel_paramform=: 0 : 0
         INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
   WHERE (ci.ci_id =?);
 )
+
+Note 'make summary table'
+smry=: readcsv jpath '~temp/summary.csv' 
+'hdr sm'=: split smry
+invtble=: ifa sm
+key=: listatom (hdr i. <'YOB'){invtble  
+dat=: 0".each (hdr i. (<'pNLB')-.~ getTrtsOnly hdr){invtble 
+sum=: key tkeytble (<tfreq key),key tkeyavg dat
+
+)
+
+Note 'regression (slope & intercept) of traits'
+)
+
+Note 'how to plot'
+Summarise at the level of a user/course (enrolment)
+So user can compare between different case instances of the same case
+and between different case instances from different cases offered within the a course
+
+Need to be careful with different cases if info is too different.
+
+User has list of summarised case-instances to choose from, can choose
+one or more to compare.
+
+Once chosen then can choose which traits and which type of info to graph.
+Options available is superset of all traits and trait info types available
+in the case-instances to be compared.
+
+Multiplot row for each chosen trait, Multiplot column for each chosen info type.
+Each indiv-plot has a series for each case-instance which contains that info combination.
+Key
+
+
+When summarising between case-instances then genD, Phen & genDe should
+all be plotted on different graphs in a multiplot. Use light colour for
+plot background to help distinguish the three types.
+
+When summarising within case-instance then might want to show genD, Phen
+& genDe on the same graph - but use 2ndry y axis for genDe & genD. The
+lines should have the colour corresponding to the plot backgrounds for
+between case-instance plots.
+
+)
+
+Note 'plot summary'
+yr0=. '2006' 
+strt=. (tnub key) tindexof boxopen yr0
+lbls=. 0". &> {.strt}. each sum
+data=. > }.strt }. each sum
+plot lbls ; data
+)
+
+Note 'test data for plotsummry'
+  X=. i. each 6 + i.9
+  Y=. X ^ each 1 + 0.3 * i.9
+  Y=. (*: , +: ,: ]) each Y
+  Y=. (<1 2 4 9 16 25,(0 6$0),0 1 2 3 4 5) (0)}Y
+plotsummry X;<Y
+((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry X;<Y
+
+  Y=. matvect each <"1 data
+  X=. ((#Y)#<0".lbls)
+  dat=. X;<Y
+  datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
+datinfo plotsummry dat
+)
+plotsummry=: 3 : 0
+  inftyps=. >;:'phen genD genDe'
+  ntrts  =. %/# every (1{::y);inftyps 
+  trtnms =. 'Trait ',"_ 1 (8!:2) ,.>:i.ntrts
+  ncis   =. >./ #every 1{::y 
+  cinms  =. 'Scenario ',"_ 1 (8!:2) ,.>:i.ncis
+  (trtnms;inftyps;cinms) plotsummry y
+:
+  'X Y'=. 2{. boxopen y
+  'trtnms inftyps cinms'=. x
+  infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
+  idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
+  frmt=. [: vfms dquote"1@dtb"1
+  pd 'reset'
+  pd 'multi ',": (#trtnms),#inftyps
+  pd 'title Comparison of Trait progress by Scenario'
+  pd 'captionfont arial 13'
+  pd 'xcaption ', frmt >idx { {:"1 infotypes
+  pd 'ycaption ', frmt trtnms
+  pd 'xgroup ',": (#idx)#0 
+  
+  pd 'ygroup ',": ,  idx{"1 |:({:,~])i.2, #trtnms 
+  pd 'key ', frmt cinms
+  pd 'keypos center top outside'
+  pd 'keystyle left boxed horizontal fat'
+  allcmd=.'type line; pensize 2' 
+  fbclrs=. (#Y)$ idx { 'lightcyan';'mistyrose';'lemonchiffon'
+  pd ((<allcmd,'; framebackcolor '),each fbclrs),. <"1 X,.Y
+ 
+  pd 'visible 0'
+  pd 'isi'
+  pd 'save png'
+ 
+)
+
 coclass 'rgswebforms'
 coinsert COBASE 
 buildButtons=: 3 : 0
@@ -1575,55 +1683,6 @@ salthash=: 3 : 0
 
 salthash_z_=: salthash_rgspasswd_
 randPassword_z_=: randPassword_rgspasswd_
-coclass 'rgsunzip'
-
-3 : 0 ''
-if. -.IFUNIX do. require 'task' end.
-if. IFCONSOLE do.
-  UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
-else.
-  UNZIP=: UNZIP_j_
-end.
-)
-
-
-dquote=: '"'&, @ (,&'"')
-hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
-exequote=: 3 : 0
-  f=. deb y
-  if. '"' = {. f do. f return. end.
-  ndx=. 4 + 1 i.~ '.exe' E. f
-  if. ndx >: #f do. f return. end.
-  '"',(ndx{.f),'"',ndx }. f
-)
-shellcmd=: 3 : 0
-  if. IFUNIX do.
-    hostcmd y
-  else.
-    spawn y
-  end.
-)
-unzip=: 3 : 0
-  'file dir'=.y
-  e=. 'Unexpected error'
-  if. IFUNIX do.
-    e=. shellcmd 'tar -xzf ',(dquote file),' -C ',dquote dir
-  else.
-    z=. exequote UNZIP
-    if. +./'7z' E. UNZIP do. 
-      dirsw=.' -o'
-    else.  
-      dirsw=.' -d'
-    end.
-    r=. z,' ',(dquote file),dirsw,dquote dir
-    e=. shellcmd r
-    
-  end.
-  e
-)
-
-unzip_z_=: unzip_rgsunzip_
-
 require 'dir files'
 
 coclass 'rgsdiradd'
@@ -1763,3 +1822,208 @@ getPPString_z_=: getPPString_rgsini_
 getPPVals_z_=: getPPVals_rgsini_
 writePPString_z_=: writePPString_rgsini_
 makeVals_z_=: makeVals_rgsini_
+coclass 'z'
+
+ifa =: <@(>"1)@|:              
+afi =: |:@:(<"_1@>)            
+
+tassert=: 3 : 0
+ assert. (1>:#$y) *. 32=3!:0 y  
+ assert. 1=#~.#&>y             
+ 1
+)
+
+ttally    =: #@(0&{::)
+tindexof  =: i.&>~@[ i.&|: i.&>
+tmemberof =: i.&>~ e.&|: i.&>~@]
+tless     =: <@:-.@tmemberof #&.> [
+tnubsieve =: ~:@|:@:(i.&>)~
+tnub      =: <@tnubsieve #&.> ]
+tfreq     =: #/.~@:|:@:(i.&>)~  
+tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
+tgrade    =: > @ ((] /: {~)&.>/) @ (}: , <@/:@(_1&{::))
+tgradedown=: > @ ((] \: {~)&.>/) @ (}: , <@\:@(_1&{::))
+tsort     =: <@tgrade {&.> ]
+tsort1    =: <@tgrade@[ {&.> ]
+tfreq     =: #/.~@:|:@:(i.&>)~
+tfreqtble =: [: tsort tnub , <@:tfreq
+tkeytble  =: [: tsort1 ([: tnub [) , [: boxopen ]
+tkeysum=: <@:tindexof~@:[ +//.&.> ]
+
+tkeyavg   =: tkeysum % &.> <@:tfreq@:[
+tkeyavg1  =: (+/ % #)tkey  
+tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
+
+
+Note 'Test animalsim data'
+require 'csv'
+smry=: readcsv jpath '~temp/summary.csv'
+smrysm=:({.smry),(40?<:#smry){ }.smry
+'hdr sm'=:split smry
+invtble=: ifa sm
+
+key=: 1 3{invtble 
+dat=: 0".each 7 10 12{invtble   
+
+key=: listatom 1{invtble
+dat=: 0". each 9}.invtble
+('year';'freq';9}.hdr),: ,.each key tkeytble (<tfreq key),key tkeyavg dat
+)
+
+Note 'Test generic data'
+hdr=: ;: 'ID DOB Sex Nat Height Weight Arrests'
+x0=: 'ID',"1 ];._1 ' ',": 10000+ i.40
+x1=: 1998+ 40 ?.@$ 4
+x2=: (40 ?.@$ 2){ >'Female';'Male'
+x3=: (40 ?.@$ 3){ >'NZ';'US';'CH'
+x4=: 1.2 +  1 * (40?.@$ 0)
+x5=:  60 + 12 * (40?.@$ 0)
+x6=: 40 ?.@$ 6
+invtble=: x0;x1;x2;x3;x4;x5;x6
+
+key=: 1 3 2{invtble
+dat=: 4 5 6{invtble
+,.each key tkeytble (<tfreq key),key tkeyavg dat
+)
+coclass 'rgsunzip'
+
+3 : 0 ''
+if. -.IFUNIX do. require 'task' end.
+if. IFCONSOLE do.
+  
+  UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
+else.
+  UNZIP=: UNZIP_j_
+end.
+)
+
+dquote=: '"'&, @ (,&'"')
+hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
+exequote=: 3 : 0
+  f=. deb y
+  if. '"' = {. f do. f return. end.
+  ndx=. 4 + 1 i.~ '.exe' E. f
+  if. ndx >: #f do. f return. end.
+  '"',(ndx{.f),'"',ndx }. f
+)
+shellcmd=: 3 : 0
+  if. IFUNIX do.
+    hostcmd y
+  else.
+    spawn y
+  end.
+)
+unzip=: 3 : 0
+  'file dir'=.dquote each y
+  e=. 'Unexpected error'
+  if. IFUNIX do.
+    e=. shellcmd 'tar -xzf ',file,' -C ',dir
+  else.
+    z=. exequote UNZIP
+    if. +./'7z' E. UNZIP do. 
+      dirsw=.' -o'
+    else.  
+      dirsw=.' -d'
+    end.
+    r=. z,' ',file,dirsw,dir
+    e=. shellcmd r
+    
+  end.
+  e
+)
+
+unzip_z_=: unzip_rgsunzip_
+
+require 'dir arc/zip/zfiles'
+require 'strings files'  
+3 : 0 ''
+  if. -.IFCONSOLE do. 
+    require 'dir_add' 
+  end.
+)
+
+coclass 'rgsztrees'
+unziptree=: 4 : 0
+  'todir fromzip'=. x;y
+  if. -.fexist fromzip do. 0 0 return. end. 
+  todir=. addPS todir
+  fromall=. /:~{."1 zdir fromzip
+  dirmsk=. '/'={:@> fromall
+  fromfiles=. (-.dirmsk)#fromall
+  repps=. (<'/',PATHSEP_j_) charsub&.> ] 
+  aprf=. ] ,&.>~ [: < [   
+  tofiles=. repps fromfiles
+  tofiles=. todir aprf tofiles
+  fromfiles=. fromfiles,.<fromzip
+  todirs=. repps dirmsk#fromall
+  todirs=. todir aprf todirs
+  todirs=. ~.;}. each ,each /\ each <;.2 each todirs
+  resdir=. dircreate todirs
+  resfile=. 0&<@>tofiles zextract"0 1 fromfiles
+  (+/resdir),+/resfile
+)
+ziptree=: 4 : 0
+  'tozip fromdir'=. x;y
+  if. -.direxist fromdir do. 0 0 return. end. 
+  repps=. (<PATHSEP_j_,'/') charsub&.> ] 
+  dprf=. ] }.&.>~ [: # [  
+  fromdir=. addPS fromdir
+  fromdirs=. addPS each }.dirpath fromdir
+  todirs=. repps fromdir dprf fromdirs
+  todirs=. todirs,.<tozip
+  fromfiles=. {."1 dirtree fromdir
+  tofiles=. repps fromdir dprf fromfiles
+  tofiles=. tofiles,.<tozip
+  zipdir=. PATHSEP_j_ dropafterlast tozip
+  resdir=. dircreate }.,each/\ <;.2  zipdir 
+  resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
+  resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
+  (+/resdir),+/resfile
+)
+zipfiles=: 4 : 0
+  fromfiles=. boxopen y
+  'tozip dirinf'=. 2{.!.(<1) boxopen x
+  if. *./-.fexist @> fromfiles do. 0 return. end. 
+  repps=. (<PATHSEP_j_,'/') charsub&.> ] 
+  dprf=. ] }.&.>~ [: # [  
+  if. (0-:dirinf) +. (1-:dirinf) *. 1=#fromfiles do.
+    tofiles=. '/' takeafterlast each repps fromfiles
+    tofiles=. tofiles,.<tozip
+    todirs=. ''
+  else.
+    if. 1-:dirinf do.
+      basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles 
+      basedir=. PATHSEP_j_ dropafterlast basedir
+    else.
+      basedir=. (, ('/' -. {:))^:(*@#) > repps <dirinf 
+    end.
+    tofiles=. repps basedir dprf fromfiles 
+    todirs=. '/' dropafterlast each tofiles 
+    todirs=. todirs #~ (a:~:todirs) *. ~: tolower each todirs 
+    todirs=. todirs,.<tozip
+    tofiles=. tofiles,.<tozip
+  end.
+  zipdir=. PATHSEP_j_ dropafterlast tozip
+  resdir=. dircreate }.,each/\ <;.2  zipdir 
+  resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
+  resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
+  (+/resdir),+/resfile
+)
+ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
+
+zextract=: 4 : 0
+  dat=. zread y
+  dat fwrite x
+)
+
+zcompress=: 4 : 0
+  dat=. fread y
+  dat zwrite x
+)
+dropafterlast=: [: |. [ dropto [: |. ]
+takeafterlast=: ] }.~ [: >: i:~
+
+unziptree_z_=: unziptree_rgsztrees_
+zipfiles_z_=: zipfiles_rgsztrees_
+ziptree_z_=: ziptree_rgsztrees_
+ztypes_z_=: ztypes_rgsztrees_

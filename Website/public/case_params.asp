@@ -45,7 +45,7 @@
 	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
       <dd><a href="case.jhp?action=status">Case status</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=breed">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=breed">Breed  Population</a></dd> 
       <dd><a href="case.jhp?action=reset">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;

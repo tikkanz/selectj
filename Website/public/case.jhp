@@ -101,7 +101,6 @@ catch.
   println 'nsires';nsires
   println 'nmales';nmales
   println 'ndams';ndams
-  println 'd2s';d2s
   println $ANIMINI_z_
   println CGIKEYS
   println CGIVALS

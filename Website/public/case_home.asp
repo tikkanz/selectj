@@ -70,7 +70,7 @@
           <input name="Upld_fem" type="file" id="Upld_fem" size="35"/>
           <label for="Upld_male">Selected sires  </label>
           <input name="Upld_male" type="file" id="Upld_male" size="35" />
-          <input type="button" id="upld" onclick="upldSelctdList()" value="Upload Files & Mate" />
+          <input type="button" id="upld" onclick="upldSelctdList()" value="Upload Files &amp; Breed" />
       </form>
       </fieldset>
     </div>
@@ -96,7 +96,7 @@
 	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
       <dd><a href="case.jhp?action=status">Case status</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=breed">Breed your flock</a></dd> 
+      <dd><a href="case.jhp?action=breed">Breed  Population</a></dd> 
       <dd><a href="case.jhp?action=reset">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;
