@@ -1,7 +1,7 @@
 NB. verbs for copying and deleting directory trees
 
 require 'dir files'
-NB. needs addPS, dropPS, dircreate, direxist verbs from dir_add.ijs script
+NB. needs addPS, dropPS, dircreate, verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
 if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
@@ -20,7 +20,7 @@ NB.                     1{ number of files successfully copied
 NB. any existing files of the same name will be written over
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
-  if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
+  if. 2~: ftype fromdir do. 0 0 return. end. NB. exit if fromdir not found
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
   aprf=. ] ,&.>~ [: < [    NB. catenates x to start of each y
   fromdirs=. dirpath fromdir

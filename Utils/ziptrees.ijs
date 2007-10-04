@@ -2,7 +2,7 @@ NB. verbs for zipping and extracting directory trees using arc/zip addon
 
 require 'dir arc/zip/zfiles'
 require 'strings files'  NB. would get loaded by other scripts anyway
-NB. needs addPS, dircreate, direxist verbs from dir_add.ijs script
+NB. needs addPS, dircreate verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
   if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
@@ -43,7 +43,7 @@ NB. returns 2-item list 0{ number of directories written to zipfile
 NB.                     1{ number of files written to zipfile
 ziptree=: 4 : 0
   'tozip fromdir'=. x;y
-  if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
+  if. 2~:ftype fromdir do. 0 0 return. end. NB. exit if fromdir not found
   repps=. (<PATHSEP_j_,'/') charsub&.> ] NB. replaces PATHSEP_j_ with '/'
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
   fromdir=. addPS fromdir
