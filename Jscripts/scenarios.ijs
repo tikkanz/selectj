@@ -66,6 +66,7 @@ sampleflkeffects samplehrdeffects
 selnlistfnme     selnlist
 traitinfofnme    trtinfo
 usesiresxflk     usesiresxhrd
+flocks           herds
 flock            herd
 flk              hrd
 )
@@ -124,6 +125,24 @@ NB. prefsuf=: [:,(>@{.@[,],>@{:@[)&.>"0 _
 NB. e.g. (('p';''),:('g';'de')) prefsuf 'NLB';'LW8';'FW12'
 NB.      <==>  'pNLB';'pLW8';'pFW12';'gNLBde';'gLW8de';'gFW12de'
 prefsuf=: [:,<@;@(1&C.)@,"1 0/
+
+NB.*makeTrtColLbl v Creates Trait column labels
+NB. result is boxed list of trait column labels sorted by infotype then trait
+NB. y is boxed list of trait base names
+NB. x is boxed list of infotypes
+makeTrtColLbl=: 3 : 0
+  ('phen';'genD';'genDe') makeTrtColLbl y
+:
+  ps=. ('phen';'genD';'genDe') e. boxopen x
+  ps=. ps# ('p';''),('g';'d'),:('g';'de')
+  z=. ps prefsuf boxopen y NB. prefix/suffix traits
+)
+
+NB.*sortTrtColLbl v Sorts trait column labels by trait then infotype
+NB. result is y sorted by trait then infotype
+NB. y is boxed list of trait column labels from makeTrtColLbl
+NB. x is 2-item integer list 0{x is #Trts, 1{x is #infotypes
+sortTrtColLbl=: ] /: ,@|:@i.@[
 
 NB.*getTrtBase v removes lowercase suffixes and prefixes from Traits names
 NB. returns list of boxed base names for traits
@@ -273,9 +292,7 @@ updateKeyState=: 4 : 0
         if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. NB. default to phenotype if selnmeth not set
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        kval=. ps prefsuf trts NB. prefix/suffix trts2select traits based on selnmeth
+        kval=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval NB. use birth rank for pNLB
       else. key2upd8=. '' end. NB. don't update key
     case. 'phens2sim' do.
@@ -297,9 +314,7 @@ updateKeyState=: 4 : 0
         if. (<'summtype') e. x do.
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. NB. default to phenotype & genotype if summtype not set
-        ps=. ('phen';'genD';'genDe') e. st
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        kval=. ps prefsuf trts NB. prefix/suffix trts2summ traits based on summtype
+        kval=. st makeTrtColLbl trts NB. prefix/suffix trts2summ traits based on summtype
       else. key2upd8=. '' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. NB. only calculate if trts2select is set in form
@@ -307,9 +322,7 @@ updateKeyState=: 4 : 0
         if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. NB. default to phenotype if selnmeth not set
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        trtflds=. ps prefsuf trts NB. prefix/suffix trts2select traits based on selnmeth
+        trtflds=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         nttrt=. getTrtsNot key2upd8 getIniVals ANIMINI NB.non-trait fields already in SelectListCols
         kval=. nttrt,trtflds
       else. key2upd8=. '' end.
