@@ -11,17 +11,30 @@ tassert=: 3 : 0
  1
 )
 
-ttally    =: #@(0&{::)
+ttally    =: #@>@{.
 tindexof  =: i.&>~@[ i.&|: i.&>
 tmemberof =: i.&>~ e.&|: i.&>~@]
 tless     =: <@:-.@tmemberof #&.> [
 tnubsieve =: ~:@|:@:(i.&>)~
 tnub      =: <@tnubsieve #&.> ]
-tfreq     =: #/.~@:|:@:(i.&>)~  NB. frequency of unique keys RGS
 tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
-tgrade    =: > @ ((] /: {~)&.>/) @ (}: , <@/:@(_1&{::))
-tgradedown=: > @ ((] \: {~)&.>/) @ (}: , <@\:@(_1&{::))
+tgrade    =: > @ ((] /: {~)&.>/) @ (}: , /:&.>@{:)
+tgradedown=: > @ ((] \: {~)&.>/) @ (}: , \:&.>@{:)
 tsort     =: <@tgrade {&.> ]
+tfrom     =: <@[ {&.> ] NB. forums
+
+
+tfreq     =: #/.~@:|:@:(i.&>)~  NB. frequency of unique keys RGS
+
+Note 'forum Roger'
+- Alternative defns for tfreq are:
+tfreq=: #/.~@tindexof~
+tfreq=: >@(# tkey)~
+
+tsort1 should perhaps be "order x by y" rather than the proposed "order y by x", to follow the dyads /: and \: .
+
+)
+
 
 NB. Below are my additions to the above verbs 
 NB. for summarising inverted tables using key columns
