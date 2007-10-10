@@ -92,34 +92,6 @@ encode=:  [: toupper ('%',(I.'6'=,3!:3'f') {&, 3!:3)
 urlencode=:  [: ; encode^:(safe -.@e.~ ])&.>
 nvp=: >@{.,'=',urlencode@":@>@{:
 args=: [: }.@; ('&'<@,nvp)"1
-
-
-boxitem=: ,`(<"_1) @. (0=L.)
-
-setcolnames=: 3 : 0
-  if. y-:i.0 0 do. return. end.
-  'hdr dat'=. split y
-  (hdr)=: |:dat
-  ''
-)
-coercetxt=: 3 : 0
-  isboxed=.0<L. y
-  y=. boxopen y
-  msk=. -.isnum @> y
-  newnums=. 0&coerce each msk#y
-  y=.[newnums (I.msk)}y 
-  if. -.isboxed do. >y end. 
-)
-listatom=: 1&#
-
-matvect=: |:@:,.^:(#&$ = 1:) 
-loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
-join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
-
-dquote=: '"'&, @ (,&'"')   
-vfms=: [: }. [: , ' ' ,. ] 
-
-makeTable=: [: > [: <;._1 each ' ',each [: <;._2 (deb@:toJ ]) , LF -. {:
 MimeMap=: 0 : 0
 .*            application/octet-stream
 .323          text/h323
@@ -329,6 +301,31 @@ MimeMap=: 0 : 0
 )
 
 coclass COBASE_z_  
+listatom=: 1&#
+matvect=: |:@:,.^:(#&$ = 1:) 
+idxfnd=: i. #~ i. < [: # [
+loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+dquote=: '"'&, @ (,&'"')
+vfms=: [: }. [: , ' ' ,. ] 
+
+makeTable=: [: > [: <;._1 each ' ',each [: <;._2 (deb@:toJ ]) , LF -. {:
+boxitem=: ,`(<"_1) @. (0=L.)
+setcolnames=: 3 : 0
+  if. y-:i.0 0 do. return. end.
+  'hdr dat'=. split y
+  (hdr)=: |:dat
+  ''
+)
+coercetxt=: 3 : 0
+  isboxed=.0<L. y
+  y=. boxopen y
+  msk=. -.isnum @> y
+  newnums=. 0&coerce each msk#y
+  y=.[newnums (I.msk)}y 
+  if. -.isboxed do. >y end. 
+)
+
 createSession=: 3 : 0
  if. isdefseed_rgspasswd_'' do. randomize'' end.
  sid=. >:?<:-:2^32 
@@ -603,6 +600,7 @@ sampleflkeffects samplehrdeffects
 selnlistfnme     selnlist
 traitinfofnme    trtinfo
 usesiresxflk     usesiresxhrd
+flocks           herds
 flock            herd
 flk              hrd
 )
@@ -620,6 +618,14 @@ getIniIdx=: ''&$: : (4 : 0)
     i else. '' end.
 )
 prefsuf=: [:,<@;@(1&C.)@,"1 0/
+makeTrtColLbl=: 3 : 0
+  ('phen';'genD';'genDe') makeTrtColLbl y
+:
+  ps=. ('phen';'genD';'genDe') e. boxopen x
+  ps=. ps# ('p';''),('g';'d'),:('g';'de')
+  z=. ps prefsuf boxopen y 
+)
+sortTrtColLbl=: ] /: ,@|:@i.@[
 getTrtBase=: ((<'pgde') -.&.>~ ])
 getTrtsOnly=: ] #~ 'pg' e.~ {.@>
 getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
@@ -735,9 +741,7 @@ updateKeyState=: 4 : 0
         if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. 
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        kval=. ps prefsuf trts 
+        kval=. sm makeTrtColLbl trts 
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
       else. key2upd8=. '' end. 
     case. 'phens2sim' do.
@@ -759,9 +763,7 @@ updateKeyState=: 4 : 0
         if. (<'summtype') e. x do.
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. 
-        ps=. ('phen';'genD';'genDe') e. st
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        kval=. ps prefsuf trts 
+        kval=. st makeTrtColLbl trts 
       else. key2upd8=. '' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. 
@@ -769,9 +771,7 @@ updateKeyState=: 4 : 0
         if. (<'selnmeth') e. x do.
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. 
-        ps=. ('phen';'genD';'genDe') e. sm
-        ps=. ps# ('p';''),('g';'d'),:('g';'de')
-        trtflds=. ps prefsuf trts 
+        trtflds=. sm makeTrtColLbl trts 
         nttrt=. getTrtsNot key2upd8 getIniVals ANIMINI 
         kval=. nttrt,trtflds
       else. key2upd8=. '' end.
@@ -928,6 +928,283 @@ runAnimalSim=: 3 : 0
   end.
 )
 
+Note 'test data'
+keylbls=. ;:'YOB'
+trtlbls=. ;:'NLB LW8 FW12 FD LEAN FAT'
+inftyps=. ;:'phen genD'
+csinsts=. 1 2 3
+keylbls=. ;:'YOB'
+trtlbls=. ;:'NLB WWT LW8 FW12'
+inftyps=. ;:'phen'
+csinsts=. 1 2
+
+datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
+sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
+
+)
+sumSummaryCSV=: 4 :0
+  'keylbls datlbls'=. x
+  fnme=. jpath '~temp/summary.csv'  
+  smry=. readcsv fnme
+  'hdr sm'=. split smry
+  invtble=. ifa sm
+  keyidx=. hdr idxfnd keylbls 
+  key=. listatom keyidx{invtble  
+  datidx=. hdr i. datlbls
+  dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble 
+  sum=. key tkeytble (<tfreq key),key tkeyavg dat 
+  yr0=. '2006'
+  strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
+  if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
+    
+    
+    popsz=. 200 
+    sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
+  end.
+  sum=. strt}. each sum  
+  ((keyidx{hdr),(<'Freq'),datlbls),:sum
+)
+
+
+Note 'user interface'
+Summarys at the level of a user/course (enrolment)
+So user can compare between different case instances of the same case
+and between different case instances from different cases offered within a course
+
+Need to be careful with different cases if info is too different.
+
+User has list of summarised case-instances to choose from, can choose
+one or more to compare.
+
+Case Summaries page - pretty much like list of course cases page, but 
+lists summarized case instances with their user name and descriptions. 
+Check box associated with each case instance. User to check one or more
+case instances to compare. Click "Compare" button. Also options to  
+download AnimSummary.csv for each case instance, Delete case instance
+summary(s).
+
+Once chosen then can choose which traits and which type of info (phen,genD,genDe) to graph.
+Options available is superset of all traits and trait info types available
+in the case-instances to be compared.
+
+Page with form - table showing traits by case instances with a 
+tick in each cell if that trait is available for that case instance.
+Last column is check boxes - check which traits to summarize.
+Choose which infotypes (phen,genD,genDe) to summarize.
+Choose graphical or tabular summary (regression too)
+Display graph/table below table or in separate window.
+)
+
+Note 'regression (slope & intercept) of traits'
+)
+
+Note 'how to plot'
+Multiplot row for each chosen trait, Multiplot column for each chosen info type.
+Each indiv-plot has a series for each case-instance which contains that info combination.
+
+plotsummry recognizes a series with only 0s as missing info
+  (e.g. if one of the case-instances does not have a certain trait). 
+  The verb will compress out the missing rows & their colors.
+
+plotsummry can handle situation where different case instances have
+different numbers of selection cycles (i.e. length of x differs between series.)
+In that case need to do multiple plots on a single graph rather
+than plot multiple series (plotsummry1 below). This may have a performance penalty.
+
+pd every <"1 x1;y1,:x2;y2
+
+When summarising between case-instances then genD, Phen & genDe are 
+plotted on different graphs in a multiplot. A light colour 
+plot background helps distinguish the three types.
+
+When summarising within case-instance then might want to show genD, Phen
+& genDe on the same graph - but use 2ndry y axis for genDe & genD. The
+lines should have the colour corresponding to the plot backgrounds for
+between case-instance plots.
+
+How to handle plots where summary is by something other than YOB??
+)
+
+Note 'test data for plotsummry'
+   X=: 2001&+&i. each 5 3 4
+   Y=: i. each 5 3 4
+   Y=: Y,:2* each Y
+   Y=: Y,8- each {.Y
+   Y=: Y,3#a:
+   Y=: (a:) (<1 0)}Y
+   Y=: (10%~3 5 7)+each"1 Y
+
+((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
+)
+
+Note 'Prepare summaries to plot'
+collbls=. {.{. every sumrys 
+keylen=. collbls i. <'Freq'
+data=. {: each sumrys
+X=. 0". &> each keylen{.each data
+Y=. > each (>:keylen)}. each data 
+Y=. ;,.each/ <"1 each Y  
+
+trtnms =. >'Fleece weight 12';'Live weight 8' 
+trtnms =. >trtlbls
+inftyps=. >inftyps
+cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' 
+
+(trtnms;inftyps;cinms) plotsummry X;<Y
+)
+plotsummry=: 3 : 0
+  inftyps=. >;:'phen genD genDe' 
+  ntrts  =. %/# every (1{::y);inftyps 
+  trtnms =. 'Trait ',"_ 1 (8!:2) ,.>:i.ntrts
+  ncis   =. >./ #every 1{::y 
+  cinms  =. 'Scenario ',"_ 1 (8!:2) ,.>:i.ncis
+  (trtnms;inftyps;cinms) plotsummry y
+:
+  'X Y'=. 2{. boxopen y
+  'trtnms inftyps cinms'=. matvect each x
+  infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
+  idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
+  nplots=. */#every trtnms;inftyps;cinms
+  
+  
+  msksnull=. <"1 +./@:*every Y 
+  mskpnull=. -.+./every msksnull 
+  frmt=. [: vfms dquote"1@dtb"1
+  clrs=. ;:'blue red green purple fuchsia olive teal yellow tan aqua brown gray'
+  pd 'reset'
+  pd 'visible ',":-. IFCONSOLE  
+  pd 'multi ',": (#trtnms),#inftyps
+  pd 'title Comparison of Trait progress by Scenario'
+  pd 'captionfont arial 13'
+  pd 'xcaption ', frmt >idx { {:"1 infotypes
+  pd 'ycaption ', frmt trtnms
+  
+  pd 'xgroup ',": mskpnull 
+  
+  pd 'ygroup ',": ,  idx{"1 |:({:,~])i.2, #trtnms 
+  pd 'key ', frmt cinms
+  pd 'keypos center top outside'
+  pd 'keystyle left boxed horizontal fat'
+  pd 'keycolor ',',' join (#cinms){. clrs
+  xtp=. ';xticpos ',,":(] {::~ (] i. >./)@:(#&>)) X  
+  allcmd=. 'type line; pensize 2;',xtp
+
+  itmclr=. nplots$(#cinms) {. clrs
+  itmclr=. (<';itemcolor '), each itmclr
+
+  fbclr=. (nplots)$(#cinms) # idx { 'lightcyan';'mistyrose';'lemonchiffon'
+  fbclr=. (<';framebackcolor '), each fbclr
+
+  opts=. (<allcmd),each ;each <"1 itmclr,.fbclr
+  
+  opts=. (nplots $(#cinms){.1)<;.1 opts 
+  opts=. msksnull# each opts  
+  data=. ,.each/"1 (<X),. <"1 Y
+  data=. msksnull# each data
+  pd ,.each/"1 opts ,. <"1 each data
+  pd 'isi'
+  
+  
+)
+captureIsi=: 3 :0
+  800 600 captureIsi y
+:
+  if. -.*#y do. y=.jpath '~temp/tstcapture.png' end.
+  require 'media/platimg'
+  coinsert 'jgl2'
+  glwh=: 3 : 'wd''pmovex '',(+0 0,y-glqwh_jgl2_@$@#)&.".wd''qformx'''
+  glwh x
+  glqall=: (|. $ [:glqpixels 0 0&,)@glqwh
+  if. (<toupper y) e. ;:'BMP GIF JPEG PNG TIFF EXIF ICO WMF EMF' do.
+    y putimg~ glqall'' 
+  else.
+    y writeimg~ glqall''  
+  end.
+)
+
+Note 'to use platimg instead of image3'
+  
+  
+  load 'media/platimg'
+  coinsert 'jgl2'
+  glqall=: (|. $ [:glqpixels 0 0&,)@glqwh
+  pd 'visible 0'
+  pd 'isi'
+  
+  'tst.png' writeimg~ glqall''
+  tstpng=: 'png' putimg~ glqall'' 
+
+To resize window/image before capture use:
+   glwh=: 3 : 'wd''pmovex '',(+0 0,y-glqwh_jgl2_@$@#)&.".wd''qformx'''
+   glwh 4 3*200  
+)
+
+
+Note 'test data for plotsummry1'
+  X=. i. each 6 + i.9
+  Y=. X ^ each 1 + 0.3 * i.9
+  Y=. (*: , +: ,: ]) each Y
+  Y=. (<1 2 4 9 16 25,(0 6$0),0 1 2 3 4 5) (0)}Y
+plotsummry1 X;<Y
+((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry1 X;<Y
+
+  Y=. matvect each <"1 data  
+  X=. ((#Y)#<lbls)  
+  dat=. X;<Y
+  datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
+datinfo plotsummry1 dat
+)
+plotsummry1=: 3 : 0
+  inftyps=. >;:'phen genD genDe' 
+  ntrts  =. %/# every (1{::y);inftyps 
+  trtnms =. 'Trait ',"_ 1 (8!:2) ,.>:i.ntrts
+  ncis   =. >./ #every 1{::y 
+  cinms  =. 'Scenario ',"_ 1 (8!:2) ,.>:i.ncis
+  (trtnms;inftyps;cinms) plotsummry1 y
+:
+  'X Y'=. 2{. boxopen y
+  'trtnms inftyps cinms'=. matvect each x
+  infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
+  idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
+  frmt=. [: vfms dquote"1@dtb"1
+  pd 'reset'
+  pd 'visible 1'
+  pd 'multi ',": (#trtnms),#inftyps
+  pd 'title Comparison of Trait progress by Scenario'
+  pd 'captionfont arial 13'
+  pd 'xcaption ', frmt >idx { {:"1 infotypes
+  pd 'ycaption ', frmt trtnms
+  pd 'xgroup ',": (#idx)#0 
+  
+  pd 'ygroup ',": ,  idx{"1 |:({:,~])i.2, #trtnms 
+  pd 'key ', frmt cinms
+  pd 'keypos center top outside'
+  pd 'keystyle left boxed horizontal fat'
+  clrs=. ;:'blue red green purple fuchsia olive teal yellow tan aqua brown gray'
+  pd 'keycolor ',',' join (#cinms){. clrs
+  allcmd=. 'type line; pensize 2'
+  cidx=.([: I. [: (*./"1) 0&~:) each Y 
+  Y=. cidx {each Y  
+  msknull=. *&#each cidx  
+
+  itmclr=. cidx { each <clrs  
+  itmclr=. ',' join each (<a:) (I.-.*#&>tstm)}tstm 
+  
+  itmclr=. (<'; itemcolor '), each itmclr
+
+  fbclr=. (#Y)$ idx { 'lightcyan';'mistyrose';'lemonchiffon'
+  fbclr=. (<'; framebackcolor '), each fbclr
+
+  opts=. (<allcmd),each ;each <"1 itmclr,.fbclr
+  
+  opts=. msknull# each opts  
+  data=. msknull# each <"1 X,.Y
+  pd opts ,. data
+ 
+  pd 'isi'
+  pd 'save png'
+ 
+)
 
 coclass 'rgssqliteq'
 sqlsel_login=: 0 : 0
@@ -1222,107 +1499,6 @@ sqlsel_paramform=: 0 : 0
         INNER JOIN `casefieldsets` cf ON ( `cs`.`cs_id` = `cf`.`cf_csid` ) 
   WHERE (ci.ci_id =?);
 )
-
-Note 'make summary table'
-smry=: readcsv jpath '~temp/summary.csv' 
-'hdr sm'=: split smry
-invtble=: ifa sm
-key=: listatom (hdr i. <'YOB'){invtble  
-dat=: 0".each (hdr i. (<'pNLB')-.~ getTrtsOnly hdr){invtble 
-sum=: key tkeytble (<tfreq key),key tkeyavg dat
-
-)
-
-Note 'regression (slope & intercept) of traits'
-)
-
-Note 'how to plot'
-Summarise at the level of a user/course (enrolment)
-So user can compare between different case instances of the same case
-and between different case instances from different cases offered within the a course
-
-Need to be careful with different cases if info is too different.
-
-User has list of summarised case-instances to choose from, can choose
-one or more to compare.
-
-Once chosen then can choose which traits and which type of info to graph.
-Options available is superset of all traits and trait info types available
-in the case-instances to be compared.
-
-Multiplot row for each chosen trait, Multiplot column for each chosen info type.
-Each indiv-plot has a series for each case-instance which contains that info combination.
-Key
-
-
-When summarising between case-instances then genD, Phen & genDe should
-all be plotted on different graphs in a multiplot. Use light colour for
-plot background to help distinguish the three types.
-
-When summarising within case-instance then might want to show genD, Phen
-& genDe on the same graph - but use 2ndry y axis for genDe & genD. The
-lines should have the colour corresponding to the plot backgrounds for
-between case-instance plots.
-
-)
-
-Note 'plot summary'
-yr0=. '2006' 
-strt=. (tnub key) tindexof boxopen yr0
-lbls=. 0". &> {.strt}. each sum
-data=. > }.strt }. each sum
-plot lbls ; data
-)
-
-Note 'test data for plotsummry'
-  X=. i. each 6 + i.9
-  Y=. X ^ each 1 + 0.3 * i.9
-  Y=. (*: , +: ,: ]) each Y
-  Y=. (<1 2 4 9 16 25,(0 6$0),0 1 2 3 4 5) (0)}Y
-plotsummry X;<Y
-((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry X;<Y
-
-  Y=. matvect each <"1 data
-  X=. ((#Y)#<0".lbls)
-  dat=. X;<Y
-  datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
-datinfo plotsummry dat
-)
-plotsummry=: 3 : 0
-  inftyps=. >;:'phen genD genDe'
-  ntrts  =. %/# every (1{::y);inftyps 
-  trtnms =. 'Trait ',"_ 1 (8!:2) ,.>:i.ntrts
-  ncis   =. >./ #every 1{::y 
-  cinms  =. 'Scenario ',"_ 1 (8!:2) ,.>:i.ncis
-  (trtnms;inftyps;cinms) plotsummry y
-:
-  'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. x
-  infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
-  idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
-  frmt=. [: vfms dquote"1@dtb"1
-  pd 'reset'
-  pd 'multi ',": (#trtnms),#inftyps
-  pd 'title Comparison of Trait progress by Scenario'
-  pd 'captionfont arial 13'
-  pd 'xcaption ', frmt >idx { {:"1 infotypes
-  pd 'ycaption ', frmt trtnms
-  pd 'xgroup ',": (#idx)#0 
-  
-  pd 'ygroup ',": ,  idx{"1 |:({:,~])i.2, #trtnms 
-  pd 'key ', frmt cinms
-  pd 'keypos center top outside'
-  pd 'keystyle left boxed horizontal fat'
-  allcmd=.'type line; pensize 2' 
-  fbclrs=. (#Y)$ idx { 'lightcyan';'mistyrose';'lemonchiffon'
-  pd ((<allcmd,'; framebackcolor '),each fbclrs),. <"1 X,.Y
- 
-  pd 'visible 0'
-  pd 'isi'
-  pd 'save png'
- 
-)
-
 coclass 'rgswebforms'
 coinsert COBASE 
 buildButtons=: 3 : 0
@@ -1683,7 +1859,7 @@ salthash=: 3 : 0
 
 salthash_z_=: salthash_rgspasswd_
 randPassword_z_=: randPassword_rgspasswd_
-require 'dir files'
+require 'files'
 
 coclass 'rgsdiradd'
 
@@ -1691,7 +1867,7 @@ addPS=: , PATHSEP_j_ -. {:
 dropPS=: }:^:(PATHSEP_j_={:)  
 dircreate=: 3 : 0
   y=. boxopen y
-  msk=. -.direxist y
+  msk=. 2~:ftype y  
   if. ''-:$msk do. msk=.(#y)#msk end.
   res=.1!:5 msk#y
   msk expand ,res
@@ -1700,8 +1876,9 @@ direxist=: 'd' e."1 [: > [: , [: ({:"1) 1!:0@(fboxname&>)@(dropPS&.>)@boxopen
  
  
 
+
+
 dircreate_z_=: dircreate_rgsdiradd_
-direxist_z_=: direxist_rgsdiradd_
 addPS_z_=: addPS_rgsdiradd_
 dropPS_z_=: dropPS_rgsdiradd_
 require 'dir files'
@@ -1716,7 +1893,7 @@ addPS=: , PATHSEP_j_ -. {:
 dropPS=: }:^:(PATHSEP_j_={:)  
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
-  if. -.direxist fromdir do. 0 0 return. end. 
+  if. 2~: ftype fromdir do. 0 0 return. end. 
   dprf=. ] }.&.>~ [: # [  
   aprf=. ] ,&.>~ [: < [    
   fromdirs=. dirpath fromdir
@@ -1833,17 +2010,30 @@ tassert=: 3 : 0
  1
 )
 
-ttally    =: #@(0&{::)
+ttally    =: #@>@{.
 tindexof  =: i.&>~@[ i.&|: i.&>
 tmemberof =: i.&>~ e.&|: i.&>~@]
 tless     =: <@:-.@tmemberof #&.> [
 tnubsieve =: ~:@|:@:(i.&>)~
 tnub      =: <@tnubsieve #&.> ]
-tfreq     =: #/.~@:|:@:(i.&>)~  
 tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
-tgrade    =: > @ ((] /: {~)&.>/) @ (}: , <@/:@(_1&{::))
-tgradedown=: > @ ((] \: {~)&.>/) @ (}: , <@\:@(_1&{::))
+tgrade    =: > @ ((] /: {~)&.>/) @ (}: , /:&.>@{:)
+tgradedown=: > @ ((] \: {~)&.>/) @ (}: , \:&.>@{:)
 tsort     =: <@tgrade {&.> ]
+tfrom     =: <@[ {&.> ] 
+
+
+tfreq     =: #/.~@:|:@:(i.&>)~  
+
+Note 'forum Roger'
+- Alternative defns for tfreq are:
+tfreq=: #/.~@tindexof~
+tfreq=: >@(# tkey)~
+
+tsort1 should perhaps be "order x by y" rather than the proposed "order y by x", to follow the dyads /: and \: .
+
+)
+
 tsort1    =: <@tgrade@[ {&.> ]
 tfreq     =: #/.~@:|:@:(i.&>)~
 tfreqtble =: [: tsort tnub , <@:tfreq
@@ -1964,7 +2154,7 @@ unziptree=: 4 : 0
 )
 ziptree=: 4 : 0
   'tozip fromdir'=. x;y
-  if. -.direxist fromdir do. 0 0 return. end. 
+  if. 2~:ftype fromdir do. 0 0 return. end. 
   repps=. (<PATHSEP_j_,'/') charsub&.> ] 
   dprf=. ] }.&.>~ [: # [  
   fromdir=. addPS fromdir
