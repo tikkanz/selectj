@@ -37,6 +37,23 @@ getFnme=: 4 : 0
         fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
       end.
       fnme=.fdir&, @> boxopen fnme
+    case. 'summaryCSV' do.
+    case. 'summaryINI' do.
+    case. 'sumryfiles' do. NB. fnames of files to include in zip
+      fnme=. >('animini';'animsumry') getFnme each y
+    case. 'sumryzip' do.
+      NB. userpop/uname/coursecode_year_sem_dm/summaries/ciid.zip
+      fdir=. 'sumryfolder' getFnme y
+      fnme=. ":y
+      fnme=. fdir,fnme,'.zip'
+    case. 'sumryfolder' do.
+      NB. userpop/uname/coursecode_year_sem_dm/summaries/
+      pathinfo=. 'caseinstfolder' getDBTableStr y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
+      fnme=. '/' pathdelim ur_uname;of_code;'summaries'
+      fnme=. basefldr,'userpop/',fnme,'/'
     case. 'trtinfo' do.
       fdir=. 'caseinstfolder' getFnme y
       inipath=. 'animini' getFnme y
@@ -90,25 +107,36 @@ getCaseInstance=: 3 : 0
   end.
 )
 
-NB.*updateCaseStage
+NB.*updateCaseStage v Update stage/status of case instance.
 NB. y is list of boxed new case stage;ci_id
 updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
 )
 
 NB.*summryCaseInstance v copies summary info to summary folder 
-Note 'summryCaseInstance'
-Create a folder under course folder called summaries.
-nms=. 'sumryfiles' getFnme y NB. get names of Files to store
-zipnm=. 'sumryzip' getFnme y  NB. get name of zip file to store in
-zipnm zipfiles nms
+summryCaseInstance=: 3 :0
+  nms=. <"1&dtb"1 'sumryfiles' getFnme y NB. get names of Files to store
+  zipnm=. 'sumryzip' getFnme y  NB. get name of zip file to store in
+  dirinf=. 'caseinstfolder' getFnme y
+  z=. (zipnm;dirinf) zipfiles nms
+  if. (#nms)={:z do. NB. update only if all files successfully zipped
+    'sumrycaseinst' updateDBTable y  NB. Update ci_sumry in caseinstances table
+  end.
+)
 
-Update ci_sumry.
+Note 'summryCaseInstance'
 Can see which case instances have summaries by looking up ci_sumry 
 in caseinstances table.
-Store caseinstance folder with animalsim.ini and out/animsummary.csv
-Could store just files renamed as 3.ini and 3.csv , 
-but not as flexible longer-term.
+)
+
+NB.*deleteCaseInstSummary v deletes zip file containing summary info for case instance
+NB. y is ciid(s)
+deleteCaseInstSummary=: 3 :0
+  zipnm=. 'sumryzip' getFnme y
+  ferase zipnm
+  if. -. fexist zipnm do.
+    'delsumrycaseinst' updateDBTable y  NB. update ci_sumry in caseinstances table.
+  end.
 )
 
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
