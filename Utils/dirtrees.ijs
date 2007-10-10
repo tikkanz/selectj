@@ -20,7 +20,7 @@ NB.                     1{ number of files successfully copied
 NB. any existing files of the same name will be written over
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
-  if. 2~: ftype fromdir do. 0 0 return. end. NB. exit if fromdir not found
+  if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
   aprf=. ] ,&.>~ [: < [    NB. catenates x to start of each y
   fromdirs=. dirpath fromdir
@@ -43,6 +43,8 @@ deltree=: 3 : 0
     *./ res,0<ferase |.dirpath y
   catch. 0 end.
 )
+
+direxist=: 2 = ftype&>@: boxopen
 
 fcopy=: 4 : 0
   dat=. fread each boxopen y

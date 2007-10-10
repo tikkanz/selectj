@@ -27,13 +27,17 @@ unziptree=: 4 : 0
   repps=. (<'/',PATHSEP_j_) charsub&.> ] NB. replaces '/' with PATHSEP_j_
   aprf=. ] ,&.>~ [: < [   NB. catenates x to start of each y
   tofiles=. repps fromfiles
+  todirs=. }. ,each /\ <;.2 todir NB. base dirs
+  msk=. -.direxist todirs
+  NB. zero any 1s before 1st 0 (dir must exist so probably no read permissions)
+  msk=. 0 (i. msk i. 0)}msk     
+  resdir=. dircreate msk#todirs NB. create non-existing base dirs 
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
   todirs=. repps dirmsk#fromall
   todirs=. todir aprf todirs
-  todirs=. ~.;}. each ,each /\ each <;.2 each todirs
-  resdir=. dircreate todirs
-  resfile=. 0&<@>tofiles zextract"0 1 fromfiles
+  resdir=.resdir, dircreate todirs  NB. create dirs from zip
+  resfile=. 0&<@>tofiles zextract"0 1 fromfiles NB. write files
   (+/resdir),+/resfile
 )
 
@@ -43,7 +47,7 @@ NB. returns 2-item list 0{ number of directories written to zipfile
 NB.                     1{ number of files written to zipfile
 ziptree=: 4 : 0
   'tozip fromdir'=. x;y
-  if. 2~:ftype fromdir do. 0 0 return. end. NB. exit if fromdir not found
+  if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
   repps=. (<PATHSEP_j_,'/') charsub&.> ] NB. replaces PATHSEP_j_ with '/'
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
   fromdir=. addPS fromdir
@@ -72,7 +76,6 @@ NB.            1. (default) Base directory is highest directory common to all fi
 NB.           ''. (i.e. empty) include full paths
 NB.    <basedir>. explicitly specify base directory
 NB. eg. (tozip;0) zipfiles fname1;fname2;fname3
-NB.! an option to explicitly set the basedir would be useful
 zipfiles=: 4 : 0
   fromfiles=. boxopen y
   'tozip dirinf'=. 2{.!.(<1) boxopen x
@@ -97,7 +100,11 @@ zipfiles=: 4 : 0
     tofiles=. tofiles,.<tozip
   end.
   zipdir=. PATHSEP_j_ dropafterlast tozip
-  resdir=. dircreate }.,each/\ <;.2  zipdir NB. create dirs in tozip path if necessary
+  zipdir=. }.,each/\ <;.2  zipdir
+  msk=. -.direxist zipdir
+  NB. zero any 1s before 1st 0 (dir must exist so probably no read permissions)
+  msk=. 0 (i. msk i. 0)}msk     
+  resdir=. dircreate msk#zipdir NB. create non-existing dirs in tozip path
   resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs NB. create dirs in tozip
   resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
   (+/resdir),+/resfile
@@ -107,6 +114,8 @@ NB.*ztypes v get file types for contents of zip file
 NB. vector of numeric types, file (1) dir (2)
 NB. eg. ztypes jpath '~addons/arc/zip/test.zip'
 ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
+
+direxist=: 2 = ftype&>@: boxopen
 
 zextract=: 4 : 0
   dat=. zread y
