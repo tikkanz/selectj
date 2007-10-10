@@ -4,6 +4,7 @@ coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
 ~Projects/selectj/jhpadd
+~Projects/selectj/utils
 ~Projects/selectj/userlogin
 ~Projects/selectj/adminusers
 ~Projects/selectj/popfolders
