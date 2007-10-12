@@ -12,6 +12,7 @@ tassert=: 3 : 0
 )
 
 ttally    =: #@>@{.
+tfrom     =: <@,@[ {&.> ]
 tindexof  =: i.&>~@[ i.&|: i.&>
 tmemberof =: i.&>~ e.&|: i.&>~@]
 tless     =: <@:-.@tmemberof #&.> [
@@ -21,20 +22,24 @@ tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
 tgrade    =: > @ ((] /: {~)&.>/) @ (}: , /:&.>@{:)
 tgradedown=: > @ ((] \: {~)&.>/) @ (}: , \:&.>@{:)
 tsort     =: <@tgrade {&.> ]
-tfrom     =: <@[ {&.> ] NB. forums
-
 
 tfreq     =: #/.~@:|:@:(i.&>)~  NB. frequency of unique keys RGS
 
-Note 'forum Roger'
+Note 'suggestions by Roger in forum'
 - Alternative defns for tfreq are:
 tfreq=: #/.~@tindexof~
 tfreq=: >@(# tkey)~
+Tested them and they are both slower and fatter than current tfreq
 
 tsort1 should perhaps be "order x by y" rather than the proposed "order y by x", to follow the dyads /: and \: .
 
 )
 
+
+NB.*tindexof1 v lookup y values in x
+NB. width of columns in x & y are extended as required to match longest item
+NB. tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>]
+tindexof1=: ,&.> tindexof {:@$&.>@(,&.>) {."1&.> ]
 
 NB. Below are my additions to the above verbs 
 NB. for summarising inverted tables using key columns

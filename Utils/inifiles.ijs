@@ -1,90 +1,129 @@
-NB.cover functions for winapi functions for reading from & writing to INI files
-require 'winapi strings'
+NB. verbs for reading from & writing to INI files
+NB. writing to INI files currently requires winapi
+
+require 'files regex strings'
 coclass 'rgsini'
 
-NB.*getPPAllKeys v Gets all the keynames and values in an INI file
-NB. returns 3 column matrix,
+Note 'get Ini string'
+inistr=. freads 'animini' getFnme 2  NB. use for file on disk
+inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y NB. use for file in zip
+)
+
+ifa =: <@(>"1)@|:              NB. inverted from atoms
+tindexof  =: i.&>~@[ i.&|: i.&>
+tindexof1=: ,&.> tindexof {:@$&.>@(,&.>) {."1&.> ]
+mfv=: ,:^:(#&$ = 1:) NB.*mfv v Make a 1-row matrix from a vector
+boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
+
+NB.*getIniAllSections v Gets all the keynames and values in an INI file
+NB. returns 3-column boxed table,
 NB.       0{"1 sectionnames, 1{"1 keynames, 2{"1 keyvalues
-NB. y is the full filename of INI file
-getPPAllSections=: 3 : 0
-  snmes=. getPPSectionNames y
-  keys=. getPPSection each <"1 (boxopen y),.snmes
-  nkys=. #@> keys       NB. number of keys in each section
-  keys=. ;(nkys>0)#keys NB. compress out empty sections
-  (nkys#snmes),.keys
-)
-
-NB.*getPPSection v Gets all the keys and values for a section of an INI file
-NB. returns 2 column matrix
-NB.           0{"1 keynames, 1{"1 keyvalues
-getPPSection=: 3 : 0
-  'fnme snme'=. y
-  len=. #str=. 4096$' '  NB. max ??32767
-  'len val'=. 0 2{'GetPrivateProfileSectionA'win32api snme;str;len;fnme
-  val=. ({.a.),len{.val  NB. line delimiter is {.a. (null)
-  val=. <;._1 val
-  val=. dtb each '#' taketo each val
-  msk=. 0< #@> val NB. lines of non-zero length
-  val=. msk#val
-  ><;._1 each '=',each val
-)
-
-NB.*getPPSectionNames v Gets section names from an INI file
-NB. returns list of boxed section names from the INI file
-NB. y is full path to INI file
-getPPSectionNames=: 3 : 0
-  fnme=. y
-  len=. #str=. 512$' '  NB. max ??32767
-  'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
-  <;._2 val=. len{.val
-)
-
-NB.*getPPString v Gets the value of a key from an INI file
-NB. returns string of value of specified key
-NB. y is 3-item list of boxed strings
-NB.         0{ The full path to the INI file
-NB.         1{ Section Name
-NB.         2{ Key Name
-NB. e.g. getPPString 'c:\myini.ini';'Install';'InstallPath'
-getPPString=: 3 : 0
-  'fnme snme knme'=. y
-  len=. #str=. 256$' '  NB. max ??32767
-  'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
-  val=. len{.val
-)
-
-NB.*getPPValue v Gets a key value from an INI file without comments
-NB. returns key value without comments
-NB. y is 3-item list of boxed strings
-NB.           0{ filename of ini file,
-NB.           1{ name of Section
-NB.           2{ name of Key
-NB. x is optional character used to delineate start of comments for line
-NB. e.g. getPPValue 'c:\myini.ini';'Install';'InstallPath'
-getPPValue=: 3 : 0
-  '#' getPPValue y  NB. default comment delimiter is #
+NB. y is literal, or 1 or 2-item boxed list.
+NB.      0{:: is filename of Ini file to read. (Empty if x is given)
+NB.      1{:: is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file, 
+NB.      or 3-column table result of parsing Ini file using parseIni
+getIniAllSections=: 3 :0
+  '' getIniAllSections y
   :
-  rval=. getPPString y   NB. get raw value of Key
-  rval=. dtb x taketo rval  NB. get cleaned Key value (x is the comment delimiter)
+  'fln delim'=. 2{.!.a: boxopen y
+  ini=. x
+  if. -.*#ini do. NB. read Ini from file
+    if. -.fexist fln do. '' return. end. NB. file not found or given
+    ini=. freads fln
+  end.
+  if. *(L.=0:) ini do. NB. parse string contents of Ini file
+    if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
+    ini=. delim parseIni ini
+  else. NB. x was already parsed
+    ini
+  end.
 )
 
-NB.*getPPVals v Gets and interprets a key value from an INI file
-NB. if can be interpreted as numeric, returns numeric list
-NB. if string contains spaces, returns list of boxed literals
-NB. else returns string of key value
-NB. y is 3-item list of boxed strings
-NB.           0{ filename of ini file,
-NB.           1{ name of Section
-NB.           2{ name of Key
-NB. x is optional character used to delineate start of comments for line
-NB. e.g. getPPVals 'c:\myini.ini' 'Install' 'InstallPath'
-getPPVals=: 3 : 0
-  '#' getPPVals y  NB. default comment delimiter is #
+NB.*getIniSectionNames v Gets section names from INI file 
+NB. returns list of boxed section names from the INI string
+NB. y is literal, or 1 or 2-item boxed list.
+NB.      filename of Ini file to read. Empty if x given.
+NB. x is optional. String contents of Ini file (LF delimited) 
+getIniSectionNames=: 3 : 0
+  '' getIniSectionNames y
   :
-  'delim err'=. 2{.!.(<_999999) boxopen x
-  val=. delim getPPValue y   NB. get cleaned value of Key
-  err makeVals val
+  'fln delim'=. 2{.!.a: boxopen y
+  if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
+  ini=. x
+  if. -.*#ini do. NB. read Ini from file
+    if. -.fexist fln do. '' return. end. NB. file not found or given
+    ini=. freads fln
+  end.
+  (<'[]')-.~each patsection rxall ini
 )
+
+NB.*getIniIndex v returns row index of INI key in parsed INI file
+NB. returns 2-item boxed list
+NB.     0{ contains numeric row index of INI key in parsed INI file
+NB.     1{ contains parsed INI file if not given in x
+NB. y is literal, or 1,2,3 or 4-item boxed list.
+NB.      literal or 0{:: y is key name to look up
+NB.      1{:: y is optional section name of Ini to look for key in
+NB.      2{:: is optional file name of Ini file to read.
+NB.      3{:: is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file, 
+NB.      or 3-column table result of parsing Ini file using parseIni
+NB. keyname lookup is case-insensitive
+getIniIndex=: 3 :0
+  '' getIniIndex y
+  :
+  'keyn secn fln delim'=. 4{.!.a: 1&#boxopen y
+  if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
+  ini=. x
+  ini=. ini getIniAllSections fln;delim
+  if. -.*#ini do. '' return. end. NB. error (reading Ini from file)
+  parsed=. (L.=0:) x
+  NB. look up keyn in 3-column table ini
+  if. -.*#secn do. NB. look up keyn ignoring section
+    if. (#ini) = i=. (boxtolower 1{"1 ini) i. < tolower keyn do.
+NB.    if. (#ini) = i=. (1{"1 ini) i. < keyn do.
+      i=.'' NB. keyn not found
+    end.
+  else. NB. look up keyn within section
+    if. (#ini) = i=. (boxtolower 2{."1 ini) i. boxtolower secn;keyn do.
+NB.    if. (#ini) = i=. (2{."1 ini) i. secn;keyn do.
+      i=.'' NB. secn;keyn not found
+    end.
+  end.
+  i;< parsed#ini  NB. return parsed ini if not given in x
+)
+
+NB.*getIniString v returns INI key value string from INI array
+NB. returns INI key value as string
+NB. y is literal, or 1,2,3 or 4-item boxed list.
+NB.      literal or 0{:: y is key name to look up
+NB.      1{:: y is optional section name of Ini to look for key in
+NB.      2{:: is optional file name of Ini file to read.
+NB.      3{:: is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file, 
+NB.      or 3-column table result of parsing Ini file using parseIni
+NB. keyname lookup is case-insensitive
+getIniString=: 3 : 0
+  '' getIniString y
+  :
+  'i ini'=. x getIniIndex y
+  if. -.*#ini do. ini=.x end. NB. x was parsed Ini
+  if. ''-:i do. i
+  else. (<i,2) {:: ini end.
+)
+
+NB.*getIniValue v returns INI key value(s) from an INI array
+NB. returns INI key string as values (numeric list or boxed list of literals)
+NB. y is literal, or 1,2,3 or 4-item boxed list.
+NB.      literal or 0{:: y is key name to look up
+NB.      1{:: y is optional section name of Ini to look for key in
+NB.      2{:: is optional file name of Ini file to read.
+NB.      3{:: is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file, 
+NB.      or 3-column table result of parsing Ini file using parseIni
+NB. keyname lookup is case-insensitive
+getIniValue=: [: makeVals getIniString
 
 NB.*join v Unbox and delimit a list of boxed items y with x
 NB. from forum post 
@@ -126,35 +165,48 @@ NB.         2{ Key Name
 NB.         3{ The values to write  (string, numeric list or 
 NB.                         list of boxed literals and/or numbers)
 writePPString=: 3 : 0
+  require 'winapi'
   'fnme snme knme val'=. y
   val=. makeString val
   res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
   0{:: res
 )
 
-NB.*writePPSection v Writes list of key;keyvalue lists to an INI file
-NB. returns Boolean, 1 if wrote OK, otherwise 0.
-NB. y is 4-item list of boxed info on key values to write
-NB.         0{ The full path to the INI file
-NB.         1{ Section Name
-NB.         2{ list of 2-item boxed lists
-NB.                  0{"1 keynames
-NB.                  1{"1 keyvalues (string, numeric list or 
-NB.                         list of boxed literals and/or numbers)
-writePPSection=: 3 : 0
-  'fnme snme keys'=. y
-  null={.a.
-  keys=. (makeString each 1{"1 keys) (1)}"0 1 keys NB. make keyvalues all strings
-  keys=. '=' join each <"1 keys  NB. join each key and keyvalue with '='
-  keys=. null,~ null join keys NB. join key,keyvalue pairs with null. Terminate with null
-  NB. max length for keys is 65,535 bytes
-  res=. 'WritePrivateProfileSectionA'win32api snme;keys;fnme
-  0{:: res
+NB.*parseIni v Parse string contents of an INI file
+NB. returns 3-column boxed table (section name;key name;key string)
+NB. y is string contents of an Ini file
+NB. x is optional character delimiter. Defaults to #.
+parseIni=: 3 :0
+  '#' parseIni y
+  :
+  ini=. }.(patsection&rxmatches rxcut ]) y NB. cut on section names & drop first
+  'snmes secs'=. <"1 |: (] $~ 2 ,~ -:@#) ini NB. reshape to 2-column table
+  snmes=. (<'[]')-.~each snmes
+  secs=. x parseIniSection each secs
+  nkys=. #&> secs
+  secs=. ;(nkys>0)#secs
+  (nkys#snmes),.secs
+  NB. (ifa (nkys#snmes),.{."1 secs);<{:"1 secs
 )
 
+NB.*parseIniSection v parse content of INI file section
+parseIniSection=: 3 : 0
+  '#' parseIniSection y
+  :
+  keys=. }.<;._2 y NB. box each line (use LF) and drop first
+  keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
+  msk=. 0< #@> keys NB. lines of non-zero length
+  keys=. msk#keys
+  >(<;._1@('='&,)each) keys NB. box on '='
+)
 
-getPPAllSections_z_=: getPPAllSections_rgsini_
-getPPString_z_=: getPPString_rgsini_
-getPPVals_z_=: getPPVals_rgsini_
+patsection=: rxcomp '\[[[:alnum:]]+\]' NB. compile pattern
+NB. patsection rxmatches inistr
+NB. rxfree patsection  NB. frees compiled pattern resources
+
+getIniAllSections_z_=: getIniAllSections_rgsini_
+getIniString_z_=: getIniString_rgsini_
+getIniValue_z_=: getIniValue_rgsini_
+getIniIndex_z_=: getIniIndex_rgsini_
 writePPString_z_=: writePPString_rgsini_
 makeVals_z_=: makeVals_rgsini_
