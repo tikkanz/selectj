@@ -9,24 +9,17 @@ inistr=. freads 'animini' getFnme 2  NB. use for file on disk
 inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y NB. use for file in zip
 )
 
-
-NB. ---------------------------------------------------------
-NB. Inverted Table verbs from invtable.ijs
-ifa =: <@(>"1)@|:              NB. inverted from atoms
-tindexof  =: i.&>~@[ i.&|: i.&>
-tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>]
-ttally=: #@>@{.
-mfv=: ,:^:(#&$ = 1:) NB.*mfv v Make a 1-row matrix from a vector
-NB. boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
+boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
 
 NB.*getIniAllSections v Gets all the keynames and values in an INI file
-NB. returns 3-column boxed table,
-NB.       0{"1 sectionnames, 1{"1 keynames, 2{"1 keyvalues
+NB. returns 5-column boxed table,
+NB.      0{"1 sectionnames, 1{"1 keynames, 2{"1 lowercase sectionnames, 
+NB.      3{"1 lowercase keynames 4{"1 keyvalues
 NB. y is literal, or 1 or 2-item boxed list.
 NB.      0{:: is filename of Ini file to read. (Empty if x is given)
 NB.      1{:: is optional comment delimiter (defaults to '#')
 NB. x is optional. Either string contents of Ini file, 
-NB.      or 3-column table result of parsing Ini file using parseIni
+NB.      or 5-column boxed table result of parseIni
 getIniAllSections=: 3 :0
   '' getIniAllSections y
   :
@@ -83,13 +76,13 @@ getIniIndex=: 3 :0
   ini=. ini getIniAllSections fln;delim
   if. -.*#ini do. '' return. end. NB. error (reading Ini from file)
   parsed=. (L.=0:) x
-  NB. look up keyn in 3-column table ini
+  NB. look up keyn in 5-column table ini
   if. -.*#secn do. NB. look up keyn ignoring section
-    if. (ttally ini) <: i=. (tolower each 1{ini) tindexof1 ifa tolower keyn do.
+    if. (#ini) = i=. (1{"1 ini) i. < tolower keyn do.
       i=.'' NB. keyn not found
     end.
   else. NB. look up keyn within section
-    if. (ttally ini) <: i=. (tolower each 2{.ini) tindexof1 ifa mfv tolower each secn;keyn do.
+    if. (#ini) = i=. (2{."1 ini) i. boxtolower secn;keyn do.
       i=.'' NB. secn;keyn not found
     end.
   end.
@@ -109,10 +102,10 @@ NB. keyname lookup is case-insensitive
 getIniString=: 3 : 0
   '' getIniString y
   :
-  'i ini'=. x getIniIndex y
+  'i ini'=. 2{.!.a: x getIniIndex y
   if. -.*#ini do. ini=.x end. NB. x was parsed Ini
   if. ''-:i do. i
-  else. dtb ,i {&> {: ini end.
+  else. (<i,4) {:: ini end.
 )
 
 NB.*getIniValue v returns INI key value(s) from an INI array
@@ -175,7 +168,8 @@ writePPString=: 3 : 0
 )
 
 NB.*parseIni v Parse string contents of an INI file
-NB. returns 3-column boxed table (section name;key name;key string)
+NB. returns 5-column boxed table 
+NB. (section name;key name;lc section name;lc key name;key string)
 NB. y is string contents of an Ini file
 NB. x is optional character delimiter. Defaults to #.
 parseIni=: 3 :0
@@ -187,8 +181,9 @@ parseIni=: 3 :0
   secs=. x parseIniSection each secs
   nkys=. #&> secs
   secs=. ;(nkys>0)#secs
-  ifa (nkys#snmes),.secs
-  NB. (ifa (nkys#snmes),.{."1 secs);<{:"1 secs
+  ini=. (nkys#snmes),.secs
+NB.  (2&{."1 ,.([: boxtolower 2&{."1) ,. {:"1) ini NB. Mixedcase cols 1st
+  (([: boxtolower 2&{."1) ,. ]) ini
 )
 
 NB.*parseIniSection v parse content of INI file section
@@ -196,9 +191,8 @@ parseIniSection=: 3 : 0
   '#' parseIniSection y
   :
   keys=. }.<;._2 y NB. box each line (use LF) and drop first
-  NB.keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
-  keys=. x&taketo each keys
-  msk=. 0< #@> keys-.each' ' NB. lines of non-zero length
+  keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
+  msk=. 0< #@> keys NB. lines of non-zero length
   keys=. msk#keys
   >(<;._1@('='&,)each) keys NB. box on '='
 )
