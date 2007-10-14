@@ -21,7 +21,7 @@ makeMateAlloc=: 4 : 0
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. NB. continue checks
       ANIMINI_z_=. 'animini' getScenarioInfo x
-      'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsire';'usesiresxhrd') getIniVals each <ANIMINI
+      'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
       NB.! add handling for across-herd as well as within-herd mating of sires
       idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of Flock/Flk columns in selection lists column labels
@@ -113,7 +113,7 @@ validMateAlloc=: 4 : 0
       oklen=. *# ma NB. not zero length
       'hdr ma'=. split ma
       ANIMINI_z_=. 'animini' getScenarioInfo x
-      'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
+      'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       NB. Arguable as to whether additional checks should be made here or
       NB.  within AnimalSim. Do here for now.
@@ -156,10 +156,10 @@ NB. y is caseinstance id
 runAnimalSim=: 3 : 0
   inipath=. 'animini' getFnme y
   if. -.fexist inipath do. 0 return. end.
-  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
-    if. crcyc< getPPVals key do.
+    if. crcyc< getIniValue key do.
       writePPString key,<crcyc  NB. reset CurrYear
     end.
     0

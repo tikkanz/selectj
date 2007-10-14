@@ -30,11 +30,11 @@ NB.           1{x is boxed list of trait column labels to summarise
 NB. e.g. ((<'YOB');< ;:'pLW8 pFW12') sumSummaryCSV 1
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-NB.!  fnme=. 'summaryCSV' getFnme y
+NB.!  fnme=. <"1&dtb"1 'summaryCSV' getFnme y
 NB.! if readcsv is bottle neck, then could do first type only & 
 NB.!  save as hdr & invtble in j component file for reuse next time.
   fnme=. jpath '~temp/summary.csv'  NB. development
-  smry=. readcsv fnme
+  smry=. readcsv fnme NB. readcsv zread fnme
   'hdr sm'=. split smry
   invtble=. ifa sm
   keyidx=. hdr idxfnd keylbls NB. indexes of only keylbls found in hdr
@@ -42,13 +42,13 @@ NB.!  save as hdr & invtble in j component file for reuse next time.
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble NB. append column of zeros to invtble to handle datlbls not in hdr
   sum=. key tkeytble (<tfreq key),key tkeyavg dat NB.! keep tfreq??
-NB.!   fnme=. 'summaryINI' getFnme y
-NB.!   yr0=. getPPValue fnme;'Job';'yearzero' NB. yearzero as string
+NB.!  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
+NB.!  yr0=. ini getIniString 'yearzero' NB. yearzero as string
   yr0=. '2006'
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
     NB.! handle for keys other than just <'YOB'
-    NB.! popsz=. +/ getPPVals fnme;1 transName each 'herds';'hrdsizes' 
+    NB.! popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
     popsz=. 200 NB. development
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
   end.
@@ -164,7 +164,7 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. matvect each x
+  'trtnms inftyps cinms'=. mfv each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   nplots=. */#every trtnms;inftyps;cinms
@@ -258,7 +258,7 @@ Note 'test data for plotsummry1'
 plotsummry1 X;<Y
 ((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry1 X;<Y
 
-  Y=. matvect each <"1 data  NB. ensure vectors are 1 row matricies
+  Y=. mfv each <"1 data  NB. ensure vectors are 1 row matricies
   X=. ((#Y)#<lbls)  NB. X is probably same for each y
   dat=. X;<Y
   datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
@@ -281,7 +281,7 @@ plotsummry1=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry1 y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. matvect each x
+  'trtnms inftyps cinms'=. mfv each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   frmt=. [: vfms dquote"1@dtb"1

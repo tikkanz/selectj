@@ -7,8 +7,8 @@ NB. (listatom 5) -: ,5
 NB. (listatom i.4 3) -: i.4 3
 listatom=: 1&#
 
-NB.*matvect v A vector is forced to be a 1 row matrix
-matvect=: |:@:,.^:(#&$ = 1:) 
+NB.*mfv v Make a 1-row matrix from a vector
+mfv=: ,:^:(#&$ = 1:)
 
 NB.*idxfnd v Returns only indexes of items of y that are found in x.
 idxfnd=: i. #~ i. < [: # [
@@ -58,4 +58,16 @@ coercetxt=: 3 : 0
   newnums=. 0&coerce each msk#y
   y=.[newnums (I.msk)}y NB. works?
   if. -.isboxed do. >y end. NB. unboxed if was at start
+)
+
+
+NB.*keyval v Returns value of key (x) in boxed 2-column table (y)
+NB. returns value of key
+NB. y is 2-column boxed table 0{"1 are keys 0{"2 keyvalues
+NB. x is character list of key to return value for
+NB. e.g. val=. 'key' keyval keyValTable
+NB. from JHP addon
+keyval=: ''&$: : (4 : 0)     NB. val=. 'key' keyval keyValTable
+  if. (#y) > i=. ({."1 y) i. <,>x do.
+    (<i,1) {:: y else. '' end.
 )

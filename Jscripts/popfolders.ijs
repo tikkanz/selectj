@@ -32,13 +32,23 @@ getFnme=: 4 : 0
       fdir=. 'caseinstfolder' getFnme y
       inipath=. 'animini' getFnme y
       fkey=. 1 transName x
-      fnme=. getPPString inipath;'FileNames';fkey
+      fnme=. getIniString fkey;'FileNames';inipath
       if. *#fnme do. NB. use default names
         fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
       end.
       fnme=.fdir&, @> boxopen fnme
     case. 'summaryCSV' do.
+      NB. 'output/animsummary.csv';'d:\web\...\ciid.zip'
+      NB. lenfldr=.# 'caseinstfolder' getFnme y
+      NB.! fnme=. lenfldr}. 'animsumry' getFnme y NB. doesn't work cause animalsim.ini gone
+      fnme=. 'output/animsummary.csv'
+      zipnme=. 'sumryzip' getFnme y
+      fnme=. >fnme;zipnme
     case. 'summaryINI' do.
+      NB. 'animalsim.ini';'d:\web\...\ciid.zip'
+      fnme=. 'animini' getDBItem y
+      zipnme=. 'sumryzip' getFnme y
+      fnme=. >fnme;zipnme
     case. 'sumryfiles' do. NB. fnames of files to include in zip
       fnme=. >('animini';'animsumry') getFnme each y
     case. 'sumryzip' do.
@@ -58,7 +68,7 @@ getFnme=: 4 : 0
       fdir=. 'caseinstfolder' getFnme y
       inipath=. 'animini' getFnme y
       fkey=. 1 transName x
-      fnme=. getPPString inipath;'quanttrts';fkey
+      fnme=. getIniString fkey;'QuantTrts';inipath
       if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
     case. 'userfolder' do. NB. y is ur_id
