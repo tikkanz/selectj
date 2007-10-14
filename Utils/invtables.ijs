@@ -40,9 +40,8 @@ mfv=: ,:^:(#&$ = 1:)
 
 NB.*tindexof1 v lookup y values in x
 NB. width of columns in x & y are extended as required to match longest item
-NB. tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>]
-tindexof1=: ,&.> tindexof {:@$&.>@(,&.>) {."1&.> ]
-
+NB. tindexof1=: ,&.> tindexof {:@$&.>@(,&.>) {."1&.> ] NB. rank 0
+tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>] NB. unbounded rank
 
 
 NB. Below are my additions to the above verbs 

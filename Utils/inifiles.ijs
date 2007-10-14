@@ -14,7 +14,8 @@ NB. ---------------------------------------------------------
 NB. Inverted Table verbs from invtable.ijs
 ifa =: <@(>"1)@|:              NB. inverted from atoms
 tindexof  =: i.&>~@[ i.&|: i.&>
-tindexof1=: ,&.> tindexof {:@$&.>@(,&.>) {."1&.> ]
+tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>]
+ttally=: #@>@{.
 mfv=: ,:^:(#&$ = 1:) NB.*mfv v Make a 1-row matrix from a vector
 NB. boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
 
@@ -83,13 +84,12 @@ getIniIndex=: 3 :0
   if. -.*#ini do. '' return. end. NB. error (reading Ini from file)
   parsed=. (L.=0:) x
   NB. look up keyn in 3-column table ini
-  'skn kv'=. ini
   if. -.*#secn do. NB. look up keyn ignoring section
-    if. (#kv) <: i=. (tolower each }."1 skn) tindexof1 ifa tolower keyn do.
+    if. (ttally ini) <: i=. (tolower each 1{ini) tindexof1 ifa tolower keyn do.
       i=.'' NB. keyn not found
     end.
   else. NB. look up keyn within section
-    if. (#kv) <: i=. (tolower each skn) tindexof1 ifa mfv tolower each secn;keyn do.
+    if. (ttally ini) <: i=. (tolower each 2{.ini) tindexof1 ifa mfv tolower each secn;keyn do.
       i=.'' NB. secn;keyn not found
     end.
   end.
@@ -112,7 +112,7 @@ getIniString=: 3 : 0
   'i ini'=. x getIniIndex y
   if. -.*#ini do. ini=.x end. NB. x was parsed Ini
   if. ''-:i do. i
-  else. (1;i){:: ini end.
+  else. dtb ,i {&> {: ini end.
 )
 
 NB.*getIniValue v returns INI key value(s) from an INI array
@@ -187,8 +187,8 @@ parseIni=: 3 :0
   secs=. x parseIniSection each secs
   nkys=. #&> secs
   secs=. ;(nkys>0)#secs
-  NB. (nkys#snmes),.secs
-  (ifa (nkys#snmes),.{."1 secs);<{:"1 secs
+  ifa (nkys#snmes),.secs
+  NB. (ifa (nkys#snmes),.{."1 secs);<{:"1 secs
 )
 
 NB.*parseIniSection v parse content of INI file section
@@ -196,8 +196,9 @@ parseIniSection=: 3 : 0
   '#' parseIniSection y
   :
   keys=. }.<;._2 y NB. box each line (use LF) and drop first
-  keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
-  msk=. 0< #@> keys NB. lines of non-zero length
+  NB.keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
+  keys=. x&taketo each keys
+  msk=. 0< #@> keys-.each' ' NB. lines of non-zero length
   keys=. msk#keys
   >(<;._1@('='&,)each) keys NB. box on '='
 )
