@@ -302,7 +302,7 @@ MimeMap=: 0 : 0
 
 coclass COBASE_z_  
 listatom=: 1&#
-matvect=: |:@:,.^:(#&$ = 1:) 
+mfv=: ,:^:(#&$ = 1:)
 idxfnd=: i. #~ i. < [: # [
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
@@ -326,6 +326,10 @@ coercetxt=: 3 : 0
   if. -.isboxed do. >y end. 
 )
 
+keyval=: ''&$: : (4 : 0)     
+  if. (#y) > i=. ({."1 y) i. <,>x do.
+    (<i,1) {:: y else. '' end.
+)
 createSession=: 3 : 0
  if. isdefseed_rgspasswd_'' do. randomize'' end.
  sid=. >:?<:-:2^32 
@@ -473,16 +477,43 @@ getFnme=: 4 : 0
       fdir=. 'caseinstfolder' getFnme y
       inipath=. 'animini' getFnme y
       fkey=. 1 transName x
-      fnme=. getPPString inipath;'FileNames';fkey
+      fnme=. getIniString fkey;'FileNames';inipath
       if. *#fnme do. 
         fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
       end.
       fnme=.fdir&, @> boxopen fnme
+    case. 'summaryCSV' do.
+      
+      
+      
+      fnme=. 'output/animsummary.csv'
+      zipnme=. 'sumryzip' getFnme y
+      fnme=. >fnme;zipnme
+    case. 'summaryINI' do.
+      
+      fnme=. 'animini' getDBItem y
+      zipnme=. 'sumryzip' getFnme y
+      fnme=. >fnme;zipnme
+    case. 'sumryfiles' do. 
+      fnme=. >('animini';'animsumry') getFnme each y
+    case. 'sumryzip' do.
+      
+      fdir=. 'sumryfolder' getFnme y
+      fnme=. ":y
+      fnme=. fdir,fnme,'.zip'
+    case. 'sumryfolder' do.
+      
+      pathinfo=. 'caseinstfolder' getDBTableStr y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
+      fnme=. '/' pathdelim ur_uname;of_code;'summaries'
+      fnme=. basefldr,'userpop/',fnme,'/'
     case. 'trtinfo' do.
       fdir=. 'caseinstfolder' getFnme y
       inipath=. 'animini' getFnme y
       fkey=. 1 transName x
-      fnme=. getPPString inipath;'quanttrts';fkey
+      fnme=. getIniString fkey;'QuantTrts';inipath
       if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
     case. 'userfolder' do. 
@@ -518,18 +549,26 @@ getCaseInstance=: 3 : 0
 updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
 )
-Note 'summryCaseInstance'
-Create a folder under course folder called summaries.
-nms=. 'sumryfiles' getFnme y 
-zipnm=. 'sumryzip' getFnme y  
-zipnm zipfiles nms
+summryCaseInstance=: 3 :0
+  nms=. <"1&dtb"1 'sumryfiles' getFnme y 
+  zipnm=. 'sumryzip' getFnme y  
+  dirinf=. 'caseinstfolder' getFnme y
+  z=. (zipnm;dirinf) zipfiles nms
+  if. (#nms)={:z do. 
+    'sumrycaseinst' updateDBTable y  
+  end.
+)
 
-Update ci_sumry.
+Note 'summryCaseInstance'
 Can see which case instances have summaries by looking up ci_sumry 
 in caseinstances table.
-Store caseinstance folder with animalsim.ini and out/animsummary.csv
-Could store just files renamed as 3.ini and 3.csv , 
-but not as flexible longer-term.
+)
+deleteCaseInstSummary=: 3 :0
+  zipnm=. 'sumryzip' getFnme y
+  ferase zipnm
+  if. -. fexist zipnm do.
+    'delsumrycaseinst' updateDBTable y  
+  end.
 )
 expireCaseInstance=: 3 : 0
   'expirecaseinst' updateDBTable y
@@ -552,14 +591,15 @@ getScenarioInfo=: 3 : 0
   select. infotyp
     case. <'animini' do.
       fnme=. 'animini' getFnme y
-      res=. getPPAllSections fnme
+      res=. getIniAllSections fnme
     case. <'alltrtinfo' do.  
       xlfnme=. 'trtinfo' getFnme y
       'tDefn' readexcel xlfnme
     case. <'status' do. 
       fnme=. 'animini' getFnme y
-      crcyc=. getPPVals fnme;'GenCycle';1&transName 'curryear'
-      ncyc=. getPPVals fnme;'Control';'ncycles'
+      ini=. getIniAllSections fnme
+      crcyc=. ini getIniValue 1&transName 'curryear'
+      ncyc=.  ini getIniValue 'ncycles'
       crcyc;ncyc
   end.
 )
@@ -571,7 +611,7 @@ updateScenarioInfo=: 3 : 0
   select. infotyp
     case. <'animini' do.
       fnme=. <'animini' getFnme y
-      res=. writePPString"1 fnme,.ANIMINI
+      res=. writePPString"1 fnme,. 2}."1 ANIMINI
   end.
 )
 updateSelnDetails=: 3 : 0
@@ -582,10 +622,10 @@ updateSelnDetails=: 3 : 0
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
   keysform=. ~. qparamKeys'' 
-  keysini=. tolower each 1{"1 ANIMINI  
+  keysini=. 1{"1 ANIMINI  
   keys2upd8=. ~.(tolower each keyscalc),(keysform e. keysini)#keysform 
   keysform updateKeyState"1 0 keys2upd8
-  ANIMINI_z_=: (; keys2upd8 getIniIdx each <ANIMINI){ANIMINI 
+  ANIMINI_z_=: (; (<ANIMINI) getIniIdx each keys2upd8){ANIMINI 
   'animini' updateScenarioInfo y 
 )
 TransNames=: makeTable 0 : 0
@@ -607,15 +647,13 @@ flk              hrd
 transType=: TransNames |."1~]
 transName=: (]keyval [:transType [)^:( (TransNames{"1~[) e.~ [: boxopen ])
 
-getIniVals=: [: makeVals getIniStr
-getIniStr=: 4 : 0
-  i=. x getIniIdx y
-  if. ''-:i do.
-    i else.  (<i,2) {:: y end.
+getIniVals=: 4 : 0
+  x getIniValue ;1 transName y
 )
-getIniIdx=: ''&$: : (4 : 0)
-  if. (#y) > i=. (tolower each 1{"1 y) i. <,>1 transName tolower x do.
-    i else. '' end.
+
+getIniIdx=: 4 : 0
+ 'idx ini'=. 2{.!.a: x getIniIndex ;1 transName y
+  idx
 )
 prefsuf=: [:,<@;@(1&C.)@,"1 0/
 makeTrtColLbl=: 3 : 0
@@ -651,53 +689,53 @@ getParamState=: 3 : 0
       vals=. ;:'phen genD genDe'
       nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
     case. 'cullage' do.
-      vals=. <"0 y getIniVals ANIMINI
+      vals=. <"0 ANIMINI getIniVals y
       nmes=. 'Female';'Male'
     case. 'hrdsizes'    do.
-      vals=. <"0 y getIniVals ANIMINI
+      vals=. <"0 ANIMINI getIniVals y
       if. 1 do. 
         seld=. boxopen vals
         vals=. <"0 (100,200*>:i.5), 1500 2000 4000
       end.
     case. 'mateage' do.
-      vals=. <"0 y getIniVals ANIMINI
+      vals=. <"0 ANIMINI getIniVals y
       nmes=. 'Female';'Male'
     case. 'objectvrevs' do.
-      nmes=. 'trtsavail' getIniVals ANIMINI
+      nmes=. ANIMINI getIniVals 'trtsavail' 
       vals=. (#nmes)#a:
-      tmpv=. <"0 y getIniVals ANIMINI
+      tmpv=. <"0 ANIMINI getIniVals y
       tmpn=. 0{:: getParamState 'trts2select'
       vals=. tmpv (nmes i. tmpn)}vals
     case. 'selnmeth'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. 'selectlistcols' getIniVals ANIMINI
+      tmp=. ANIMINI getIniVals 'selectlistcols'
       tmp=. getTrtsOnly tmp 
       tmp=. {:>{:tmp  
       seld=. ('ed' i. tmp){ |.vals 
     case. 'summtype'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. 'respons2outpt' getIniVals ANIMINI
+      tmp=. ANIMINI getIniVals'respons2outpt'
       tmp=. getTrtsOnly tmp 
       tmp=. ~.{:@>tmp   
       tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  
       seld=. tmp#vals   
     case. 'trtsrecorded' do.
-      vals=. 'trtsavail' getIniVals ANIMINI
+      vals=. ANIMINI getIniVals 'trtsavail'
       vals=. getTrtsPhn vals
       nmes=. 'TrtCaption' getTrtInfo vals
-      seld=. y getIniVals ANIMINI
+      seld=. ANIMINI getIniVals y
     case. 'trts2select';'trts2summ' do.
-      vals=. 'trtsavail' getIniVals ANIMINI
+      vals=. ANIMINI getIniVals 'trtsavail'
       nmes=. 'TrtCaption' getTrtInfo vals
       nmes=. ('(',each vals ,each <') '),each nmes
       tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
-      tmp=. tmp getIniVals ANIMINI
+      tmp=. ANIMINI getIniVals tmp
       tmp=. getTrtsOnly tmp  
       tmp=. tmp -. each <'pdge' 
       seld=. ~. tmp 
     case. do. 
     
-      vals=. y getIniVals ANIMINI
+      vals=. ANIMINI getIniVals y
       if. isnum vals do. vals=. <"0 vals end.
       vals=. boxopen vals  
   end.
@@ -713,7 +751,7 @@ updateKeyState=: 4 : 0
     
       notset=. -.frmtrts e. x
       initrts=. notset# msk#'selectlistcols';'respons2outpt'
-      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
+      initrts=. getTrtBase getTrtsOnly ;(<ANIMINI) getIniVals each initrts
       frmtrts=. ;qparamList each frmtrts
       kval=. ~.frmtrts,initrts
     case. 'getebvs'   do.
@@ -723,7 +761,7 @@ updateKeyState=: 4 : 0
         frmflds=. 'selnmeth';'summtype'
         notset=. -.frmflds e. x
         iniflds=. notset# 'selectlistcols';'respons2outpt'
-        isebv=. 'e' e. {:@>getTrtsOnly ;iniflds getIniVals each <ANIMINI
+        isebv=. 'e' e. {:@>getTrtsOnly ;(<ANIMINI) getIniVals each iniflds
         kval=. +./isebv,(<'genDe') e."0 1> qparamList each frmflds
         key2upd8=. (*./notset){:: key2upd8;'' 
       end.
@@ -754,7 +792,7 @@ updateKeyState=: 4 : 0
     
       notset=. -.frmtrts e. x
       initrts=. notset# (<'trtsrecorded'),msk#'selectlistcols';'respons2outpt'
-      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
+      initrts=. getTrtBase getTrtsOnly ;(<ANIMINI) getIniVals each initrts
       frmtrts=. ;qparamList each frmtrts
       kval=. getTrtsPhn ~.(<'NLB'),frmtrts,initrts  
     case. 'respons2outpt'  do.
@@ -772,7 +810,7 @@ updateKeyState=: 4 : 0
           sm=. qparamList 'selnmeth'
         else. sm=. <'phen' end. 
         trtflds=. sm makeTrtColLbl trts 
-        nttrt=. getTrtsNot key2upd8 getIniVals ANIMINI 
+        nttrt=. getTrtsNot ANIMINI getIniVals key2upd8 
         kval=. nttrt,trtflds
       else. key2upd8=. '' end.
     case. 'trts2sim' do.
@@ -781,15 +819,15 @@ updateKeyState=: 4 : 0
     
       notset=. -. frmtrts e. x
       initrts=. notset# ;:'trtsrecorded selectlistcols respons2outpt'
-      initrts=. getTrtBase getTrtsOnly ;initrts getIniVals each <ANIMINI
+      initrts=. getTrtBase getTrtsOnly ;(<ANIMINI) getIniVals each initrts
       frmtrts=. ;qparamList each frmtrts
       kval=. ~.frmtrts,initrts
     case. do. 
       kval=. qparamList key2upd8
   end.
-  kidx=. key2upd8 getIniIdx ANIMINI
+  kidx=. ANIMINI getIniIdx key2upd8
   if. -.''-:kidx do.
-    ANIMINI=: (<kval) (<kidx,2) } ANIMINI
+    ANIMINI=: (<kval) (<kidx,4) } ANIMINI
   end.
   ''
 )
@@ -810,7 +848,7 @@ makeMateAlloc=: 4 : 0
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. 
       ANIMINI_z_=. 'animini' getScenarioInfo x
-      'ndams d2s xhrd'=. ('hrdsizes';'dams2hrdsire';'usesiresxhrd') getIniVals each <ANIMINI
+      'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   
       
       idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' 
@@ -881,7 +919,7 @@ validMateAlloc=: 4 : 0
       oklen=. *# ma 
       'hdr ma'=. split ma
       ANIMINI_z_=. 'animini' getScenarioInfo x
-      'popsz cage mage'=. ('hrdsizes';'cullage';'mateage') getIniVals each <ANIMINI
+      'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       
       
@@ -916,10 +954,10 @@ checkCycle=: 3 : 0
 runAnimalSim=: 3 : 0
   inipath=. 'animini' getFnme y
   if. -.fexist inipath do. 0 return. end.
-  crcyc=. getPPVals key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
-    if. crcyc< getPPVals key do.
+    if. crcyc< getIniValue key do.
       writePPString key,<crcyc  
     end.
     0
@@ -945,7 +983,7 @@ sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
   fnme=. jpath '~temp/summary.csv'  
-  smry=. readcsv fnme
+  smry=. readcsv fnme 
   'hdr sm'=. split smry
   invtble=. ifa sm
   keyidx=. hdr idxfnd keylbls 
@@ -1061,7 +1099,7 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. matvect each x
+  'trtnms inftyps cinms'=. mfv each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   nplots=. */#every trtnms;inftyps;cinms
@@ -1148,7 +1186,7 @@ Note 'test data for plotsummry1'
 plotsummry1 X;<Y
 ((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry1 X;<Y
 
-  Y=. matvect each <"1 data  
+  Y=. mfv each <"1 data  
   X=. ((#Y)#<lbls)  
   dat=. X;<Y
   datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
@@ -1163,7 +1201,7 @@ plotsummry1=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry1 y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. matvect each x
+  'trtnms inftyps cinms'=. mfv each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   frmt=. [: vfms dquote"1@dtb"1
@@ -1338,6 +1376,17 @@ sqlupd_expirecaseinst=: 0 : 0
   WHERE ci_id=?;
 )
 
+sqlupd_sumrycaseinst=: 0 : 0
+  UPDATE caseinstances
+  SET ci_sumry=1
+  WHERE ci_id=?;
+)
+
+sqlupd_delsumrycaseinst=: 0 : 0
+  UPDATE caseinstances
+  SET ci_sumry=0
+  WHERE ci_id=?;
+)
 sqlsel_animini=: 0 : 0
   SELECT sd.sd_filen sd_filen 
   FROM  `cases` cases INNER JOIN `caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
@@ -1867,12 +1916,13 @@ addPS=: , PATHSEP_j_ -. {:
 dropPS=: }:^:(PATHSEP_j_={:)  
 dircreate=: 3 : 0
   y=. boxopen y
-  msk=. 2~:ftype y  
+  msk=. -.direxist y
   if. ''-:$msk do. msk=.(#y)#msk end.
   res=.1!:5 msk#y
   msk expand ,res
 )
-direxist=: 'd' e."1 [: > [: , [: ({:"1) 1!:0@(fboxname&>)@(dropPS&.>)@boxopen
+direxist=: 2 = ftype&>@: boxopen
+ 
  
  
 
@@ -1893,7 +1943,7 @@ addPS=: , PATHSEP_j_ -. {:
 dropPS=: }:^:(PATHSEP_j_={:)  
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
-  if. 2~: ftype fromdir do. 0 0 return. end. 
+  if. -.direxist fromdir do. 0 0 return. end. 
   dprf=. ] }.&.>~ [: # [  
   aprf=. ] ,&.>~ [: < [    
   fromdirs=. dirpath fromdir
@@ -1912,6 +1962,8 @@ deltree=: 3 : 0
   catch. 0 end.
 )
 
+direxist=: 2 = ftype&>@: boxopen
+
 fcopy=: 4 : 0
   dat=. fread each boxopen y
   dat fwrite each boxopen x
@@ -1919,51 +1971,73 @@ fcopy=: 4 : 0
 
 copytree_z_=: copytree_rgstrees_
 deltree_z_=: deltree_rgstrees_
-require 'winapi strings'
+require 'files regex strings'
 coclass 'rgsini'
-getPPAllSections=: 3 : 0
-  snmes=. getPPSectionNames y
-  keys=. getPPSection each <"1 (boxopen y),.snmes
-  nkys=. #@> keys       
-  keys=. ;(nkys>0)#keys 
-  (nkys#snmes),.keys
+
+Note 'get Ini string'
+inistr=. freads 'animini' getFnme 2  
+inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y 
 )
-getPPSection=: 3 : 0
-  'fnme snme'=. y
-  len=. #str=. 4096$' '  
-  'len val'=. 0 2{'GetPrivateProfileSectionA'win32api snme;str;len;fnme
-  val=. ({.a.),len{.val  
-  val=. <;._1 val
-  val=. dtb each '#' taketo each val
-  msk=. 0< #@> val 
-  val=. msk#val
-  ><;._1 each '=',each val
-)
-getPPSectionNames=: 3 : 0
-  fnme=. y
-  len=. #str=. 512$' '  
-  'len val'=. 0 1{'GetPrivateProfileSectionNamesA'win32api str;len;fnme
-  <;._2 val=. len{.val
-)
-getPPString=: 3 : 0
-  'fnme snme knme'=. y
-  len=. #str=. 256$' '  
-  'len val'=. 0 4{'GetPrivateProfileStringA'win32api snme;knme;'';str;len;fnme
-  val=. len{.val
-)
-getPPValue=: 3 : 0
-  '#' getPPValue y  
+
+boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
+getIniAllSections=: 3 :0
+  '' getIniAllSections y
   :
-  rval=. getPPString y   
-  rval=. dtb x taketo rval  
+  'fln delim'=. 2{.!.a: boxopen y
+  ini=. x
+  if. -.*#ini do. 
+    if. -.fexist fln do. '' return. end. 
+    ini=. freads fln
+  end.
+  if. *(L.=0:) ini do. 
+    if. -.*#delim do. delim=. '#' end. 
+    ini=. delim parseIni ini
+  else. 
+    ini
+  end.
 )
-getPPVals=: 3 : 0
-  '#' getPPVals y  
+getIniSectionNames=: 3 : 0
+  '' getIniSectionNames y
   :
-  'delim err'=. 2{.!.(<_999999) boxopen x
-  val=. delim getPPValue y   
-  err makeVals val
+  'fln delim'=. 2{.!.a: boxopen y
+  if. -.*#delim do. delim=. '#' end. 
+  ini=. x
+  if. -.*#ini do. 
+    if. -.fexist fln do. '' return. end. 
+    ini=. freads fln
+  end.
+  (<'[]')-.~each patsection rxall ini
 )
+getIniIndex=: 3 :0
+  '' getIniIndex y
+  :
+  'keyn secn fln delim'=. 4{.!.a: 1&#boxopen y
+  if. -.*#delim do. delim=. '#' end. 
+  ini=. x
+  ini=. ini getIniAllSections fln;delim
+  if. -.*#ini do. '' return. end. 
+  parsed=. (L.=0:) x
+  
+  if. -.*#secn do. 
+    if. (#ini) = i=. (1{"1 ini) i. < tolower keyn do.
+      i=.'' 
+    end.
+  else. 
+    if. (#ini) = i=. (2{."1 ini) i. boxtolower secn;keyn do.
+      i=.'' 
+    end.
+  end.
+  i;< parsed#ini  
+)
+getIniString=: 3 : 0
+  '' getIniString y
+  :
+  'i ini'=. 2{.!.a: x getIniIndex y
+  if. -.*#ini do. ini=.x end. 
+  if. ''-:i do. i
+  else. (<i,4) {:: ini end.
+)
+getIniValue=: [: makeVals getIniString
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
 makeString=:[: ' '&join 8!:0
 makeVals=: 3 : 0
@@ -1977,28 +2051,42 @@ makeVals=: 3 : 0
   val
 )
 writePPString=: 3 : 0
+  require 'winapi'
   'fnme snme knme val'=. y
   val=. makeString val
   res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
   0{:: res
 )
-writePPSection=: 3 : 0
-  'fnme snme keys'=. y
-  null={.a.
-  keys=. (makeString each 1{"1 keys) (1)}"0 1 keys 
-  keys=. '=' join each <"1 keys  
-  keys=. null,~ null join keys 
-  
-  res=. 'WritePrivateProfileSectionA'win32api snme;keys;fnme
-  0{:: res
+parseIni=: 3 :0
+  '#' parseIni y
+  :
+  ini=. }.(patsection&rxmatches rxcut ]) y 
+  'snmes secs'=. <"1 |: (] $~ 2 ,~ -:@#) ini 
+  snmes=. (<'[]')-.~each snmes
+  secs=. x parseIniSection each secs
+  nkys=. #&> secs
+  secs=. ;(nkys>0)#secs
+  ini=. (nkys#snmes),.secs
+  (([: boxtolower 2&{."1) ,. ]) ini
+)
+parseIniSection=: 3 : 0
+  '#' parseIniSection y
+  :
+  keys=. }.<;._2 y 
+  keys=. (dtb@(x&taketo)) each keys 
+  msk=. 0< #@> keys 
+  keys=. msk#keys
+  >(<;._1@('='&,)each) keys 
 )
 
-
-getPPAllSections_z_=: getPPAllSections_rgsini_
-getPPString_z_=: getPPString_rgsini_
-getPPVals_z_=: getPPVals_rgsini_
+patsection=: rxcomp '\[[[:alnum:]]+\]' 
+getIniAllSections_z_=: getIniAllSections_rgsini_
+getIniString_z_=: getIniString_rgsini_
+getIniValue_z_=: getIniValue_rgsini_
+getIniIndex_z_=: getIniIndex_rgsini_
 writePPString_z_=: writePPString_rgsini_
 makeVals_z_=: makeVals_rgsini_
+
 coclass 'z'
 
 ifa =: <@(>"1)@|:              
@@ -2011,6 +2099,7 @@ tassert=: 3 : 0
 )
 
 ttally    =: #@>@{.
+tfrom     =: <@,@[ {&.> ]
 tindexof  =: i.&>~@[ i.&|: i.&>
 tmemberof =: i.&>~ e.&|: i.&>~@]
 tless     =: <@:-.@tmemberof #&.> [
@@ -2020,19 +2109,20 @@ tkey      =: 1 : '<@tindexof~@[ u/.&.> ]'
 tgrade    =: > @ ((] /: {~)&.>/) @ (}: , /:&.>@{:)
 tgradedown=: > @ ((] \: {~)&.>/) @ (}: , \:&.>@{:)
 tsort     =: <@tgrade {&.> ]
-tfrom     =: <@[ {&.> ] 
-
 
 tfreq     =: #/.~@:|:@:(i.&>)~  
 
-Note 'forum Roger'
+Note 'suggestions by Roger in forum'
 - Alternative defns for tfreq are:
 tfreq=: #/.~@tindexof~
 tfreq=: >@(# tkey)~
+Tested them and they are both slower and fatter than current tfreq
 
 tsort1 should perhaps be "order x by y" rather than the proposed "order y by x", to follow the dyads /: and \: .
 
 )
+mfv=: ,:^:(#&$ = 1:)
+tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>] 
 
 tsort1    =: <@tgrade@[ {&.> ]
 tfreq     =: #/.~@:|:@:(i.&>)~
@@ -2143,18 +2233,22 @@ unziptree=: 4 : 0
   repps=. (<'/',PATHSEP_j_) charsub&.> ] 
   aprf=. ] ,&.>~ [: < [   
   tofiles=. repps fromfiles
+  todirs=. }. ,each /\ <;.2 todir 
+  msk=. -.direxist todirs
+  
+  msk=. 0 (i. msk i. 0)}msk     
+  resdir=. dircreate msk#todirs 
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
   todirs=. repps dirmsk#fromall
   todirs=. todir aprf todirs
-  todirs=. ~.;}. each ,each /\ each <;.2 each todirs
-  resdir=. dircreate todirs
-  resfile=. 0&<@>tofiles zextract"0 1 fromfiles
+  resdir=.resdir, dircreate todirs  
+  resfile=. 0&<@>tofiles zextract"0 1 fromfiles 
   (+/resdir),+/resfile
 )
 ziptree=: 4 : 0
   'tozip fromdir'=. x;y
-  if. 2~:ftype fromdir do. 0 0 return. end. 
+  if. -.direxist fromdir do. 0 0 return. end. 
   repps=. (<PATHSEP_j_,'/') charsub&.> ] 
   dprf=. ] }.&.>~ [: # [  
   fromdir=. addPS fromdir
@@ -2194,12 +2288,18 @@ zipfiles=: 4 : 0
     tofiles=. tofiles,.<tozip
   end.
   zipdir=. PATHSEP_j_ dropafterlast tozip
-  resdir=. dircreate }.,each/\ <;.2  zipdir 
+  zipdir=. }.,each/\ <;.2  zipdir
+  msk=. -.direxist zipdir
+  
+  msk=. 0 (i. msk i. 0)}msk     
+  resdir=. dircreate msk#zipdir 
   resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
   resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
   (+/resdir),+/resfile
 )
 ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
+
+direxist=: 2 = ftype&>@: boxopen
 
 zextract=: 4 : 0
   dat=. zread y
