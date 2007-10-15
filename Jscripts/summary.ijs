@@ -15,47 +15,63 @@ inftyps=. ;:'phen'
 csinsts=. 1 2
 
 datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
-sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
+NB. sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
+(keylbls;< datlbls) plotSummaries csinsts
+)
 
+getSummaryCSV=: 3 : 0
+  require 'jfiles'
+  fnme =. <"1&dtb"1 'summaryCSV' getFnme y
+  jfnme=. 'ijf',~_3}.1{:: fnme 
+NB. I think readcsv is bottle neck, so done first time only & then
+NB.  hdr & inverted table saved in j component file for reuse next time.
+NB.!  ijf files are 3-5times bigger than zip - append to zip?
+NB.!  or just clean up now and then??
+  if. fexist jfnme do. NB. get from j component file (.ijf)
+    smry=. jread jfnme;0 1
+  else. NB. create boxed array from csv and store in j component file.
+    'hdr invtble'=. split fixcsv toJ zread fnme
+    invtble=. ifa invtble
+    smry=. hdr;<invtble
+    res=. jcreate jfnme
+    res=. smry jappend jfnme
+  end.
+  smry
+  NB. fnme=. jpath '~temp/summary.csv'  NB. development
+  NB. smry=. fixcsv toJ zread fnme
 )
 
 NB.*sumSummaryCSV v Summarise CSV data cols by key cols
 NB. returns 2-row boxed table of labels & summarised info
 NB.                 0{ is boxed list of column labels
 NB.                 1{ is summary info in inverted table form                      
-NB. y is case instance id of summary.csv to summarise
+NB. y is case instance ids of summary.csv to summarise
 NB. x is 2-item boxed list. 
 NB.           0{x is boxed list of column labels to use as summary keys
 NB.           1{x is boxed list of trait column labels to summarise
 NB. e.g. ((<'YOB');< ;:'pLW8 pFW12') sumSummaryCSV 1
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-NB.!  fnme=. <"1&dtb"1 'summaryCSV' getFnme y
-NB.! if readcsv is bottle neck, then could do first type only & 
-NB.!  save as hdr & invtble in j component file for reuse next time.
-  fnme=. jpath '~temp/summary.csv'  NB. development
-  smry=. readcsv fnme NB. readcsv zread fnme
-  'hdr sm'=. split smry
-  invtble=. ifa sm
+  'hdr invtble'=. getSummaryCSV y
+  NB. invtble=. ifa sm
   keyidx=. hdr idxfnd keylbls NB. indexes of only keylbls found in hdr
   key=. listatom keyidx{invtble  NB. get keycols (listatom nolonger reqd?)
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble NB. append column of zeros to invtble to handle datlbls not in hdr
   sum=. key tkeytble (<tfreq key),key tkeyavg dat NB.! keep tfreq??
-NB.!  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
-NB.!  yr0=. ini getIniString 'yearzero' NB. yearzero as string
-  yr0=. '2006'
+  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
+  yr0=. ini getIniString 'yearzero' NB. yearzero as string
+NB.  yr0=. '2006'
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
     NB.! handle for keys other than just <'YOB'
-    NB.! popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
-    popsz=. 200 NB. development
+    popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
+    NB. popsz=. 200 NB. development
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
   end.
-  sum=. strt}. each sum  NB. drop pre-yearzero info  
+  sum=. strt}. each sum  NB. drop pre-yearzero info
   ((keyidx{hdr),(<'Freq'),datlbls),:sum
 )
-
 
 Note 'user interface'
 Summarys at the level of a user/course (enrolment)
@@ -128,21 +144,42 @@ Note 'test data for plotsummry'
 ((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
 )
 
-Note 'Prepare summaries to plot'
-collbls=. {.{. every sumrys NB. collbls should all be the same could check
-keylen=. collbls i. <'Freq'
-data=. {: each sumrys
-X=. 0". &> each keylen{.each data
-Y=. > each (>:keylen)}. each data NB. drop key
-Y=. ;,.each/ <"1 each Y  NB. make table
-
-trtnms =. >'Fleece weight 12';'Live weight 8' NB. get text for base traits
-trtnms =. >trtlbls
-inftyps=. >inftyps
-cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' NB. get summary names for case instances
-
-(trtnms;inftyps;cinms) plotsummry X;<Y
+NB.*preplotsummry v prepare arguments for plotsummry
+NB. returns 2-item boxed list of x and y arguments for plotsummry
+NB. y is case instance id(s) of summary.csv(s) to plot
+NB. x is output from sumSummaryCSV
+preplotsummry=: 4 :0
+  collbls=. {.{. every x NB. collbls should all be the same could check
+  keylen=. collbls i. <'Freq'
+  data=. {: each x
+  X=. 0". &> each keylen{.each data
+  Y=. > each (>:keylen)}. each data NB. drop key
+  Y=. ;,.each/ <"1 each Y  NB. make table
+  NB. 
+  inftyps=. >inftyps
+  NB. Format for trait names needs some thought
+  NB. Could just use base trait labels
+  NB. Or if only a few (1-3) traits to display could look up full Trait name
+  NB. could investigate wrapping Trait name label over multiple lines if long.
+  NB. trtnms =. >'Fleece weight 12';'Live weight 8' NB. get text for base traits
+  trtnms =. >~.getTrtBase getTrtsOnly collbls NB. safer to do lookup of getTrtBase collbls to look for valid trait names
+  NB. database lookup of (user) names for case instances.
+  cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' NB. get summary names for case instances
+  (trtnms;inftyps;cinms) ;< X;<Y
 )
+
+NB.*plotSummaries v 
+NB. y is case instance id(s) of summary.csv(s) to plot
+NB. x is 2-item boxed list. 
+NB.        0{x is boxed list of column labels to use as summary keys
+NB.        1{x is boxed list of trait column labels to summarise
+plotSummaries=: 4 :0 
+ sumrys=. (<x) sumSummaryCSV each y
+ 'names data'=. sumrys preplotsummry y
+ names plotsummry data
+)
+
+
 
 NB.*plotsummry v  plots traits by infotypes for one or more caseinstance summaries
 NB. handles - caseinstances with diff nCycles

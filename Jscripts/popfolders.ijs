@@ -42,8 +42,9 @@ getFnme=: 4 : 0
       NB. lenfldr=.# 'caseinstfolder' getFnme y
       NB.! fnme=. lenfldr}. 'animsumry' getFnme y NB. doesn't work cause animalsim.ini gone
       fnme=. 'output/animsummary.csv'
-      zipnme=. 'sumryzip' getFnme y
+      zipnme=. jpath 'sumryzip' getFnme y
       fnme=. >fnme;zipnme
+      return. NB. don't jpath fnme. zread must have '/'
     case. 'summaryINI' do.
       NB. 'animalsim.ini';'d:\web\...\ciid.zip'
       fnme=. 'animini' getDBItem y
