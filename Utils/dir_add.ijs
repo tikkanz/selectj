@@ -14,7 +14,7 @@ NB. if user account calling createdir doesn't have
 NB. read permission for already existing parent directories.
 NB. looks like they don't exist and interface error when try to create
 dircreate=: 3 : 0
-  y=. boxopen y
+  y=. boxxopen y
   msk=. -.direxist y
   if. ''-:$msk do. msk=.(#y)#msk end.
   res=.1!:5 msk#y
