@@ -28,16 +28,17 @@
   <div id="caseName"><h2><%= sd_name %> </h2>
     <p><%= sd_descr %> </p>
   </div>
-  <div id="caseMsg">
-    <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
-    <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
-    <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
-    <p class="error" style="display:<%=('err'-: _3{.action){::'none';'block'%>"><%=errormsg %></p>
-  </div>
   <div id="caseStatus">
     <p style="display:<%=(cistage=1){::'none';'block'%>">You have not yet started selecting your population. </p>
     <p style="display:<%=(cistage=21){::'none';'block'%>">Your population is beginning cycle <%=currcycle %> of <%=ncycles %> cycles of selection. </p>
     <p style="display:<%=(cistage=99){::'none';'block'%>">All your selection cycles are complete. </p>
+  </div>
+  <div id="caseMsg">
+    <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
+    <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
+    <p class="info" style="display:<%=(action-:'storefin'){::'none';'block'%>">The case was successfully stored. </p>
+    <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
+    <p class="error" style="display:<%=('err'-: _3{.action){::'none';'block'%>"><%=errormsg %></p>
   </div>
   </div>
   <div class="story">
@@ -94,10 +95,11 @@
       <dt>Case Menu</dt>
       <!--<dd><a href="../poplntype.asp">Choose Question </a></dd>
 	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
-      <dd><a href="case.jhp?action=status">Case status</a></dd>
+      <dd><a href="case.jhp?action=home">CaseHome</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=breed">Breed  Population</a></dd> 
-      <dd><a href="case.jhp?action=reset">Reset case</a></dd>
+      <dd><a href="case.jhp?action=breed">Breed  population</a></dd> 
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cisumry{::'case.jhp?action=store">Store completed case';'#">Case is stored' %></a></dd> 
+      <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cisumry %>)">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;
   </div> 

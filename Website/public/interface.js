@@ -110,3 +110,19 @@ function callregsubmit() {
 		frm.passwdc.disabled=false
 		}
 	}
+
+function resetCase(cistage, cisumry) {
+	//decides whether to prompt to store case first
+	act = "reset" //default to reset case
+	stc = false   //default to not store case
+	if ((99==cistage) && (!cisumry)) {
+		stc = !confirm("Your case is complete but has not yet been stored. Are you sure you want to reset without storing first?");
+	}
+	else if(cistage>1){
+		if (!confirm("Your case is not yet complete. Are you sure you want to reset and lose your progress so far?")){
+			act = "home"
+		}
+	}
+	location.href= "case.jhp?action="+act+"&store="+stc ;
+	return false;
+}

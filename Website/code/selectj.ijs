@@ -487,8 +487,9 @@ getFnme=: 4 : 0
       
       
       fnme=. 'output/animsummary.csv'
-      zipnme=. 'sumryzip' getFnme y
+      zipnme=. jpath 'sumryzip' getFnme y
       fnme=. >fnme;zipnme
+      return. 
     case. 'summaryINI' do.
       
       fnme=. 'animini' getDBItem y
@@ -539,7 +540,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. >@{:'caseinstance' getDBTable uofcsid
+  ciid=. 'caseinstance' getDBItem uofcsid
   if. #ciid do.
     ciid
   else. 
@@ -549,25 +550,20 @@ getCaseInstance=: 3 : 0
 updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
 )
-summryCaseInstance=: 3 :0
+storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y 
   zipnm=. 'sumryzip' getFnme y  
   dirinf=. 'caseinstfolder' getFnme y
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. 
-    'sumrycaseinst' updateDBTable y  
+    'storecaseinst' updateDBTable y  
   end.
 )
-
-Note 'summryCaseInstance'
-Can see which case instances have summaries by looking up ci_sumry 
-in caseinstances table.
-)
-deleteCaseInstSummary=: 3 :0
+deleteStoredCaseInst=: 3 :0
   zipnm=. 'sumryzip' getFnme y
   ferase zipnm
   if. -. fexist zipnm do.
-    'delsumrycaseinst' updateDBTable y  
+    'delstoredcaseinst' updateDBTable y  
   end.
 )
 expireCaseInstance=: 3 : 0
@@ -977,32 +973,47 @@ inftyps=. ;:'phen'
 csinsts=. 1 2
 
 datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
-sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
+(keylbls;< datlbls) plotSummaries csinsts
+)
 
+getSummaryCSV=: 3 : 0
+  require 'jfiles'
+  fnme =. <"1&dtb"1 'summaryCSV' getFnme y
+  jfnme=. 'ijf',~_3}.1{:: fnme 
+  if. fexist jfnme do. 
+    smry=. jread jfnme;0 1
+  else. 
+    'hdr invtble'=. split fixcsv toJ zread fnme
+    invtble=. ifa invtble
+    smry=. hdr;<invtble
+    res=. jcreate jfnme
+    res=. smry jappend jfnme
+  end.
+  smry
+  
+  
 )
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  fnme=. jpath '~temp/summary.csv'  
-  smry=. readcsv fnme 
-  'hdr sm'=. split smry
-  invtble=. ifa sm
+  'hdr invtble'=. getSummaryCSV y
+  
   keyidx=. hdr idxfnd keylbls 
   key=. listatom keyidx{invtble  
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble 
   sum=. key tkeytble (<tfreq key),key tkeyavg dat 
-  yr0=. '2006'
+  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
+  yr0=. ini getIniString 'yearzero' 
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
     
+    popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
     
-    popsz=. 200 
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
   end.
   sum=. strt}. each sum  
   ((keyidx{hdr),(<'Freq'),datlbls),:sum
 )
-
 
 Note 'user interface'
 Summarys at the level of a user/course (enrolment)
@@ -1019,7 +1030,7 @@ lists summarized case instances with their user name and descriptions.
 Check box associated with each case instance. User to check one or more
 case instances to compare. Click "Compare" button. Also options to  
 download AnimSummary.csv for each case instance, Delete case instance
-summary(s).
+summary(s). View case selection details.
 
 Once chosen then can choose which traits and which type of info (phen,genD,genDe) to graph.
 Options available is superset of all traits and trait info types available
@@ -1074,22 +1085,32 @@ Note 'test data for plotsummry'
 
 ((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
 )
-
-Note 'Prepare summaries to plot'
-collbls=. {.{. every sumrys 
-keylen=. collbls i. <'Freq'
-data=. {: each sumrys
-X=. 0". &> each keylen{.each data
-Y=. > each (>:keylen)}. each data 
-Y=. ;,.each/ <"1 each Y  
-
-trtnms =. >'Fleece weight 12';'Live weight 8' 
-trtnms =. >trtlbls
-inftyps=. >inftyps
-cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' 
-
-(trtnms;inftyps;cinms) plotsummry X;<Y
+preplotsummry=: 4 :0
+  collbls=. {.{. every x 
+  keylen=. collbls i. <'Freq'
+  data=. {: each x
+  X=. 0". &> each keylen{.each data
+  Y=. > each (>:keylen)}. each data 
+  Y=. ;,.each/ <"1 each Y  
+  
+  inftyps=. >inftyps
+  
+  
+  
+  
+  
+  trtnms =. >~.getTrtBase getTrtsOnly collbls 
+  
+  cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' 
+  (trtnms;inftyps;cinms) ;< X;<Y
 )
+plotSummaries=: 4 :0 
+ sumrys=. (<x) sumSummaryCSV each y
+ 'names data'=. sumrys preplotsummry y
+ names plotsummry data
+)
+
+
 plotsummry=: 3 : 0
   inftyps=. >;:'phen genD genDe' 
   ntrts  =. %/# every (1{::y);inftyps 
@@ -1376,13 +1397,13 @@ sqlupd_expirecaseinst=: 0 : 0
   WHERE ci_id=?;
 )
 
-sqlupd_sumrycaseinst=: 0 : 0
+sqlupd_storecaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_sumry=1
   WHERE ci_id=?;
 )
 
-sqlupd_delsumrycaseinst=: 0 : 0
+sqlupd_delstoredcaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_sumry=0
   WHERE ci_id=?;
@@ -1441,7 +1462,7 @@ sqlsel_greeting=: 0 : 0
   WHERE ur.ur_id=?;
 )
 
-sqlsel_mycourses=: 0 : 0
+sqlsel_mycoursesOLD=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
          off_info.cr_code cr_code ,
@@ -1454,8 +1475,57 @@ sqlsel_mycourses=: 0 : 0
   FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
         INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
   WHERE (en.en_urid =?) AND (off_info.of_status >0)
+  GROUP BY of_id
   ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
 )
+
+sqlsel_mycourses=: 0 : 0
+  SELECT off_info.of_id of_id ,
+         off_info.cr_name cr_name ,
+         off_info.cr_code cr_code ,
+         off_info.of_year of_year ,
+         off_info.sm_code sm_code ,
+         off_info.dm_code dm_code ,
+         off_info.pp_adminfname pp_adminfname ,
+         off_info.pp_adminlname pp_adminlname ,
+         rl.rl_name rl_name 
+  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
+        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid =?) 
+   AND (off_info.of_status >0) 
+   AND NOT EXISTS (
+     SELECT  off_info2.of_id of_id , 
+             rl2.rl_id FROM offering_info off_info2
+     INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
+     INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+     WHERE (en2.en_urid == en.en_urid) 
+       AND (off_info2.of_status >0) 
+       AND (off_info2.of_id == off_info.of_id) 
+       AND (rl2.rl_id > rl.rl_id)
+     ) -- end select do not remove this SQL comment otherwise bracket closes noun
+  GROUP BY of_id
+  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
+)
+sqlsel_effrole=: 0 : 0
+  SELECT off_info.of_id of_id ,
+         rl.rl_id rl_id ,
+         rl.rl_name rl_name 
+  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
+        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid =?) 
+    AND (off_info.of_id=?) 
+    AND NOT EXISTS (
+      SELECT  off_info2.of_id of_id , 
+              rl2.rl_id FROM offering_info off_info2
+      INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
+      INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+      WHERE (en2.en_urid == en.en_urid) 
+        AND (off_info2.of_id == off_info.of_id) 
+        AND (rl2.rl_id > rl.rl_id)
+      ) -- end select do not remove this SQL comment otherwise bracket closes noun
+  GROUP BY of_id
+)
+
 
 sqlsel_course=: 0 : 0
   SELECT off_info.of_id of_id ,
@@ -1488,6 +1558,18 @@ sqlsel_coursecases=: 0 : 0
   FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
         INNER JOIN `offeringcases` oc ON ( `cs`.`cs_id` = `oc`.`oc_csid` ) 
   WHERE (oc.oc_ofid =?);
+)
+sqlsel_coursesumrys=: 0 : 0
+  SELECT ci.ci_id ci_id ,
+         sd.sd_code sd_code ,
+         sd.sd_name sd_name ,
+         sd.sd_descr sd_descr ,
+         ci.ci_usrname ci_usrname ,
+         ci.ci_usrdescr ci_usrdescr 
+  FROM   main.`scendefs` sd INNER JOIN main.`cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+         INNER JOIN main.`caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
+  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_sumry =1)
+  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc
 )
 
 sqlsel_casestage=: 0 : 0
@@ -1841,13 +1923,15 @@ getDBItem=: 3 : 0
  '' getDBItem y
 :
  r=. x getDBTable y
- r=.>{.{:r
+ if. #r do. r=.>{.{:r end.
+ r
 )
 getDBField=: 3 : 0
  '' getDBField y
 :
  r=. x getDBTable y
- r=.>{."1}.r
+ if. #r do. r=.>{."1}.r end.
+ r
 )
 getDBItemStr=: 3 : 0
  '' getDBItemStr y
@@ -1915,7 +1999,7 @@ coclass 'rgsdiradd'
 addPS=: , PATHSEP_j_ -. {:          
 dropPS=: }:^:(PATHSEP_j_={:)  
 dircreate=: 3 : 0
-  y=. boxopen y
+  y=. boxxopen y
   msk=. -.direxist y
   if. ''-:$msk do. msk=.(#y)#msk end.
   res=.1!:5 msk#y

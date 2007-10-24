@@ -1,0 +1,35 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=. qparam 'action'
+  if. 0-: 'uofid'=. validEnrolment'' do. 
+    DeleteCookie 'OfferingID' 
+	('action';'home') redirect 'user.jhp'
+	return.
+  end.
+  select. action
+	case. 'home' do.
+	  DeleteCookie 'CaseID'
+      page=. '~CGI/coursesumry_home.asp'  NB. destination page
+	  'uid ofid'=. uofid
+	  setcolnames 'greeting' getDBTable uid
+      setcolnames 'course' getDBTable ofid
+	  setcolnames 'coursesumrys' getDBTable uofid
+      NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
+	  transfer page
+	case. 'download' do.
+	case. 'params' do.
+	case. do.  NB. default action
+      ('action';'home') redirect 'coursesumry.jhp'
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println 4!:0 <'uid'
+  println COOKIEKEYS
+  println COOKIEVALS
+  println '</pre></p></body></html>'
+end.
+%>
