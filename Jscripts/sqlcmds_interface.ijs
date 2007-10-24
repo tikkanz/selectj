@@ -10,7 +10,7 @@ sqlsel_greeting=: 0 : 0
   WHERE ur.ur_id=?;
 )
 
-sqlsel_mycourses=: 0 : 0
+sqlsel_mycoursesOLD=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
          off_info.cr_code cr_code ,
@@ -23,8 +23,60 @@ sqlsel_mycourses=: 0 : 0
   FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
         INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
   WHERE (en.en_urid =?) AND (off_info.of_status >0)
+  GROUP BY of_id
   ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
 )
+
+sqlsel_mycourses=: 0 : 0
+  SELECT off_info.of_id of_id ,
+         off_info.cr_name cr_name ,
+         off_info.cr_code cr_code ,
+         off_info.of_year of_year ,
+         off_info.sm_code sm_code ,
+         off_info.dm_code dm_code ,
+         off_info.pp_adminfname pp_adminfname ,
+         off_info.pp_adminlname pp_adminlname ,
+         rl.rl_name rl_name 
+  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
+        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid =?) 
+   AND (off_info.of_status >0) 
+   AND NOT EXISTS (
+     SELECT  off_info2.of_id of_id , 
+             rl2.rl_id FROM offering_info off_info2
+     INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
+     INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+     WHERE (en2.en_urid == en.en_urid) 
+       AND (off_info2.of_status >0) 
+       AND (off_info2.of_id == off_info.of_id) 
+       AND (rl2.rl_id > rl.rl_id)
+     ) -- end select do not remove this SQL comment otherwise bracket closes noun
+  GROUP BY of_id
+  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
+)
+
+NB. gets effective role of user for a course offering
+NB. i.e. role with highest rl_id
+sqlsel_effrole=: 0 : 0
+  SELECT off_info.of_id of_id ,
+         rl.rl_id rl_id ,
+         rl.rl_name rl_name 
+  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
+        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid =?) 
+    AND (off_info.of_id=?) 
+    AND NOT EXISTS (
+      SELECT  off_info2.of_id of_id , 
+              rl2.rl_id FROM offering_info off_info2
+      INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
+      INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+      WHERE (en2.en_urid == en.en_urid) 
+        AND (off_info2.of_id == off_info.of_id) 
+        AND (rl2.rl_id > rl.rl_id)
+      ) -- end select do not remove this SQL comment otherwise bracket closes noun
+  GROUP BY of_id
+)
+
 
 sqlsel_course=: 0 : 0
   SELECT off_info.of_id of_id ,
