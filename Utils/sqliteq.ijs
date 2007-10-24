@@ -53,7 +53,8 @@ getDBItem=: 3 : 0
  '' getDBItem y
 :
  r=. x getDBTable y
- r=.>{.{:r
+ if. #r do. r=.>{.{:r end.
+ r
 )
 
 NB.*getDBField v gets single field from a database query
@@ -62,7 +63,8 @@ getDBField=: 3 : 0
  '' getDBField y
 :
  r=. x getDBTable y
- r=.>{."1}.r
+ if. #r do. r=.>{."1}.r end.
+ r
 )
 
 NB.*getDBItemStr v gets single field from a record in database
