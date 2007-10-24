@@ -50,7 +50,7 @@ getFnme=: 4 : 0
       fnme=. 'animini' getDBItem y
       zipnme=. 'sumryzip' getFnme y
       fnme=. >fnme;zipnme
-    case. 'sumryfiles' do. NB. fnames of files to include in zip
+    case. 'sumryfiles' do. NB. fnames of files to store in zip
       fnme=. >('animini';'animsumry') getFnme each y
     case. 'sumryzip' do.
       NB. userpop/uname/coursecode_year_sem_dm/summaries/ciid.zip
@@ -110,7 +110,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. >@{:'caseinstance' getDBTable uofcsid
+  ciid=. 'caseinstance' getDBItem uofcsid
   if. #ciid do.
     ciid
   else. NB. create new caseinstance
@@ -124,29 +124,24 @@ updateCaseStage=: 3 : 0
   'casestage' updateDBTable y
 )
 
-NB.*summryCaseInstance v copies summary info to summary folder 
-summryCaseInstance=: 3 :0
+NB.*storeCaseInstance v stores summary info from completed case instance in summary zip
+storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y NB. get names of Files to store
   zipnm=. 'sumryzip' getFnme y  NB. get name of zip file to store in
   dirinf=. 'caseinstfolder' getFnme y
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. NB. update only if all files successfully zipped
-    'sumrycaseinst' updateDBTable y  NB. Update ci_sumry in caseinstances table
+    'storecaseinst' updateDBTable y  NB. Update ci_sumry in caseinstances table
   end.
 )
 
-Note 'summryCaseInstance'
-Can see which case instances have summaries by looking up ci_sumry 
-in caseinstances table.
-)
-
-NB.*deleteCaseInstSummary v deletes zip file containing summary info for case instance
+NB.*deleteStoredCaseInst v deletes zip file containing summary info for case instance
 NB. y is ciid(s)
-deleteCaseInstSummary=: 3 :0
+deleteStoredCaseInst=: 3 :0
   zipnm=. 'sumryzip' getFnme y
   ferase zipnm
   if. -. fexist zipnm do.
-    'delsumrycaseinst' updateDBTable y  NB. update ci_sumry in caseinstances table.
+    'delstoredcaseinst' updateDBTable y  NB. update ci_sumry in caseinstances table.
   end.
 )
 

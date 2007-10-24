@@ -88,7 +88,7 @@ lists summarized case instances with their user name and descriptions.
 Check box associated with each case instance. User to check one or more
 case instances to compare. Click "Compare" button. Also options to  
 download AnimSummary.csv for each case instance, Delete case instance
-summary(s).
+summary(s). View case selection details.
 
 Once chosen then can choose which traits and which type of info (phen,genD,genDe) to graph.
 Options available is superset of all traits and trait info types available

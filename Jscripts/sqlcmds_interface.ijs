@@ -111,6 +111,21 @@ sqlsel_coursecases=: 0 : 0
   WHERE (oc.oc_ofid =?);
 )
 
+NB. return case and case instance info for all stored case instances
+NB. for the user offering
+sqlsel_coursesumrys=: 0 : 0
+  SELECT ci.ci_id ci_id ,
+         sd.sd_code sd_code ,
+         sd.sd_name sd_name ,
+         sd.sd_descr sd_descr ,
+         ci.ci_usrname ci_usrname ,
+         ci.ci_usrdescr ci_usrdescr 
+  FROM   main.`scendefs` sd INNER JOIN main.`cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+         INNER JOIN main.`caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
+  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_sumry =1)
+  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc
+)
+
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
          ci.ci_sumry ci_sumry

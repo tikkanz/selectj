@@ -139,13 +139,13 @@ sqlupd_expirecaseinst=: 0 : 0
   WHERE ci_id=?;
 )
 
-sqlupd_sumrycaseinst=: 0 : 0
+sqlupd_storecaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_sumry=1
   WHERE ci_id=?;
 )
 
-sqlupd_delsumrycaseinst=: 0 : 0
+sqlupd_delstoredcaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_sumry=0
   WHERE ci_id=?;
