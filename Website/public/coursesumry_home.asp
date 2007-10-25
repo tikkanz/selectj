@@ -28,13 +28,14 @@
   <div class="story">
     <h3>Your Stored Cases</h3>
     <p>Select one or more stored cases to summarise/compare. </p>
+    <form name="F1" id="F1" method="post" action="coursesumry.jhp">
         <table cellspacing=0 width=88%><tr class=rh>
       <th colspan="2">Stored Case ID</th><th>My Case description</th><th>Base Case description</th><th>Actions</th>
       </tr>
       <% for_idx. i.#ci_id do. %>
         <tr class="r<%= ,":2|idx %>">
 		  <td> <%= idx{ci_id %> </td>
-          <td><input name="stsum" type="checkbox" id="stsum" value=<%= idx{ci_id %> /></td>
+          <td><input name="select" type="checkbox" value=<%= idx{ci_id %> /></td>
           <td class="objlist"><span class="objname"><%= idx{ci_usrname %></span><br/>
             <%=idx{ci_usrdescr%><br/>
             &nbsp;
@@ -43,13 +44,14 @@
             <%=idx{sd_descr%><br/>
             &nbsp;
           </td>
-          <td> <a href="coursesumry.jhp?action=download&ci_id=<%= idx{ci_id %>">download Summary Info</a><br/>
-               <a href="coursesumry.jhp?action=params&ci_id=<%= idx{ci_id %>">view Selection details</a>
+          <td> <a href="coursesumry.jhp?action=download&ciid=<%= idx{ci_id %>">download Summary Info</a><br/>
+               <a href="coursesumry.jhp?action=params&ciid=<%= idx{ci_id %>">view Selection details</a>
           </td>
         </tr><% end. %>
-        <tr><td colspan="3"><input name="" type="button" value="Compare Scenarios" /></td><td></td><td><a href=".">Delete Selected</a></td>
+        <tr><td colspan="3"><input name="action" type="submit" value="Compare Cases" /></td><td></td><td><input name="action" type="submit" value="Delete Selected" /></td>
         </tr>
     </table>
+    </form>
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><!-- InstanceBeginEditable name="navbar" --><!-- InstanceEndEditable --> 

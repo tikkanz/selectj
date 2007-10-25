@@ -1,13 +1,18 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
-  action=. qparam 'action'
   if. 0-: 'uofid'=. validEnrolment'' do. 
     DeleteCookie 'OfferingID' 
 	('action';'home') redirect 'user.jhp'
 	return.
   end.
-  select. action
+  action=. qparam 'action'
+  select. ' ' taketo action
+    case. 'Compare' do.
+      NB.! open new page with form to choose parameters to summarise by
+      ciids=. 4 qparamList 'select'
+      ('action';'home') redirect 'coursesumry.jhp'
+      NB. (ciids) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
 	case. 'home' do.
 	  DeleteCookie 'CaseID'
       page=. '~CGI/coursesumry_home.asp'  NB. destination page
@@ -18,7 +23,18 @@ try.
       NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	  transfer page
 	case. 'download' do.
+      page=. 'download.jhp'
+	  'fpth zipnme' =. <"1&dtb"1 'summaryCSV' getFnme qparam 'ciid'
+      fnme=. 'Summary.csv'
+      qry=. ('zipname';zipnme),('filepath';fpth),:'filename';fnme
+	  qry redirect page
 	case. 'params' do.
+      NB.! view selection details but no changing
+      ('action';'home') redirect 'coursesumry.jhp'
+    case. 'Delete' do. NB. delete stored cases
+      ciids=. 4 qparamList 'select'
+      deleteStoredCaseInst"0 ;ciids
+      ('action';'home') redirect 'coursesumry.jhp'
 	case. do.  NB. default action
       ('action';'home') redirect 'coursesumry.jhp'
   end.

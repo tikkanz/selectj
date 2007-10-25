@@ -33,6 +33,8 @@ fext=:'.'&(i:~}.])
 fname=: PATHSEP_j_&(>:@i:~}.])
 isJHP=: (;:'jhp asp') e.~ [:<fext
 transfer=: 3 : 0
+  '' transfer y
+  :
   'fpth fnme'=.2{. boxopen y
   
   myext=. fext fpth
@@ -44,9 +46,13 @@ transfer=: 3 : 0
     markup fpth
   case. do.
     Expires 0
-    if. 0<#fnme do. ContentDisp fnme end.
+    if. *#fnme do. ContentDisp fnme end.
     ContentType ctype
-    stdout fread jpath fpth
+    if. *#x do.
+      stdout x
+    else.
+      stdout fread jpath fpth
+    end.
   end.
 )
 
@@ -560,6 +566,7 @@ storeCaseInstance=: 3 :0
   end.
 )
 deleteStoredCaseInst=: 3 :0
+  if. 0=#y do. '' return. end.
   zipnm=. 'sumryzip' getFnme y
   ferase zipnm
   if. -. fexist zipnm do.
@@ -976,7 +983,7 @@ datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
 (keylbls;< datlbls) plotSummaries csinsts
 )
 
-getSummaryCSV=: 3 : 0
+readSummaryCSV=: 3 : 0
   require 'jfiles'
   fnme =. <"1&dtb"1 'summaryCSV' getFnme y
   jfnme=. 'ijf',~_3}.1{:: fnme 
@@ -995,7 +1002,7 @@ getSummaryCSV=: 3 : 0
 )
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  'hdr invtble'=. getSummaryCSV y
+  'hdr invtble'=. readSummaryCSV y
   
   keyidx=. hdr idxfnd keylbls 
   key=. listatom keyidx{invtble  
