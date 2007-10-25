@@ -19,7 +19,7 @@ NB. sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
 (keylbls;< datlbls) plotSummaries csinsts
 )
 
-getSummaryCSV=: 3 : 0
+readSummaryCSV=: 3 : 0
   require 'jfiles'
   fnme =. <"1&dtb"1 'summaryCSV' getFnme y
   jfnme=. 'ijf',~_3}.1{:: fnme 
@@ -52,7 +52,7 @@ NB.           1{x is boxed list of trait column labels to summarise
 NB. e.g. ((<'YOB');< ;:'pLW8 pFW12') sumSummaryCSV 1
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  'hdr invtble'=. getSummaryCSV y
+  'hdr invtble'=. readSummaryCSV y
   NB. invtble=. ifa sm
   keyidx=. hdr idxfnd keylbls NB. indexes of only keylbls found in hdr
   key=. listatom keyidx{invtble  NB. get keycols (listatom nolonger reqd?)

@@ -22,7 +22,10 @@ NB.* transfer v transfers a file to stdout with appropriate response headers
 NB. y is 1 or 2-item boxed list.
 NB.         0{ path to file on server
 NB.         1{ optional name for file to be downloaded
+NB. x is optional filecontent to download
 transfer=: 3 : 0
+  '' transfer y
+  :
   'fpth fnme'=.2{. boxopen y
   NB. map fpth to physical path if required
   myext=. fext fpth
@@ -34,9 +37,13 @@ transfer=: 3 : 0
     markup fpth
   case. do.
     Expires 0
-    if. 0<#fnme do. ContentDisp fnme end.
+    if. *#fnme do. ContentDisp fnme end.
     ContentType ctype
-    stdout fread jpath fpth
+    if. *#x do.
+      stdout x
+    else.
+      stdout fread jpath fpth
+    end.
   end.
 )
 

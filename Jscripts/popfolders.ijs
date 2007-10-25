@@ -138,6 +138,7 @@ storeCaseInstance=: 3 :0
 NB.*deleteStoredCaseInst v deletes zip file containing summary info for case instance
 NB. y is ciid(s)
 deleteStoredCaseInst=: 3 :0
+  if. 0=#y do. '' return. end.
   zipnm=. 'sumryzip' getFnme y
   ferase zipnm
   if. -. fexist zipnm do.
