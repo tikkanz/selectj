@@ -7,8 +7,9 @@ NB. (listatom 5) -: ,5
 NB. (listatom i.4 3) -: i.4 3
 listatom=: 1&#
 
-NB.*mfv v Make a 1-row matrix from a vector
-mfv=: ,:^:(#&$ = 1:)
+NB.*mfv1 v Make a 1-row matrix from a vector
+mfv1=: ,:^:(#&$ = 1:)
+NB. use mfv in convert.ijs instead
 
 NB.*idxfnd v Returns only indexes of items of y that are found in x.
 idxfnd=: i. #~ i. < [: # [

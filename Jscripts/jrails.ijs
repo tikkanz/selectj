@@ -35,7 +35,7 @@ buildForm=: 3 : 0
 
 NB.*buildFieldset v builds xhtml fieldset code for a fieldset in a form
 NB. y is fs_id of fieldset
-NB. x is cf_value or disabled status (0 disabled, 1 not disabled)
+NB. x is disabled status (0 disabled, 1 not disabled)
 buildFieldset=: 3 : 0
   1 buildFieldset y
 :
@@ -46,7 +46,7 @@ buildFieldset=: 3 : 0
   pdvs=. buildParamDiv each boxitemidx <"0 each fs_id;pr_id
   fst=. FIELDSET LF join lgd;pdvs
   dsabld=. (x<1)#'disabled="disabled"'
-  fst=. ('disabled';dsabld) stringreplace fst
+  fst=. ('disabled="disabled"';dsabld) stringreplace fst
 )
 
 NB.*buildParamDiv v builds relevant xhtml div for a parameter in a fieldset
@@ -96,9 +96,9 @@ NB. x is optional list of boxed controlvalues to be checked
 buildControlset=: 3 : 0
   '' buildControlset y
 :
-  'cprops vals nms idx'=. 4{.y
+  'cprops vals nms idx'=. 4{. y
   ctrls=. x&buildInput each boxitemidx cprops;vals;<idx
-  lbls=.  buildLabel each boxitemidx nms;<idx
+  lbls=. 'pr_code'&buildLabel each boxitemidx nms;<idx
   LF join ,ctrls,.lbls,.<BR ''
 )
 
@@ -108,26 +108,28 @@ NB. x is optional list of boxed Controlvalues to be checked
 buildInput=: 3 : 0
  '' buildInput y
 :
-  'Ctrlprops Val Idx'=. 3{.y
+  'Ctrlprops Val Idx'=. 3{. y
   Val=. ,8!:2 Val
   x=. 8!:0 x
   Pcode=.'pr_code'
   Chk=. 'checked="checked"'
-  ". '((x e.~ <Val)#Chk) INPUT id (Pcode,Idx) value Val name Pcode disabled ',Ctrlprops,' '''''
+  ". '((x e.~ <Val)#Chk) INPUT id (Pcode,":Idx) value Val name Pcode disabled Pcode ',Ctrlprops,' '''''
 )
 
 NB.*buildLabel v builds Label for form control
 NB. y is 1- or 2-item list of boxed Labeltext[;Controlindex]
 NB. x is optional parameter code
+NB. for="{paramcode},{Controlindex}" (matches unique ID of control)
+NB. eg. buildLabel 'Height'   or 'trait' buildLabel 'Height';4
 buildLabel=: 3 : 0
-  'pr_code' buildLabel y
+  '' buildLabel y
 :
   'nme idx'=. 2{. boxopen y
   Pcode=. x NB. parameter code
-  LABEL for (Pcode,idx) nme
+  LABEL for (Pcode,":idx) nme
 )
 
-NB.*buildLabel v builds Note code for form control
+NB.*buildNote v builds Note code for form control
 NB. returns '' if y is '' else code for Note
 NB. y is string for note
 buildNote=: 3 : 0
@@ -140,12 +142,14 @@ NB.*buildOption v builds xhtml option code for an option in a select form contro
 NB. y is a 1- or 2-item list of boxed Optionvalue[;Optiontext]
 NB. x is optional list of boxed Optionvalues to be selected
 NB. used by buildSelect
+NB. eg. (3;4;5) buildOption 0;'Blue'
+NB. eg. (0;4;5) buildOption 0;'Blue'
 buildOption=: 3 : 0
   '' buildOption y
 :
   'Val Descr'=. 2$y
   sel=. 'selected="selected"'
-  ((x e.~ <Val)#sel) OPTION value Val Descr
+  ((x e.~ <Val)#sel) OPTION value Val ":Descr
 )
 
 NB.*buildSelect v creates select control with options.
@@ -160,14 +164,53 @@ buildSelect=: 3 : 0
 :
   'Ctrlprops opts'=. 2{. y
   opts=. ,each (<"0^:(L.=1:)) opts NB. ensure box depth 2 and no atoms
-  opts=. 8!:0 each opts
-  x=. boxopen 8!:0 x
+NB.   opts=. 8!:0 each opts
+NB.   x=. boxopen 8!:0 x
   Pcode=.'pr_code'
   opts=. x&buildOption each opts
   opts=. LF join opts
-  ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
+  ". 'SELECT id Pcode name Pcode disabled Pcode ',Ctrlprops,' opts'
 )
 
+NB.*makeTable v create simple XHTML table from boxed matrix
+makeTable=: 3 : 0
+  TABLE TBODY LF join TR each ,each/"1 TD each y
+)
+
+enclose=: [ , ,~
+
+buildTag=:4 :0
+  'tgn attn attv'=. x
+  attr=. ((' 'enclose each boxopen attn),each quote each boxopen attv)
+  tgdefs=. ,each/"1 |: (<toupper tgn),attr
+  ".each tgdefs ,each (' ',each quote each y)
+)
+
+Note  'Build Sumrydef Table'
+ cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'
+ cols4row=. (TD class 'tbltick') every '1st';'&nbsp;';'hello'
+ row=. TR class 'r1' vfm cols4row
+ INPUT type 'checkbox' name 'traits' id 'traits0' ''
+ LF join TR each ,each/"1 |: TD classA ('r1';'r2';'r3') |: 8!:0 i.  4 3
+ LF join TR each ,each/"1    TD classA  'r1' 8!:0 i.  4 3
+TABLE id 'sumrydef' TBODY id 'infotyps' LF join TR each ,each/"1 |: TD class2 ('r1';'r2';'r3') |: 8!:0 i.  4 3
+(TD classA ('trait'&,each 8!:0 >:i.4) 8!:0 i.  4 1),.TD classA ('tbletick') 8!:0 i.  4 3
+unbox1=: >^:(<:&L.) NB. unbox down to 1 level
+unbox1 TD ismap noresize checked 8!:0 i. 3 4
+TABLE id 'sumrydef' TBODY id 'trts' LF join TR classA ('r1';'r2';'r1') ,each/"1(TD each tst),. TD classA ('s1';'s2';'s3') 8!:0 i.3 2
+
+NB.  cell=:4 :0
+NB.   'nm cl'=.x
+NB.   TD name nm class cl y
+NB.  ) NB. from Raul
+
+ ((;:'n1 n2 n3') <@,"0 ;:'s1 s2 s3') cell each 8!:0 i.3 2
+ ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag '3'
+ ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag 8!:0 i.3 2
+ ('TD' ;('name';'id';'class');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) cell1 8!:0 i.3 2
+ ('TD' ;('name';'id';'disabled');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) buildTag 8!:0 i.3 2
+
+)
 
 NB. =========================================================
 NB. Utilities
@@ -206,13 +249,15 @@ NB. <option value="VISA" selected="selected">VISA</option>\n
 NB. <option value="MasterCard">MasterCard</option>\n
 NB. <option value="Discover" selected="selected">Discover</option>
 
-rarg=:  ('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece weight at 12-mon';'FW12');(<'Ultrasound backfat depth';'FD')
+rarg=:  '';('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece weight at 12-mon';'FW12');(<'Ultrasound backfat depth';'FD')
 larg=:  'NLB';'FD'
-larg selectoptions rarg
+larg buildSelect rarg
 NB. <option value="NLB" selected="selected">No. of Lambs Born</option>\n
 NB. <option value="LW8">Live weight at 8-mon</option>\n
 NB. <option value="FW12">Fleece weight at 12-mon</option>\n
 NB. <option value="FD" selected="selected">Ultrasound backfat depth</option>
 )
 
-buildForm_z_=: buildForm_rgswebforms_
+buildForm_z_=:  buildForm_rgswebforms_
+makeTable_z_=:  makeTable_rgswebforms_
+buildTable_z_=: buildTable_rgswebforms_

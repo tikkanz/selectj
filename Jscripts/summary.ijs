@@ -74,22 +74,6 @@ NB.  yr0=. '2006'
 )
 
 Note 'user interface'
-Summarys at the level of a user/course (enrolment)
-So user can compare between different case instances of the same case
-and between different case instances from different cases offered within a course
-
-Need to be careful with different cases if info is too different.
-
-User has list of summarised case-instances to choose from, can choose
-one or more to compare.
-
-Case Summaries page - pretty much like list of course cases page, but 
-lists summarized case instances with their user name and descriptions. 
-Check box associated with each case instance. User to check one or more
-case instances to compare. Click "Compare" button. Also options to  
-download AnimSummary.csv for each case instance, Delete case instance
-summary(s). View case selection details.
-
 Once chosen then can choose which traits and which type of info (phen,genD,genDe) to graph.
 Options available is superset of all traits and trait info types available
 in the case-instances to be compared.
@@ -102,8 +86,6 @@ Choose graphical or tabular summary (regression too)
 Display graph/table below table or in separate window.
 )
 
-Note 'regression (slope & intercept) of traits'
-)
 
 Note 'how to plot'
 Multiplot row for each chosen trait, Multiplot column for each chosen info type.
@@ -201,7 +183,7 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv each x
+  'trtnms inftyps cinms'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   nplots=. */#every trtnms;inftyps;cinms
@@ -295,7 +277,7 @@ Note 'test data for plotsummry1'
 plotsummry1 X;<Y
 ((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry1 X;<Y
 
-  Y=. mfv each <"1 data  NB. ensure vectors are 1 row matricies
+  Y=. mfv1 each <"1 data  NB. ensure vectors are 1 row matricies
   X=. ((#Y)#<lbls)  NB. X is probably same for each y
   dat=. X;<Y
   datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
@@ -318,7 +300,7 @@ plotsummry1=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry1 y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv each x
+  'trtnms inftyps cinms'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   frmt=. [: vfms dquote"1@dtb"1
