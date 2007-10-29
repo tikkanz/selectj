@@ -308,7 +308,7 @@ MimeMap=: 0 : 0
 
 coclass COBASE_z_  
 listatom=: 1&#
-mfv=: ,:^:(#&$ = 1:)
+mfv1=: ,:^:(#&$ = 1:)
 idxfnd=: i. #~ i. < [: # [
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
@@ -1023,22 +1023,6 @@ sumSummaryCSV=: 4 :0
 )
 
 Note 'user interface'
-Summarys at the level of a user/course (enrolment)
-So user can compare between different case instances of the same case
-and between different case instances from different cases offered within a course
-
-Need to be careful with different cases if info is too different.
-
-User has list of summarised case-instances to choose from, can choose
-one or more to compare.
-
-Case Summaries page - pretty much like list of course cases page, but 
-lists summarized case instances with their user name and descriptions. 
-Check box associated with each case instance. User to check one or more
-case instances to compare. Click "Compare" button. Also options to  
-download AnimSummary.csv for each case instance, Delete case instance
-summary(s). View case selection details.
-
 Once chosen then can choose which traits and which type of info (phen,genD,genDe) to graph.
 Options available is superset of all traits and trait info types available
 in the case-instances to be compared.
@@ -1051,8 +1035,6 @@ Choose graphical or tabular summary (regression too)
 Display graph/table below table or in separate window.
 )
 
-Note 'regression (slope & intercept) of traits'
-)
 
 Note 'how to plot'
 Multiplot row for each chosen trait, Multiplot column for each chosen info type.
@@ -1127,7 +1109,7 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv each x
+  'trtnms inftyps cinms'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   nplots=. */#every trtnms;inftyps;cinms
@@ -1214,7 +1196,7 @@ Note 'test data for plotsummry1'
 plotsummry1 X;<Y
 ((>'Fleece weight 12';'No. Lambs Born';'Live weight 8');(>'phen';'genD';'genDe');>'My first one';'My second version';'Base case' )plotsummry1 X;<Y
 
-  Y=. mfv each <"1 data  
+  Y=. mfv1 each <"1 data  
   X=. ((#Y)#<lbls)  
   dat=. X;<Y
   datinfo=. (>'No of Lambs Born';'Live weight 8';'Fleece weight 12';'Fat Depth';'carcass Lean';'carcass Fat');(>'phen';'genD');>'My first one'
@@ -1229,7 +1211,7 @@ plotsummry1=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry1 y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv each x
+  'trtnms inftyps cinms'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   frmt=. [: vfms dquote"1@dtb"1
@@ -1667,7 +1649,7 @@ buildFieldset=: 3 : 0
   pdvs=. buildParamDiv each boxitemidx <"0 each fs_id;pr_id
   fst=. FIELDSET LF join lgd;pdvs
   dsabld=. (x<1)#'disabled="disabled"'
-  fst=. ('disabled';dsabld) stringreplace fst
+  fst=. ('disabled="disabled"';dsabld) stringreplace fst
 )
 buildParamDiv=: 3 : 0
   info=. 'param' getDBTable y  
@@ -1709,27 +1691,27 @@ buildParamDiv=: 3 : 0
 buildControlset=: 3 : 0
   '' buildControlset y
 :
-  'cprops vals nms idx'=. 4{.y
+  'cprops vals nms idx'=. 4{. y
   ctrls=. x&buildInput each boxitemidx cprops;vals;<idx
-  lbls=.  buildLabel each boxitemidx nms;<idx
+  lbls=. 'pr_code'&buildLabel each boxitemidx nms;<idx
   LF join ,ctrls,.lbls,.<BR ''
 )
 buildInput=: 3 : 0
  '' buildInput y
 :
-  'Ctrlprops Val Idx'=. 3{.y
+  'Ctrlprops Val Idx'=. 3{. y
   Val=. ,8!:2 Val
   x=. 8!:0 x
   Pcode=.'pr_code'
   Chk=. 'checked="checked"'
-  ". '((x e.~ <Val)#Chk) INPUT id (Pcode,Idx) value Val name Pcode disabled ',Ctrlprops,' '''''
+  ". '((x e.~ <Val)#Chk) INPUT id (Pcode,":Idx) value Val name Pcode disabled Pcode ',Ctrlprops,' '''''
 )
 buildLabel=: 3 : 0
-  'pr_code' buildLabel y
+  '' buildLabel y
 :
   'nme idx'=. 2{. boxopen y
   Pcode=. x 
-  LABEL for (Pcode,idx) nme
+  LABEL for (Pcode,":idx) nme
 )
 buildNote=: 3 : 0
   if. #y do.
@@ -1741,21 +1723,50 @@ buildOption=: 3 : 0
 :
   'Val Descr'=. 2$y
   sel=. 'selected="selected"'
-  ((x e.~ <Val)#sel) OPTION value Val Descr
+  ((x e.~ <Val)#sel) OPTION value Val ":Descr
 )
 buildSelect=: 3 : 0
   '' buildSelect y
 :
   'Ctrlprops opts'=. 2{. y
   opts=. ,each (<"0^:(L.=1:)) opts 
-  opts=. 8!:0 each opts
-  x=. boxopen 8!:0 x
   Pcode=.'pr_code'
   opts=. x&buildOption each opts
   opts=. LF join opts
-  ". 'SELECT id Pcode name Pcode disabled ',Ctrlprops,' opts'
+  ". 'SELECT id Pcode name Pcode disabled Pcode ',Ctrlprops,' opts'
+)
+makeTable=: 3 : 0
+  TABLE TBODY LF join TR each ,each/"1 TD each y
 )
 
+enclose=: [ , ,~
+
+buildTag=:4 :0
+  'tgn attn attv'=. x
+  attr=. ((' 'enclose each boxopen attn),each quote each boxopen attv)
+  tgdefs=. ,each/"1 |: (<toupper tgn),attr
+  ".each tgdefs ,each (' ',each quote each y)
+)
+
+Note  'Build Sumrydef Table'
+ cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'
+ cols4row=. (TD class 'tbltick') every '1st';'&nbsp;';'hello'
+ row=. TR class 'r1' vfm cols4row
+ INPUT type 'checkbox' name 'traits' id 'traits0' ''
+ LF join TR each ,each/"1 |: TD classA ('r1';'r2';'r3') |: 8!:0 i.  4 3
+ LF join TR each ,each/"1    TD classA  'r1' 8!:0 i.  4 3
+TABLE id 'sumrydef' TBODY id 'infotyps' LF join TR each ,each/"1 |: TD class2 ('r1';'r2';'r3') |: 8!:0 i.  4 3
+(TD classA ('trait'&,each 8!:0 >:i.4) 8!:0 i.  4 1),.TD classA ('tbletick') 8!:0 i.  4 3
+unbox1=: >^:(<:&L.) 
+unbox1 TD ismap noresize checked 8!:0 i. 3 4
+TABLE id 'sumrydef' TBODY id 'trts' LF join TR classA ('r1';'r2';'r1') ,each/"1(TD each tst),. TD classA ('s1';'s2';'s3') 8!:0 i.3 2
+ ((;:'n1 n2 n3') <@,"0 ;:'s1 s2 s3') cell each 8!:0 i.3 2
+ ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag '3'
+ ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag 8!:0 i.3 2
+ ('TD' ;('name';'id';'class');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) cell1 8!:0 i.3 2
+ ('TD' ;('name';'id';'disabled');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) buildTag 8!:0 i.3 2
+
+)
 makeidx=:[: 8!:0 i.
 
 boxitemidx=:<"1@:|:@:>
@@ -1774,12 +1785,15 @@ larg selectoptions rarg
 rarg=:  'VISA';'MasterCard';'Discover'
 larg=:  'VISA';'Discover'
 larg selectoptions rarg
-rarg=:  ('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece weight at 12-mon';'FW12');(<'Ultrasound backfat depth';'FD')
+rarg=:  '';('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece weight at 12-mon';'FW12');(<'Ultrasound backfat depth';'FD')
 larg=:  'NLB';'FD'
-larg selectoptions rarg
+larg buildSelect rarg
 )
 
-buildForm_z_=: buildForm_rgswebforms_
+buildForm_z_=:  buildForm_rgswebforms_
+makeTable_z_=:  makeTable_rgswebforms_
+buildTable_z_=: buildTable_rgswebforms_
+
 addpath_z_=: adverb def '(copath~ ~.@(x&;)@copath)@(coname^:(0:=#)) :. ((copath~ copath -. (<x)"_)@(coname^:(0:=#)))'
 webdefs_z_=: 'jweb' addpath
 webdefs ''      
@@ -1804,7 +1818,7 @@ maketag@> ;:noun define-.LF
    OPTGROUP OPTION TEXTAREA LABEL
    SCRIPT NOSCRIPT
 )
-parm=: adverb def 'conjunction def ((''('''''',x,''='''' glue v) u y'');'':'';(''(('''''',x,''='''' glue v),'''' '''',x) u y''))'
+parm=:  adverb def 'conjunction def ((''('''''',x,''='''' glue v) u y'');'':'';(''(('''''',x,''='''' glue v),'''' '''',x) u y''))'
 makeparm=: verb def 'empty ".y,''=: '''''',y,'''''' parm'''
 makeparm@> ;:noun define-.LF
    size width height align href face bgcolor
@@ -1825,18 +1839,31 @@ makeparm@> ;:noun define-.LF
    marginwidth marginheight target for
    action method enctype onsubmit accept
    maxlength onselect onchange prompt
-   language onreset checked readonly multiple
-   selected
+   language onreset
 )
+parmA=: adverb def 'conjunction def ((''('''''',(}:x),''='''' &glue each boxopen v) u each boxopen y'');'':'';(''(('''''',(}:x),''='''' &glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
+makeparmA=: verb def 'empty ".y,''=: '''''',y,'''''' parmA'''
+makeparmA@> 'A',~ each ;:noun define-.LF
+  class id name
+)
+
 
 enquote=: ('"'&,)@(,&'"')^:('"'&~:@{.@(1&{.))
 glue=: , enquote@":
-parm0=: adverb def 'adverb def (('''''''',x,'''''' u y'');'':'';(''('''''',x,'' '''',x) u y''))'
+parm0=: adverb def 'conjunction def (('''''''',(x,''=''glue x),'''''''','' u y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) u y''))'
 makeparm0=: verb def 'empty ".y,''=: '''''',y,'''''' parm0'''
 makeparm0@> ;:noun define-.LF
-   ismap compact nowrap declare nohref noshade
-   noresize disabled
+    checked compact declare defer disabled ismap multiple
+    nohref noresize noshade nowrap readonly selected
 )
+
+parm0A=: adverb def 'adverb def (('''''''',(x,''=''glue x),'''''''','' &u each boxopen y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) &u each boxopen y''))'
+makeparm0A=: verb def 'empty ".y,''=: '''''',y,'''''' parm0A'''
+makeparm0A@> 'A',~ each ;:noun define-.LF
+    checked compact declare defer disabled ismap multiple
+    nohref noresize noshade nowrap readonly selected
+)
+
 point=: adverb def 'verb def ((''''''<'',x,'' />'''''');'':'';(''''''<'',x,'' '''',x,'''' />''''''))'
 makepoint=: verb def 'empty ".y,''=: '''''',(tolower y),'''''' point'''
 makepoint@> ;:noun define-.LF
@@ -1849,6 +1876,9 @@ makecolor@> ;:noun define-.LF
    Green  Lime   Olive  Yellow
    Navy   Blue   Teal   Aqua
 )
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
+
+unbox1=: >^:(<:&L.) 
 
 splice=: 2 : '; @ (<@u ;. n)'
 
@@ -2074,7 +2104,7 @@ boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
 getIniAllSections=: 3 :0
   '' getIniAllSections y
   :
-  'fln delim'=. 2{.!.a: boxopen y
+  'fln delim'=. 2{. boxopen y
   ini=. x
   if. -.*#ini do. 
     if. -.fexist fln do. '' return. end. 
@@ -2090,7 +2120,7 @@ getIniAllSections=: 3 :0
 getIniSectionNames=: 3 : 0
   '' getIniSectionNames y
   :
-  'fln delim'=. 2{.!.a: boxopen y
+  'fln delim'=. 2{. boxopen y
   if. -.*#delim do. delim=. '#' end. 
   ini=. x
   if. -.*#ini do. 
@@ -2102,7 +2132,7 @@ getIniSectionNames=: 3 : 0
 getIniIndex=: 3 :0
   '' getIniIndex y
   :
-  'keyn secn fln delim'=. 4{.!.a: 1&#boxopen y
+  'keyn secn fln delim'=. 4{. boxopen y
   if. -.*#delim do. delim=. '#' end. 
   ini=. x
   ini=. ini getIniAllSections fln;delim
@@ -2212,7 +2242,7 @@ Tested them and they are both slower and fatter than current tfreq
 tsort1 should perhaps be "order x by y" rather than the proposed "order y by x", to follow the dyads /: and \: .
 
 )
-mfv=: ,:^:(#&$ = 1:)
+mfv1=: ,:^:(#&$ = 1:)
 tindexof1=: ([,&.>]) tindexof {:@$&.>@([,&.>]) {."1&.>] 
 
 tsort1    =: <@tgrade@[ {&.> ]

@@ -327,8 +327,10 @@ font-size: 80%;
 font-weight: normal;
 }
 
-.big { font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
-font-size: 120%;
+.tbltick {
+	font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
+	font-size: 190%;
+	text-align: center;
 }
 .frmtble {
 	background-color: #FFFF99;
@@ -542,4 +544,31 @@ html>body #navBar dd {border-bottom: none;}
 }
 #SelListUp input{
 	margin:0 0 7px 0;
+}
+#definesumry .tbltick {
+	font-size: 140%;
+	font-weight: bold;
+	background-position: center center;
+}
+#definesumry #trts .r1{
+	background-color:#FFFF99;
+}
+#definesumry #trts .r2{
+	background-color:#FFFFDD;
+}
+#definesumry #inftyps .r1{
+	background-color:#CCFFCC;
+}
+#definesumry #inftyps .r2{
+	background-color:#EEFFEE;
+}
+.tblheading2 {
+ text-align:right;
+}
+.tbltools {
+	background-color:#66CCFF;
+}
+thead th {
+	background-color:#f0f0a0;;
+	padding:3px 0px;
 }
