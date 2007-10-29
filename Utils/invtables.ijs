@@ -35,8 +35,8 @@ tsort1 should perhaps be "order x by y" rather than the proposed "order y by x",
 
 )
 
-NB.*mfv v Make a 1-row matrix from a vector
-mfv=: ,:^:(#&$ = 1:)
+NB.*mfv1 v Make a 1-row matrix from a vector
+mfv1=: ,:^:(#&$ = 1:)
 
 NB.*tindexof1 v lookup y values in x
 NB. width of columns in x & y are extended as required to match longest item

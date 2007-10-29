@@ -1,6 +1,5 @@
 NB. HTML-generating utilities
-NB. based on web.ijs from system library
-NB. 'c:\program files\j601\system\packages\publish\web.ijs'
+NB. based on system library script jpath '~system\packages\publish\web.ijs'
 addpath_z_=: adverb def '(copath~ ~.@(x&;)@copath)@(coname^:(0:=#)) :. ((copath~ copath -. (<x)"_)@(coname^:(0:=#)))'
 webdefs_z_=: 'jweb' addpath
 webdefs ''      NB. add jweb to start of path for current locale
@@ -87,7 +86,7 @@ NB. :
 NB. (('href=' glue v),' ',x) u y
 NB. )
 
-parm=: adverb def 'conjunction def ((''('''''',x,''='''' glue v) u y'');'':'';(''(('''''',x,''='''' glue v),'''' '''',x) u y''))'
+parm=:  adverb def 'conjunction def ((''('''''',x,''='''' glue v) u y'');'':'';(''(('''''',x,''='''' glue v),'''' '''',x) u y''))'
 makeparm=: verb def 'empty ".y,''=: '''''',y,'''''' parm'''
 makeparm@> ;:noun define-.LF
    size width height align href face bgcolor
@@ -108,9 +107,17 @@ makeparm@> ;:noun define-.LF
    marginwidth marginheight target for
    action method enctype onsubmit accept
    maxlength onselect onchange prompt
-   language onreset checked readonly multiple
-   selected
+   language onreset
 )
+
+NB. parm2=: adverb def 'conjunction def ((''((<'''''',(}:x),''='''') glue each boxopen v) u each boxopen y'');'':'';(''(((<'''''',(}:x),''='''') glue each boxopen v),'''' '''',x) u each boxopen y''))'
+NB. parm2=: adverb def 'conjunction def ((''((<'''''',(}:x),''='''') glue each boxopen v) u each boxopen y'');'':'';(''(((<'''''',(}:x),''='''') glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
+parmA=: adverb def 'conjunction def ((''('''''',(}:x),''='''' &glue each boxopen v) u each boxopen y'');'':'';(''(('''''',(}:x),''='''' &glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
+makeparmA=: verb def 'empty ".y,''=: '''''',y,'''''' parmA'''
+makeparmA@> 'A',~ each ;:noun define-.LF
+  class id name
+)
+
 
 enquote=: ('"'&,)@(,&'"')^:('"'&~:@{.@(1&{.))
 glue=: , enquote@":
@@ -123,12 +130,21 @@ NB. :
 NB. (('ismap'),' ',x) u y
 NB. )
 
-parm0=: adverb def 'adverb def (('''''''',x,'''''' u y'');'':'';(''('''''',x,'' '''',x) u y''))'
+NB.parm0=: adverb def 'adverb def (('''''''',(x,''=''glue x),'''''''','' u y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) u y''))'
+parm0=: adverb def 'conjunction def (('''''''',(x,''=''glue x),'''''''','' u y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) u y''))'
 makeparm0=: verb def 'empty ".y,''=: '''''',y,'''''' parm0'''
 makeparm0@> ;:noun define-.LF
-   ismap compact nowrap declare nohref noshade
-   noresize disabled
+    checked compact declare defer disabled ismap multiple
+    nohref noresize noshade nowrap readonly selected
 )
+
+parm0A=: adverb def 'adverb def (('''''''',(x,''=''glue x),'''''''','' &u each boxopen y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) &u each boxopen y''))'
+makeparm0A=: verb def 'empty ".y,''=: '''''',y,'''''' parm0A'''
+makeparm0A@> 'A',~ each ;:noun define-.LF
+    checked compact declare defer disabled ismap multiple
+    nohref noresize noshade nowrap readonly selected
+)
+
 
 NB. ELEMENT: with no closing tag
 NB. Create point verbs of the form:
@@ -166,6 +182,12 @@ NB. splice conjunction is utility.
 NB. ftext is verb covering decorate with standard fmt codes and verbs.
 NB. fdecor is adv like decorate -- arg and deriv. l.arg are more standards
 
+NB.*join v unbox and delimit a list of boxed items y with x
+NB. from forum post
+NB. http://www.jsoftware.com/pipermail/programming/2007-June/007077.html
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  NB. ignore $.
+
+unbox1=: >^:(<:&L.) NB. unbox down to 1 level
 
 splice=: 2 : '; @ (<@u ;. n)'
 

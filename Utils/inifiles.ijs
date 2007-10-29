@@ -23,7 +23,7 @@ NB.      or 5-column boxed table result of parseIni
 getIniAllSections=: 3 :0
   '' getIniAllSections y
   :
-  'fln delim'=. 2{.!.a: boxopen y
+  'fln delim'=. 2{. boxopen y
   ini=. x
   if. -.*#ini do. NB. read Ini from file
     if. -.fexist fln do. '' return. end. NB. file not found or given
@@ -45,7 +45,7 @@ NB. x is optional. String contents of Ini file (LF delimited)
 getIniSectionNames=: 3 : 0
   '' getIniSectionNames y
   :
-  'fln delim'=. 2{.!.a: boxopen y
+  'fln delim'=. 2{. boxopen y
   if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
   ini=. x
   if. -.*#ini do. NB. read Ini from file
@@ -70,7 +70,7 @@ NB. keyname lookup is case-insensitive
 getIniIndex=: 3 :0
   '' getIniIndex y
   :
-  'keyn secn fln delim'=. 4{.!.a: 1&#boxopen y
+  'keyn secn fln delim'=. 4{. boxopen y
   if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
   ini=. x
   ini=. ini getIniAllSections fln;delim
