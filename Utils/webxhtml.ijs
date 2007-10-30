@@ -110,15 +110,6 @@ makeparm@> ;:noun define-.LF
    language onreset
 )
 
-NB. parm2=: adverb def 'conjunction def ((''((<'''''',(}:x),''='''') glue each boxopen v) u each boxopen y'');'':'';(''(((<'''''',(}:x),''='''') glue each boxopen v),'''' '''',x) u each boxopen y''))'
-NB. parm2=: adverb def 'conjunction def ((''((<'''''',(}:x),''='''') glue each boxopen v) u each boxopen y'');'':'';(''(((<'''''',(}:x),''='''') glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
-parmA=: adverb def 'conjunction def ((''('''''',(}:x),''='''' &glue each boxopen v) u each boxopen y'');'':'';(''(('''''',(}:x),''='''' &glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
-makeparmA=: verb def 'empty ".y,''=: '''''',y,'''''' parmA'''
-makeparmA@> 'A',~ each ;:noun define-.LF
-  class id name
-)
-
-
 enquote=: ('"'&,)@(,&'"')^:('"'&~:@{.@(1&{.))
 glue=: , enquote@":
 
@@ -137,14 +128,6 @@ makeparm0@> ;:noun define-.LF
     checked compact declare defer disabled ismap multiple
     nohref noresize noshade nowrap readonly selected
 )
-
-parm0A=: adverb def 'adverb def (('''''''',(x,''=''glue x),'''''''','' &u each boxopen y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) &u each boxopen y''))'
-makeparm0A=: verb def 'empty ".y,''=: '''''',y,'''''' parm0A'''
-makeparm0A@> 'A',~ each ;:noun define-.LF
-    checked compact declare defer disabled ismap multiple
-    nohref noresize noshade nowrap readonly selected
-)
-
 
 NB. ELEMENT: with no closing tag
 NB. Create point verbs of the form:
