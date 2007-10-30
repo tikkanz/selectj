@@ -19,28 +19,6 @@ NB. sumrys=: (<keylbls;< datlbls) sumSummaryCSV each csinsts
 (keylbls;< datlbls) plotSummaries csinsts
 )
 
-readSummaryCSV=: 3 : 0
-  require 'jfiles'
-  fnme =. <"1&dtb"1 'summaryCSV' getFnme y
-  jfnme=. 'ijf',~_3}.1{:: fnme 
-NB. I think readcsv is bottle neck, so done first time only & then
-NB.  hdr & inverted table saved in j component file for reuse next time.
-NB.!  ijf files are 3-5times bigger than zip - append to zip?
-NB.!  or just clean up now and then??
-  if. fexist jfnme do. NB. get from j component file (.ijf)
-    smry=. jread jfnme;0 1
-  else. NB. create boxed array from csv and store in j component file.
-    'hdr invtble'=. split fixcsv toJ zread fnme
-    invtble=. ifa invtble
-    smry=. hdr;<invtble
-    res=. jcreate jfnme
-    res=. smry jappend jfnme
-  end.
-  smry
-  NB. fnme=. jpath '~temp/summary.csv'  NB. development
-  NB. smry=. fixcsv toJ zread fnme
-)
-
 NB.*sumSummaryCSV v Summarise CSV data cols by key cols
 NB. returns 2-row boxed table of labels & summarised info
 NB.                 0{ is boxed list of column labels
@@ -52,21 +30,19 @@ NB.           1{x is boxed list of trait column labels to summarise
 NB. e.g. ((<'YOB');< ;:'pLW8 pFW12') sumSummaryCSV 1
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  'hdr invtble'=. readSummaryCSV y
-  NB. invtble=. ifa sm
+  fnme =. <"1&dtb"1 'summaryCSV' getFnme y  
+  'hdr invtble'=. readStoredCaseInst fnme
   keyidx=. hdr idxfnd keylbls NB. indexes of only keylbls found in hdr
   key=. listatom keyidx{invtble  NB. get keycols (listatom nolonger reqd?)
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble NB. append column of zeros to invtble to handle datlbls not in hdr
   sum=. key tkeytble (<tfreq key),key tkeyavg dat NB.! keep tfreq??
-  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
+  ini=. >readStoredCaseInst <"1&dtb"1 'summaryINI' getFnme y
   yr0=. ini getIniString 'yearzero' NB. yearzero as string
-NB.  yr0=. '2006'
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
     NB.! handle for keys other than just <'YOB'
     popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
-    NB. popsz=. 200 NB. development
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
   end.
   sum=. strt}. each sum  NB. drop pre-yearzero info
@@ -114,17 +90,6 @@ between case-instance plots.
 How to handle plots where summary is by something other than YOB??
 )
 
-Note 'test data for plotsummry'
-   X=: 2001&+&i. each 5 3 4
-   Y=: i. each 5 3 4
-   Y=: Y,:2* each Y
-   Y=: Y,8- each {.Y
-   Y=: Y,3#a:
-   Y=: (a:) (<1 0)}Y
-   Y=: (10%~3 5 7)+each"1 Y
-
-((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
-)
 
 NB.*preplotsummry v prepare arguments for plotsummry
 NB. returns 2-item boxed list of x and y arguments for plotsummry
@@ -161,7 +126,17 @@ plotSummaries=: 4 :0
  names plotsummry data
 )
 
+Note 'test data for plotsummry'
+   X=: 2001&+&i. each 5 3 4
+   Y=: i. each 5 3 4
+   Y=: Y,:2* each Y
+   Y=: Y,8- each {.Y
+   Y=: Y,3#a:
+   Y=: (a:) (<1 0)}Y
+   Y=: (10%~3 5 7)+each"1 Y
 
+((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
+)
 
 NB.*plotsummry v  plots traits by infotypes for one or more caseinstance summaries
 NB. handles - caseinstances with diff nCycles

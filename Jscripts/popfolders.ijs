@@ -135,6 +135,31 @@ storeCaseInstance=: 3 :0
   end.
 )
 
+NB.*readStoredCaseInst v reads files from a CaseInstance stored in a zip file
+NB. result depends on file requested.
+NB.     if .csv then 2-item boxed list. 1{boxed list of header names. 2{csv contents as inverted table
+NB.     if .ini then boxed list of parsed ini file
+NB. y is 2-item boxed list 0{ file to extract. 1{ pathname of zip
+readStoredCaseInst=: 3 : 0
+  fnme=. y
+  kfnme=. 'ijf',~_3}. 1{:: fnme
+  ftyp=. _3{. 0{:: fnme
+  ns=. ((;:'csv ini') i. <ftyp){::(;:'csvhdr csvcnt');<<'ini' NB. required nouns for ftyp
+  if. -.fexist kfnme do. keycreate kfnme end.
+  if. _4-: res=. keyread kfnme;<ns do. 
+    NB. read from zip and create key
+    select. ftyp
+    case. 'csv' do.
+      res=. split fixcsv toJ zread fnme
+      res=. (ifa each 1{res) 1}res
+    case. 'ini' do.      
+      res=. <(toJ zread fnme) getIniAllSections ''
+    end.
+    s=. res keywrite kfnme;<ns
+  end.
+  res
+)
+
 NB.*deleteStoredCaseInst v deletes zip file containing summary info for case instance
 NB. y is ciid(s)
 deleteStoredCaseInst=: 3 :0
