@@ -12,8 +12,10 @@ try.
       NB.! open new page with form to choose parameters to summarise by
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
       ciids=. 4 qparamList 'select'
+      cfform=: 'defsumry' buildcfForm ciids
       ('action';'home') redirect 'coursesumry.jhp'
       NB. (ciids) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
+      NB. transfer page
 	case. 'home' do.
 	  DeleteCookie 'CaseID'
       page=. '~CGI/coursesumry_home.asp'  NB. destination page

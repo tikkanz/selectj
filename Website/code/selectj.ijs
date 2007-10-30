@@ -6,6 +6,8 @@ script_z_ '~system\packages\files\csv.ijs'
 script_z_ '~system\main\dir.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
+script_z_ '~system\classes\plot\jzplot.ijs'
+script_z_ '~system\packages\files\keyfiles.ijs'
 script_z_ '~addons\convert\misc\md5.ijs'
 script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~addons\data\sqlite\sqlite.ijs'
@@ -565,6 +567,25 @@ storeCaseInstance=: 3 :0
     'storecaseinst' updateDBTable y  
   end.
 )
+readStoredCaseInst=: 3 : 0
+  fnme=. y
+  kfnme=. 'ijf',~_3}. 1{:: fnme
+  ftyp=. _3{. 0{:: fnme
+  ns=. ((;:'csv ini') i. <ftyp){::(;:'csvhdr csvcnt');<<'ini' 
+  if. -.fexist kfnme do. keycreate kfnme end.
+  if. _4-: res=. keyread kfnme;<ns do. 
+    
+    select. ftyp
+    case. 'csv' do.
+      res=. split fixcsv toJ zread fnme
+      res=. (ifa each 1{res) 1}res
+    case. 'ini' do.      
+      res=. <(toJ zread fnme) getIniAllSections ''
+    end.
+    s=. res keywrite kfnme;<ns
+  end.
+  res
+)
 deleteStoredCaseInst=: 3 :0
   if. 0=#y do. '' return. end.
   zipnm=. 'sumryzip' getFnme y
@@ -982,40 +1003,21 @@ csinsts=. 1 2
 datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
 (keylbls;< datlbls) plotSummaries csinsts
 )
-
-readSummaryCSV=: 3 : 0
-  require 'jfiles'
-  fnme =. <"1&dtb"1 'summaryCSV' getFnme y
-  jfnme=. 'ijf',~_3}.1{:: fnme 
-  if. fexist jfnme do. 
-    smry=. jread jfnme;0 1
-  else. 
-    'hdr invtble'=. split fixcsv toJ zread fnme
-    invtble=. ifa invtble
-    smry=. hdr;<invtble
-    res=. jcreate jfnme
-    res=. smry jappend jfnme
-  end.
-  smry
-  
-  
-)
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  'hdr invtble'=. readSummaryCSV y
-  
+  fnme =. <"1&dtb"1 'summaryCSV' getFnme y  
+  'hdr invtble'=. readStoredCaseInst fnme
   keyidx=. hdr idxfnd keylbls 
   key=. listatom keyidx{invtble  
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble 
   sum=. key tkeytble (<tfreq key),key tkeyavg dat 
-  ini=. (toJ zread <"1&dtb"1 'summaryINI' getFnme y) getIniAllSections ''
+  ini=. >readStoredCaseInst <"1&dtb"1 'summaryINI' getFnme y
   yr0=. ini getIniString 'yearzero' 
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
     
     popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
-    
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
   end.
   sum=. strt}. each sum  
@@ -1063,17 +1065,6 @@ between case-instance plots.
 How to handle plots where summary is by something other than YOB??
 )
 
-Note 'test data for plotsummry'
-   X=: 2001&+&i. each 5 3 4
-   Y=: i. each 5 3 4
-   Y=: Y,:2* each Y
-   Y=: Y,8- each {.Y
-   Y=: Y,3#a:
-   Y=: (a:) (<1 0)}Y
-   Y=: (10%~3 5 7)+each"1 Y
-
-((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
-)
 preplotsummry=: 4 :0
   collbls=. {.{. every x 
   keylen=. collbls i. <'Freq'
@@ -1099,7 +1090,17 @@ plotSummaries=: 4 :0
  names plotsummry data
 )
 
+Note 'test data for plotsummry'
+   X=: 2001&+&i. each 5 3 4
+   Y=: i. each 5 3 4
+   Y=: Y,:2* each Y
+   Y=: Y,8- each {.Y
+   Y=: Y,3#a:
+   Y=: (a:) (<1 0)}Y
+   Y=: (10%~3 5 7)+each"1 Y
 
+((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
+)
 plotsummry=: 3 : 0
   inftyps=. >;:'phen genD genDe' 
   ntrts  =. %/# every (1{::y);inftyps 
@@ -1841,12 +1842,6 @@ makeparm@> ;:noun define-.LF
    maxlength onselect onchange prompt
    language onreset
 )
-parmA=: adverb def 'conjunction def ((''('''''',(}:x),''='''' &glue each boxopen v) u each boxopen y'');'':'';(''(('''''',(}:x),''='''' &glue each boxopen v),each '''' '''',each boxopen x) u each boxopen y''))'
-makeparmA=: verb def 'empty ".y,''=: '''''',y,'''''' parmA'''
-makeparmA@> 'A',~ each ;:noun define-.LF
-  class id name
-)
-
 
 enquote=: ('"'&,)@(,&'"')^:('"'&~:@{.@(1&{.))
 glue=: , enquote@":
@@ -1856,14 +1851,6 @@ makeparm0@> ;:noun define-.LF
     checked compact declare defer disabled ismap multiple
     nohref noresize noshade nowrap readonly selected
 )
-
-parm0A=: adverb def 'adverb def (('''''''',(x,''=''glue x),'''''''','' &u each boxopen y'');'':'';(''('''''',(x,''=''glue x),'' '''',x) &u each boxopen y''))'
-makeparm0A=: verb def 'empty ".y,''=: '''''',y,'''''' parm0A'''
-makeparm0A@> 'A',~ each ;:noun define-.LF
-    checked compact declare defer disabled ismap multiple
-    nohref noresize noshade nowrap readonly selected
-)
-
 point=: adverb def 'verb def ((''''''<'',x,'' />'''''');'':'';(''''''<'',x,'' '''',x,'''' />''''''))'
 makepoint=: verb def 'empty ".y,''=: '''''',(tolower y),'''''' point'''
 makepoint@> ;:noun define-.LF

@@ -11,11 +11,6 @@
 </script>
 <link rel="stylesheet" href="animalsim.css" type="text/css" />
 <!-- InstanceBeginEditable name="stylesheets" -->
-<style type="text/css">
-<!--
-.style1 {font-size: x-large}
--->
-</style>
 <!-- InstanceEndEditable -->
 </head>
 <body onload="">
@@ -31,133 +26,7 @@
   <div class="story">
     <h3>Summarise Cases</h3>
     <p>Select one or more traits and one or more info types to summarise.</p>
- 
-    <form name="definesumry" id="definesumry" method="post" action="coursesumry.jhp">
-      <table cellspacing="0">
-      <thead>
-        <tr>
-          <th colspan="2">&nbsp;</th>
-          <th>This is my first case</th>
-          <th>This was a good case</th>
-          <th>Don't think this case is bad</th>
-          <th>not sure about this case</th>
-          <th>Case 5</th>
-          <th>Case 6</th>
-        </tr>
-        </thead>
-        <tbody id="trts">
-        <tr class="r1">
-          <th>Traits</th>
-          <td>&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        <tr class="r2">
-          <td class="tblheading2"><label for="traits0"><abbr title="Number of Lambs Born">NLB</abbr></label></td>
-          <td><input type="checkbox" name="traits" id="traits0" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        <tr class="r1">
-          <td class="tblheading2"><label for="traits1"><abbr title="Fleece Weight at 12-months of age">FW12</abbr></label></td>
-          <td><input type="checkbox" name="traits" id="traits1" /></td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-        </tr>
-        <tr class="r2">
-          <td class="tblheading2"><label for="traits2"><abbr title="Live weight at 8-months of age">LW8</abbr></label></td>
-          <td><input type="checkbox" name="traits" id="traits2" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-        </tr>
-        <tr class="r1">
-          <td class="tblheading2"><label for="traits3"><abbr title="Carcass Lean (kg)">LEAN</abbr></label></td>
-          <td><input type="checkbox" name="traits" id="traits3" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        <tr class="r2">
-          <td class="tblheading2"><label for="traits4"><abbr title="Carcass Fat (kg)">FAT</abbr></label></td>
-          <td><input type="checkbox" name="traits" id="traits4" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        </tbody>
-        <tbody id="inftyps">
-        <tr class="r1">
-          <th>InfoTypes</th>
-          <td>&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        <tr class="r2">
-          <td class="tblheading2"><label for="inftyps0">Phenotypes</label></td>
-          <td><input type="checkbox" name="inftyps" id="inftyps0" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        <tr class="r1">
-          <td class="tblheading2"><label for="inftyps1">Genotypes</label></td>
-          <td><input type="checkbox" name="inftyps" id="inftyps1" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-        </tr>
-        <tr class="r2">
-          <td class="tblheading2"><label for="inftyps2">Est.&nbsp;Genotypes</label></td>
-          <td><input type="checkbox" name="inftyps" id="inftyps2" /></td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&#9679;</td>
-          <td class="tbltick">&nbsp;</td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr class="tbltools">
-          <td colspan="2"></td>
-          <td colspan="2"><input name="action" type="submit" value="Plot Summary" /></td>
-          <td colspan="4"><input name="action" type="submit" value="Tabulate Summary" /></td>
-        </tr>  
-        </tfoot>      
-      </table>
-    </form> 
+    <%=cfform%>
   </div>
   <!-- InstanceEndEditable --></div>
 <!--end content -->
