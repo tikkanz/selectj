@@ -76,7 +76,7 @@ sqlsel_expiredguests=: 0 : 0
        INNER JOIN main.`people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
   WHERE (pp.pp_id =5) 
   AND (ur.ur_status >0)
-  AND ((ss.ss_expire -julianday('now'))<0);
+  AND (((ss.ss_expire -julianday('now'))<0) OR (ss.ss_status=0));
 )
 
 sqlsel_enrolled=: 0 : 0
@@ -168,7 +168,8 @@ sqlsel_userlist=: 0 : 0
          ur.ur_status ur_status ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
-  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id;
+  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
+  WHERE ur_status >=?;
 )
 
 

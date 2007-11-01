@@ -185,10 +185,10 @@ deleteCaseInstFolder=: 3 : 0
   res=.deltree delpath
   if. 1=*./res do. 1 else. 0 end.
 )
-NB.*deleteUserFolder v deletes user's folder
-NB. ys is user id
+NB.*deleteUserFolders v deletes users' folders
+NB. ys is boxed list of user ids
 deleteUserFolders=: 3 : 0
-  delpath=. 'userfolder' getFnme y
-  res=.deltree"1 delpath
+  delpath=. ,each 'userfolder'&getFnme each y
+  res=.deltree every delpath
   if. 1=*./res do. 1 else. 0 end.
 )

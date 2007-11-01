@@ -7,6 +7,9 @@ NB. (listatom 5) -: ,5
 NB. (listatom i.4 3) -: i.4 3
 listatom=: 1&#
 
+NB.*boxopenatoms v if y not boxed, boxes atoms
+boxopenatoms=:<"0^:(L.=0:)
+
 NB.*mfv1 v Make a 1-row matrix from a vector
 mfv1=: ,:^:(#&$ = 1:)
 NB. use mfv in convert.ijs instead

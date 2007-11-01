@@ -19,8 +19,6 @@ expireSession=: 3 : 0
   'sessionexpire' updateDBTable ".sid
 )
 
-GUESTID=:5
-
 NB.*isActive v checks if username is inactive (needs to be reinitalised)
 isActive=: 3 : 0
   s=. {:'status' getDBTable y

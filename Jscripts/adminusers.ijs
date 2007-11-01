@@ -13,8 +13,10 @@ cleanGuests=: 3 : 0
   if. 0=#ginfo do. 0 return. end. NB. no expired guests
   'hdr dat'=. split ginfo
   (hdr)=. |:dat                   NB. assign hdrnames
-  'sessionexpire' updateDBTable <"0 ss_id
-  resetUsers <"0 ur_id
+  if. *#ss_id do.
+    'sessionexpire' updateDBTable boxopenatoms ss_id
+  end.
+  resetUsers ur_id
   ''
 )
 
@@ -23,10 +25,13 @@ NB. y is boxed list of user ids
 NB. no result?
 resetUsers=: 3 : 0
   if. *#y do.
-    cids=. 'caseinst2expire' getDBField y
-    'expirecaseinst' updateDBTable cids
-    'resetusers' updateDBTable y
-    deleteUserFolders y NB. delete users folder
+    urids=. boxopenatoms y
+    cids=. 'caseinst2expire' getDBField urids
+    if. #cids do. 
+      'expirecaseinst' updateDBTable boxopenatoms cids
+    end.
+    deleteUserFolders y NB. delete users' folders
+    'resetusers' updateDBTable urids
     ''
   end.
 )
@@ -46,8 +51,8 @@ NB. y is list of user ids
 NB. no result?
 deleteUsers=: 3 : 0
   if. *#y do.
-    'deleteusers' updateDBTable y
     deleteUserFolders y NB. do stuff to delete user folder
+    'deleteusers' updateDBTable boxopenatoms y
     ''
   end.
 )
