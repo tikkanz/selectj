@@ -74,7 +74,7 @@ sqlsel_expiredguests=: 0 : 0
          ss.ss_id ss_id 
   FROM main.`users` ur INNER JOIN main.`sessions` ss ON ( `ur`.`ur_id` = `ss`.`ss_urid` ) 
        INNER JOIN main.`people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
-  WHERE (pp.pp_id =5) 
+  WHERE (pp.pp_id =1) 
   AND (ur.ur_status >0)
   AND (((ss.ss_expire -julianday('now'))<0) OR (ss.ss_status=0));
 )
@@ -130,7 +130,7 @@ sqlsel_scendef=: 0 : 0
 sqlsel_caseinst2expire=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM   main.`users` ur INNER JOIN main.`caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
-  WHERE  (ur.ur_id =?) AND (ci.ci_status >0)
+  WHERE  (ur.ur_id =?) AND (ci.ci_status >0);
 )
 
 sqlupd_expirecaseinst=: 0 : 0
@@ -169,7 +169,7 @@ sqlsel_userlist=: 0 : 0
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
   FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
-  WHERE ur_status >=?;
+  WHERE (ur_status >=?) AND (pp.pp_id !=?);
 )
 
 
