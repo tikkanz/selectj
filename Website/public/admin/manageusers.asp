@@ -31,18 +31,19 @@
     <p>This page can be used to manage users.</p>
   </div>
   <form name="manageusers" id="manageusers" method="post" enctype="" action="">
-    <input type="hidden" name="active" id="active" value="<%=fltractiv%>" />
-    <input type="hidden" name="guest" id="guest" value="<%=fltrguest%>" />
-    <div class="Error<%=*#Error%>"><%=Error%></div>
-<table cellspacing=0>
+    <fieldset><legend>Filters</legend>
+      <label for="Flt_active"> Show inactive users</label><input name="Flt_active" type="checkbox" id="Flt_active" value="1" <%= fltactivechkd %> />
+    <label for="Flt_guest">Show guests</label><input name="Flt_guest" type="checkbox" id="Flt_guest" value="1" <%= fltguestchkd %> />
+    <input type="submit" name="action" value="Update Filter" />
+    </fieldset>
+    <div class="Error<%= *#Error %>"><%= Error %></div>
+<table cellspacing="0" width="100%">
   <tr class="tbltools">
     <td colspan="2">
       <input type="submit" name="action" value="Reset Selected" />
-      <input type="submit" name="action" value="Delete Selected" />
-      <a href="admin.jhp?action=Home&active=<%=fltractivalt%>&guest=<%=fltrguest%>">Show <%=fltractivaltmsg%></a>
-      <a href="admin.jhp?action=Home&active=<%=fltractiv%>&guest=<%=fltrguestalt%>"><%=fltrguestaltmsg%></a>      
-      <a href="admin.jhp?action=Reset&urid=-99&active=<%=fltractiv%>&guest=<%=fltrguest%>">Reset all</a>
-      <a href="admin.jhp?action=Delete&urid=-99&active=<%=fltractiv%>&guest=<%=fltrguest%>">Delete all</a>
+      <input type="submit" name="action" value="Delete Selected" /> 
+      <a href="admin.jhp?action=Reset&urid=-99&Flt_active=<%= fltactive %>&Flt_guest=<%= fltguest %>">Reset all</a>
+      <a href="admin.jhp?action=Delete&urid=-99&Flt_active=<%= fltactive %>&Flt_guest=<%= fltguest %>">Delete all</a>
     </td>
   </tr>
   <tr>
@@ -57,11 +58,11 @@
       <% if. #ur_id do.
 	     for_i. i.#ur_id do. %>
         <tr class="r<%=(selected~:i{ur_id){'s',":2|i%>">
-        <td class="tblheading2"><a href="admin.jhp?action=Index&urid=<%=i{ur_id %>&active=<%=fltractiv%>&guest=<%=fltrguest%>"><%= i{ur_id %></a></td>
-        <td><input type="checkbox" name="urid" id="urid<%=i%>"  value="<%= i{ur_id %>"></td>
-        <td><label for="urid<%=i%>"><%= i{pp_fname %></label></td>
+        <td class="tblheading2"><a href="admin.jhp?action=Index&urid=<%= i{ur_id %>&Flt_active=<%= fltactive %>&Flt_guest=<%= fltguest %>"><%= i{ur_id %></a></td>
+        <td><input type="checkbox" name="urid" id="urid<%= i %>"  value="<%= i{ur_id %>"></td>
+        <td><label for="urid<%= i %>"><%= i{pp_fname %></label></td>
         <td><%= i{pp_lname %></td>
-        <td><%= i{ur_status %></td>
+        <td align="center"><%= i{ur_status %></td>
         </tr>
 	  <% end. 
 	    end.%>
