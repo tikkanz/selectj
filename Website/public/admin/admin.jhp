@@ -6,12 +6,13 @@ try.
   urid =: ;0 qparamList 'urid'
   selected=: (action-:'Index'){:: 0;urid
 
-  filters=. ;:'all active'
-  fltr   =: 'all' qparam 'Filter'
-  activ=. filters i. <fltr
-  fltralt=: (-.activ){:: filters
-
-  setcolnames 'userlist' getDBTable activ NB. database call to get users
+  fltractiv   =: 1 qparam 'active'
+  fltrguest   =: 0 qparam 'guest'
+  fltractivalt=: -.fltractiv
+  fltrguestalt=: -.fltrguest
+  fltractivaltmsg=: fltractivalt{:: ;:'all active'
+  fltrguestaltmsg=: fltrguestalt{:: 'Show guests';'Don''t show guests'
+  setcolnames 'userlist' getDBTable fltractiv;fltrguest NB. database call to get users
   select. ' ' taketo action
   case. 'Reset' do.  NB. reset selected recs
     if. urid-:,_99 do. urid=: ur_id end.
@@ -25,7 +26,7 @@ try.
     Item=: |:'userrec' getDBTable urid
   case.  do.
   end.
-  setcolnames 'userlist' getDBTable activ NB. database call to get users
+  setcolnames 'userlist' getDBTable fltractiv;fltrguest NB. database call to get users
   if. 0>4!:0 <'ur_id' do. ur_id=: '' end.
 catch. Error=: 13!:12'' 
 end.

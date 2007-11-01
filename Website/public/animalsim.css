@@ -575,7 +575,9 @@ html>body #navBar dd {border-bottom: none;}
     font-size: 80%;
 	margin:2px 5px;
 }
-
+.tbldetails {
+	font-size:80%;
+}
 thead th {
 	background-color:#f0f0a0;;
 	padding:3px 2px;

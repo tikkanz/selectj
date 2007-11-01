@@ -55,20 +55,20 @@ insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (11
 insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (12,'Traits to record','trtsrecorded','select','multiple '''' size ''6''');
 insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (13,'No. of breeding females','hrdsizes','This does not include female replacements that are too young to mate.<br/>&nbsp;','select','');
 
+insert into people (pp_fname, pp_lname, pp_email) values ('Temporary', 'Guest', 'guest@nodomain.com');
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Jason', 'Win', 'onfire@xtra.co.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Joe', 'Bloggs', 'jbloggs@xtra.co.nz');
-insert into people (pp_fname, pp_lname, pp_email) values ('Temporary', 'Guest', 'guest@nodomain.com');
 
 insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Population Size','POPSZ','Does the size of the breeding population affect the rate of progress through selection?','animalsim.ini');
 insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Changing REVs','CHGREV','You can change relative economic values (REVs) for the traits in your selection index.','animalsim.ini');
 insert into scendefs (sd_name,sd_code,sd_descr,sd_filen) values ('Select animals manually','MANSEL','You specify which animals to use as parents individually, using your own selection criteria.','animalsim.ini');
 
-insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (1,1,'tikka','55f9078cf55595a928ec8cf35e20d106',2079797903);
-insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (3,1,'injapan','6530575557447b07e16da4204329c8a8',-865438670);
-insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (2,3,'tricia','ef5c0caabb090e216e24adfeca4ca316',64988700);
-insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (4,2,'bloggs','8f90eacdc8ffe4e71b52906865d81f4c',-228865924);
+insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (2,1,'tikka','55f9078cf55595a928ec8cf35e20d106',2079797903);
+insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (4,1,'injapan','6530575557447b07e16da4204329c8a8',-865438670);
+insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (3,3,'tricia','ef5c0caabb090e216e24adfeca4ca316',64988700);
+insert into users (ur_ppid, ur_inid, ur_uname, ur_passhash, ur_salt) values (5,2,'bloggs','8f90eacdc8ffe4e71b52906865d81f4c',-228865924);
 
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Sheep Production','117352','All about sheep production including genetics',1);
 insert into courses (cr_name, cr_code, cr_descr, cr_inid) values ('Animal Breeding and Genetics','227202','Genetics for vets',1);

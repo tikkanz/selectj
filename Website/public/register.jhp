@@ -36,8 +36,6 @@ catch.
   <%print qparamKeys''%>
   qparam each qparamKeys''
   <%print qparam each qparamKeys''%>
-  of_id
-  <%print #of_id %>
   </pre>
   <%
   println '</p></body></html>'

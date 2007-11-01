@@ -28,99 +28,89 @@
   <div id="breadCrumb"> </div>
   <h2 id="pageName">Manage Users </h2>
   <div class="story">
-    <p>This is the admin page </p>
+    <p>This page can be used to manage users.</p>
   </div>
   <form name="manageusers" id="manageusers" method="post" enctype="" action="">
-    <input type="hidden" name="Filter" id="Filter" value="<%=fltr%>" />
-<div class="Error<%=*#Error%>"><%=Error%></div>
-
-<table id="listusers" width="81%" cellspacing=0>
+    <input type="hidden" name="active" id="active" value="<%=fltractiv%>" />
+    <input type="hidden" name="guest" id="guest" value="<%=fltrguest%>" />
+    <div class="Error<%=*#Error%>"><%=Error%></div>
+<table cellspacing=0>
   <tr class="tbltools">
-    <td colspan="4"><input type="submit" name="action" value="Reset Selected" />
-                   <input type="submit" name="action" value="Delete Selected" />
-                    <a href="admin.jhp?action=Home&Filter=<%=fltralt%>">Show <%=fltralt%></a>
-                    <a href="admin.jhp?action=Reset&urid=-99&Filter=<%=fltr%>">Reset all</a>
-                    <a href="admin.jhp?action=Delete&urid=-99&Filter=<%=fltr%>">Delete all</a>
-                    </td>
-  </tr><tr><td valign=top>
-    <table cellspacing=0 width=98%><tr class="rh">
-      <th>&#160;</th> 
-      <th>UserID</th>
-      <th>Active</th>
+    <td colspan="2">
+      <input type="submit" name="action" value="Reset Selected" />
+      <input type="submit" name="action" value="Delete Selected" />
+      <a href="admin.jhp?action=Home&active=<%=fltractivalt%>&guest=<%=fltrguest%>">Show <%=fltractivaltmsg%></a>
+      <a href="admin.jhp?action=Home&active=<%=fltractiv%>&guest=<%=fltrguestalt%>"><%=fltrguestaltmsg%></a>      
+      <a href="admin.jhp?action=Reset&urid=-99&active=<%=fltractiv%>&guest=<%=fltrguest%>">Reset all</a>
+      <a href="admin.jhp?action=Delete&urid=-99&active=<%=fltractiv%>&guest=<%=fltrguest%>">Delete all</a>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+    <fieldset><legend>User list</legend>
+    <table id="userlist" class="tbldetails" cellspacing=0 width="100%"><tr class="rh">
+      <th colspan="2">UserID</th>
       <th>First</th>
       <th>Last</th>
+      <th>Active</th>
       </tr>
       <% if. #ur_id do.
 	     for_i. i.#ur_id do. %>
         <tr class="r<%=(selected~:i{ur_id){'s',":2|i%>">
+        <td class="tblheading2"><a href="admin.jhp?action=Index&urid=<%=i{ur_id %>&active=<%=fltractiv%>&guest=<%=fltrguest%>"><%= i{ur_id %></a></td>
         <td><input type="checkbox" name="urid" id="urid<%=i%>"  value="<%= i{ur_id %>"></td>
-        <td><a href="admin.jhp?action=Index&urid=<%=i{ur_id %>&Filter=<%=fltr%>"><%= i{ur_id %></a></td>
-        <td><span><%= i{ur_status %></span> </td>
-        <td><span><%= i{pp_fname %></span> </td>
-        <td><span><%= i{pp_lname %></span> </td>
+        <td><label for="urid<%=i%>"><%= i{pp_fname %></label></td>
+        <td><%= i{pp_lname %></td>
+        <td><%= i{ur_status %></td>
         </tr>
 	  <% end. 
 	    end.%>
     </table>
+    </fieldset>
     </td>
-    <td colspan="3" valign="top">
-    <fieldset><legend>User Info</legend>
-      <table cellspacing="0">
+    <td valign="top">
+    <% if. 0<:4!:0 <'Item' do. %>
+    <fieldset><legend>User details</legend>
+      <table id="userrec" class="tbldetails" cellspacing="0">
         <tr>
-        <th width="78" class="rh">UserID</th>
-        <td width="93"><%= 'ur_id'keyval Item%></td>
-      </tr><tr>
-        <th class="rh">Name</th>
-        <td><%='pp_fname'keyval Item%> <%='pp_lname'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">Username</th>
-        <td><%= 'ur_uname'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">StudentID</th>
-        <td><%= 'ur_refnum'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">Email</th>
-        <td><%= 'pp_email'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">Status</th>
-        <td><%= 'ur_status'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">Salt</th>
-        <td><%= 'ur_salt'keyval Item%></td>
-      </tr>
-      <tr>
-        <th class="rh">PassHash</th>
-        <td><%= 'ur_passhash'keyval Item%></td>
-      </tr>
+          <th class="rh">UserID</th>
+          <td><%= 'ur_id'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">Name</th>
+          <td><%='pp_fname'keyval Item%> <%='pp_lname'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">Username</th>
+          <td><%= 'ur_uname'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">StudentID</th>
+          <td><%= 'ur_refnum'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">Email</th>
+          <td><%= 'pp_email'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">Status</th>
+          <td><%= 'ur_status'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">Salt</th>
+          <td><%= 'ur_salt'keyval Item%></td>
+        </tr>
+        <tr>
+          <th class="rh">PassHash</th>
+          <td><%= 'ur_passhash'keyval Item%></td>
+        </tr>
       </table>
     </fieldset>
-  </td></tr></table>
+    <% end. %>
+  </td>
+  </tr>
+  </table>
 </form>
-<!-- <pre>
-CGIKEYS
-<%print CGIKEYS %>
-CGIVALS
-<%print CGIVALS %>
-Select
-<%print Select %>
-ur_id
-<%print Uids %>
-Item
-<%print Item %>
-</pre> -->
-<script>
-function cmd(name, item) {
-  var F1 = document.getElementById("manageusers");
-  if (name) F1.action.value = name;
-  if (item != null) F1.Index.value = item;
-  F1.submit();
-}
-</script>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><!-- InstanceBeginEditable name="navbar" --><!-- InstanceEndEditable --> 
 <!--end navbar --> 
