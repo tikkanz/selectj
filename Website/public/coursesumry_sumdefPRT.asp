@@ -25,19 +25,28 @@
   <h2 id="pageName"><%=cr_code%> - <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
   <div class="story">
     <h3>Summarise Cases</h3>
-    <p>Select one or more traits and one or more info types to summarise.</p>
+    <p>Select one or more cases, traits and info types to summarise. <br /> At least one case, one trait and one info type should be selected.</p>
  
     <form name="defsumry" id="defsumry" method="post" action="coursesumry.jhp">
       <table cellspacing="0">
       <thead>
         <tr>
           <th colspan="2">&nbsp;</th>
-          <th>This is my first case</th>
-          <th>This was a good case</th>
-          <th>Don't think this case is bad</th>
-          <th>not sure about this case</th>
-          <th>Case 5</th>
-          <th>Case 6</th>
+          <th><label for="ciid0">This is my first case</label></th>
+          <th><label for="ciid1">This was a good case</label></th>
+          <th><label for="ciid2">Don't think this case is bad</label></th>
+          <th><label for="ciid3">not sure about this case</label></th>
+          <th><label for="ciid4">Case 5</label></th>
+          <th><label for="ciid5">Case 6</label></th>
+        </tr>
+        <tr>
+          <th colspan="2"></th>
+          <th><input type="checkbox" name="ciid" id="ciid0" /></th>
+          <th><input type="checkbox" name="ciid" id="ciid1" /></th>
+          <th><input type="checkbox" name="ciid" id="ciid2" /></th>
+          <th><input type="checkbox" name="ciid" id="ciid3" /></th>
+          <th><input type="checkbox" name="ciid" id="ciid4" /></th>
+          <th><input type="checkbox" name="ciid" id="ciid5" /></th>
         </tr>
         </thead>
         <tbody id="trts">

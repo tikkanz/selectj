@@ -30,17 +30,18 @@
   <div class="story">
     <p>This is the admin page </p>
   </div>
-  <form name="F1" id="F1" method="post" enctype="" action="">
-  <input type="hidden" name="Command" value="">
-  <input type="hidden" name="Index" value="">
+  <form name="manageusers" id="manageusers" method="post" enctype="" action="">
+    <input type="hidden" name="Filter" id="Filter" value="<%=fltr%>" />
 <div class="Error<%=*#Error%>"><%=Error%></div>
 
 <table id="listusers" width="81%" cellspacing=0>
-  <tr class="Tools">
-    <td width=57%><a href="javascript:cmd('Reset')">Reset Selected</a> <a href="javascript:cmd('Delete')">Delete Selected</a></td>
-    <td width=5%>&#160;</td>
-    <td width="18%"><a href="javascript:cmd('Reset',-99)">Reset all</a></td>
-    <td width="20%"><a href="javascript:cmd('Delete',-99)">Delete all</a></td>
+  <tr class="tbltools">
+    <td colspan="4"><input type="submit" name="action" value="Reset Selected" />
+                   <input type="submit" name="action" value="Delete Selected" />
+                    <a href="admin.jhp?action=Home&Filter=<%=fltralt%>">Show <%=fltralt%></a>
+                    <a href="admin.jhp?action=Reset&urid=-99&Filter=<%=fltr%>">Reset all</a>
+                    <a href="admin.jhp?action=Delete&urid=-99&Filter=<%=fltr%>">Delete all</a>
+                    </td>
   </tr><tr><td valign=top>
     <table cellspacing=0 width=98%><tr class="rh">
       <th>&#160;</th> 
@@ -49,14 +50,17 @@
       <th>First</th>
       <th>Last</th>
       </tr>
-      <% for_i. i.#ur_id do. %><tr class="r<%=(Index~:i){'s',":2|i%>">
-        <td><input type="checkbox" name="Select"  value="<%= i %>"></td>
-        <td><a href="javascript:cmd('Index',<%=i%>)"><%= i{ur_id %></a>
-		    <input type="hidden"   name="ur_id"   value="<%= i{ur_id %>"></td>
+      <% if. #ur_id do.
+	     for_i. i.#ur_id do. %>
+        <tr class="r<%=(selected~:i{ur_id){'s',":2|i%>">
+        <td><input type="checkbox" name="urid" id="urid<%=i%>"  value="<%= i{ur_id %>"></td>
+        <td><a href="admin.jhp?action=Index&urid=<%=i{ur_id %>&Filter=<%=fltr%>"><%= i{ur_id %></a></td>
         <td><span><%= i{ur_status %></span> </td>
         <td><span><%= i{pp_fname %></span> </td>
         <td><span><%= i{pp_lname %></span> </td>
-        </tr><% end. %>
+        </tr>
+	  <% end. 
+	    end.%>
     </table>
     </td>
     <td colspan="3" valign="top">
@@ -106,15 +110,13 @@ Select
 <%print Select %>
 ur_id
 <%print Uids %>
-Index
-<%print Index %>
 Item
 <%print Item %>
 </pre> -->
 <script>
 function cmd(name, item) {
-  var F1 = document.getElementById("F1");
-  if (name) F1.Command.value = name;
+  var F1 = document.getElementById("manageusers");
+  if (name) F1.action.value = name;
   if (item != null) F1.Index.value = item;
   F1.submit();
 }

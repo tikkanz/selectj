@@ -310,6 +310,7 @@ MimeMap=: 0 : 0
 
 coclass COBASE_z_  
 listatom=: 1&#
+boxopenatoms=:<"0^:(L.=0:)
 mfv1=: ,:^:(#&$ = 1:)
 idxfnd=: i. #~ i. < [: # [
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
@@ -350,8 +351,6 @@ expireSession=: 3 : 0
   sid=.0{:: readTicket y
   'sessionexpire' updateDBTable ".sid
 )
-
-GUESTID=:5
 isActive=: 3 : 0
   s=. {:'status' getDBTable y
 )
@@ -433,16 +432,21 @@ cleanGuests=: 3 : 0
   if. 0=#ginfo do. 0 return. end. 
   'hdr dat'=. split ginfo
   (hdr)=. |:dat                   
-  'sessionexpire' updateDBTable <"0 ss_id
-  resetUsers <"0 ur_id
+  if. *#ss_id do.
+    'sessionexpire' updateDBTable boxopenatoms ss_id
+  end.
+  resetUsers ur_id
   ''
 )
 resetUsers=: 3 : 0
   if. *#y do.
-    cids=. 'caseinst2expire' getDBField y
-    'expirecaseinst' updateDBTable cids
-    'resetusers' updateDBTable y
+    urids=. boxopenatoms y
+    cids=. 'caseinst2expire' getDBField urids
+    if. #cids do. 
+      'expirecaseinst' updateDBTable boxopenatoms cids
+    end.
     deleteUserFolders y 
+    'resetusers' updateDBTable urids
     ''
   end.
 )
@@ -454,8 +458,8 @@ setUsers=: 3 : 0
 )
 deleteUsers=: 3 : 0
   if. *#y do.
-    'deleteusers' updateDBTable y
     deleteUserFolders y 
+    'deleteusers' updateDBTable boxopenatoms y
     ''
   end.
 )
@@ -604,8 +608,8 @@ deleteCaseInstFolder=: 3 : 0
   if. 1=*./res do. 1 else. 0 end.
 )
 deleteUserFolders=: 3 : 0
-  delpath=. 'userfolder' getFnme y
-  res=.deltree"1 delpath
+  delpath=. ,each 'userfolder'&getFnme each y
+  res=.deltree every delpath
   if. 1=*./res do. 1 else. 0 end.
 )
 getScenarioInfo=: 3 : 0
@@ -1324,7 +1328,7 @@ sqlsel_expiredguests=: 0 : 0
        INNER JOIN main.`people` pp ON ( `pp`.`pp_id` = `ur`.`ur_ppid` ) 
   WHERE (pp.pp_id =5) 
   AND (ur.ur_status >0)
-  AND ((ss.ss_expire -julianday('now'))<0);
+  AND (((ss.ss_expire -julianday('now'))<0) OR (ss.ss_status=0));
 )
 
 sqlsel_enrolled=: 0 : 0
@@ -1409,7 +1413,8 @@ sqlsel_userlist=: 0 : 0
          ur.ur_status ur_status ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
-  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id;
+  FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
+  WHERE ur_status >=?;
 )
 
 

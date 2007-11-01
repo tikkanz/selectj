@@ -11,7 +11,7 @@ try.
     case. 'Compare' do.
       NB.! open new page with form to choose parameters to summarise by
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
-      ciids=. 4 qparamList 'select'
+      ciids=. 4 qparamList 'ciid'
       cfform=: 'defsumry' buildcfForm ciids
       ('action';'home') redirect 'coursesumry.jhp'
       NB. (ciids) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'

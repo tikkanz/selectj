@@ -1,25 +1,32 @@
 <% 
 load '~..CGI/code/selectj.ijs'
-ur_id   =: qparamList   'ur_id'
-Select =: ;0 qparamList 'Select'
-NB. Item   =: qparam 'Item'
-Index  =: _1 qparam     'Index'
-Error=: ''
-
 try.
-  select. qparam 'Command'
+  Error=: ''
+  action=: qparam 'action'
+  urid =: ;0 qparamList 'urid'
+  selected=: (action-:'Index'){:: 0;urid
+
+  filters=. ;:'all active'
+  fltr   =: 'all' qparam 'Filter'
+  activ=. filters i. <fltr
+  fltralt=: (-.activ){:: filters
+
+  setcolnames 'userlist' getDBTable activ NB. database call to get users
+  select. ' ' taketo action
   case. 'Reset' do.  NB. reset selected recs
-    if. _99-:Index do. Select=:i.#ur_id end.
-    tmp=. resetUsers Select{ur_id
+    if. urid-:,_99 do. urid=: ur_id end.
+    tmp=. resetUsers urid
+    erase 'ur_id'
   case. 'Delete' do.  NB. delete selected recs
-    if. _99-:Index do. Select=:i.#ur_id end.
-    tmp=. deleteUsers Select{ur_id
+    if. urid-:,_99 do. urid=: ur_id end.
+    tmp=. deleteUsers urid
+    erase 'ur_id'
   case. 'Index' do. NB. select & display user record
-    Item=: |:'userrec' getDBTable Index{ur_id
+    Item=: |:'userrec' getDBTable urid
   case.  do.
   end.
-  setcolnames 'userlist' getDBTable '' NB. database call to get users
-  
+  setcolnames 'userlist' getDBTable activ NB. database call to get users
+  if. 0>4!:0 <'ur_id' do. ur_id=: '' end.
 catch. Error=: 13!:12'' 
 end.
 

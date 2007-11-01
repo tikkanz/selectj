@@ -28,29 +28,37 @@
   <div class="story">
     <h3>Your Stored Cases</h3>
     <p>Select one or more stored cases to summarise/compare. </p>
-    <form name="F1" id="F1" method="post" action="coursesumry.jhp">
-        <table cellspacing=0 width=88%><tr class=rh>
-      <th colspan="2">Stored Case ID</th><th>My Case description</th><th>Base Case description</th><th>Actions</th>
-      </tr>
-      <% for_idx. i.#ci_id do. %>
-        <tr class="r<%= ,":2|idx %>">
-		  <td> <%= idx{ci_id %> </td>
-          <td><input name="select" type="checkbox" value=<%= idx{ci_id %> /></td>
-          <td class="objlist"><span class="objname"><%= idx{ci_usrname %></span><br/>
-            <%=idx{ci_usrdescr%><br/>
-            &nbsp;
-          </td>
-          <td class="objlist"><span class="objname"><%= idx{sd_name %></span><span class="objcode">(<%= dtb idx{sd_code%>)</span><br/>
-            <%=idx{sd_descr%><br/>
-            &nbsp;
-          </td>
-          <td> <a href="coursesumry.jhp?action=download&ciid=<%= idx{ci_id %>">download Summary Info</a><br/>
-               <a href="coursesumry.jhp?action=params&ciid=<%= idx{ci_id %>">view Selection details</a>
-          </td>
-        </tr><% end. %>
-        <tr><td colspan="3"><input name="action" type="submit" value="Compare Cases" /></td><td></td><td><input name="action" type="submit" value="Delete Selected" /></td>
-        </tr>
-    </table>
+    <form name="cfcases" id="cfcases" method="post" action="coursesumry.jhp">
+     <table cellspacing=0>
+       <thead>
+         <tr>
+           <th colspan="2">Stored Case ID</th><th>My Case description</th><th>Base Case description</th><th>Actions</th>
+         </tr>
+       </thead>
+       <tbody>
+       <% for_idx. i.#ci_id do. %>
+         <tr class="r<%= ,":2|idx %>">
+		   <td class="tblheading2"><label for="ciid<%=idx%>"><%= idx{ci_id %></label></td>
+           <td><input name="ciid" id="ciid<%=idx%>" type="checkbox" value="<%= idx{ci_id %>" /></td>
+           <td class="objlist"><span class="objname"><%= idx{ci_usrname %></span><br/>
+             <%=idx{ci_usrdescr%><br/>
+             &nbsp;
+           </td>
+           <td class="objlist"><span class="objname"><%= idx{sd_name %></span><span class="objcode">(<%= dtb idx{sd_code%>)</span><br/>
+             <%=idx{sd_descr%><br/>
+             &nbsp;
+           </td>
+           <td> <a href="coursesumry.jhp?action=download&ciid=<%= idx{ci_id %>">download&nbsp;Summary&nbsp;Info</a><br/>
+             <a href="coursesumry.jhp?action=params&ciid=<%= idx{ci_id %>">view&nbsp;Selection&nbsp;details</a>
+           </td>
+         </tr>
+       <% end. %>
+       </tbody>
+       <tfoot>
+         <tr class="tbltools"><td colspan="5"><input name="action" type="submit" value="Compare Cases" /><input name="action" type="submit" value="Delete Selected" /></td>
+         </tr>
+       </tfoot>
+     </table>
     </form>
   </div>
 <!-- InstanceEndEditable --></div> 
