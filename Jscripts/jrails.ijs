@@ -20,9 +20,9 @@ buildButtons=: 3 : 0
 NB.*buildForm v builds xhtml form code for a case
 NB. y is ci_id of case
 buildForm=: 3 : 0
-  ANIMINI_z_=: 'animini' getScenarioInfo y
-  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
-  info=. 'paramform' getDBTable y  NB. gets legend, fs_ids,cf_value
+  ANIMINI_z_=: 'animini' getInfo y
+  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  info=. 'paramform' getInfo y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
   lgd=. P class 'legend' 'This is the legend for my form'
@@ -185,6 +185,30 @@ buildTag=:4 :0
   tgdefs=. ,each/"1 |: (<toupper tgn),attr
   ".each tgdefs ,each (' ',each quote each y)
 )
+
+buildSJForm=: 3 : 0
+  '' buildSJForm y
+:
+  select. x
+  case. 'sumrydef' do.
+    ciids=. y
+    fnme =. <"1&dtb"1 each 'summaryCSV'&getFnme each y  
+    fnme =. (<'csvhdr')&,each }.each fnme NB. replace 1st item of each fnme with 'csvhdr'
+    hdrs=. readStoredCaseInst every fnme  NB.! fix this up to use getInfo
+    trtflds=. getTrtsOnly each hdrs
+    trts=. ~.&getTrtBase each trtflds NB. get trait abbrevs
+    NB. get trait names for each ciid
+      NB. to get trait names may need to retrieve from base scenario zip
+    inftyps=. getTrtInfoTyps each trtflds NB. get info types for each ciid
+    alltrts=. ~.; trts NB. get nub of superset of all trait abbrevs
+    NB. define corresponding trait names
+    allinftyps=. ~.; inftyps NB. get nub of superset of all info types codes
+    NB. define corresponding info type names
+    NB. trtsprset&e. each 1{"1 ciidinfo
+  case. do.
+  end.
+)
+
 
 Note  'Build Sumrydef Table'
  cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'

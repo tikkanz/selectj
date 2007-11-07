@@ -1,48 +1,12 @@
 NB. I think this will be about working out what templates are available
 NB. Presenting those options to user
 
-NB.*getScenarioInfo v gets Scenario info from caseinstance folder
-NB. y is numeric caseinstance id
-NB. x is optional strings specifying info to get
-NB.   [default is 'animini']
-NB. other options will let us read
-getScenarioInfo=: 3 : 0
-  'animini' getScenarioInfo y
-  :
-  infotyp=. boxopen x
-  select. infotyp
-    case. <'animini' do.
-      fnme=. 'animini' getFnme y
-      res=. getIniAllSections fnme
-    case. <'alltrtinfo' do.  NB. reads tDefn sheet from TrtInfo.xls
-      xlfnme=. 'trtinfo' getFnme y
-      'tDefn' readexcel xlfnme
-    case. <'status' do. NB. returns currcycle;ncycles from animalsim.ini
-      fnme=. 'animini' getFnme y
-      ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      crcyc;ncyc
-  end.
-)
-
-updateScenarioInfo=: 3 : 0
-  'animini' updateScenarioInfo y
-  :
-  infotyp=. boxopen x
-  select. infotyp
-    case. <'animini' do.
-      fnme=. <'animini' getFnme y
-      res=. writePPString"1 fnme,. 2}."1 ANIMINI
-  end.
-)
-
 NB.*updateSelnDetails v updates INI file configuration based on submitted Selection Details form
 NB. y is caseinstance id
 updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS NB. required until SelectJ and AnimalSim parameter names match
-  ANIMINI_z_=: 'animini' getScenarioInfo y
-  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
+  ANIMINI_z_=: 'animini' getInfo y
+  TRTINFO_z_=: 'alltrtinfo' getInfo y
   NB. Names of ini keys that need to be updated by processing form info
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
@@ -153,6 +117,21 @@ NB. returns list of boxed field names (looks for not starting with 'p' or 'g')
 NB. y is a list of boxed field names e.g. ;:'Tag Flk BR gLW8d pNLB gFW12de'
 getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
 
+NB.*getTrtInfoTyps v returns infotype of each trait field name in y
+NB. returns list of boxed infotype code fore each trait field name in y
+NB. y is list of boxed field names e.g. ;:'Tag Flk BR gLW8d pNLB gFW12de'
+NB. getTrtInfoTyps=: ({."1 INFOTYPES) #~([: 0&e. [: (] e.&'de') {:&>) , [: 'de'&e. {:&>
+getTrtInfoTyps=: 3 : 0
+  lst=. {:&>y
+  msk=. 0 e. lst e. 'de'
+  msk=. msk, 'de' e. lst
+  res=. msk#{."1 INFOTYPES
+)
+
+
+NB.*INFTYPES n Infotype codes ({."1) and names ({:"1)
+INFOTYPES=:  (;:'phen genD genDe'),. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+
 NB.*getTrtInfo v looks up column of tDefn sheet for each trait
 NB. returns list of boxed column info for each trait in y
 NB. y is list of boxed base trait names
@@ -189,8 +168,8 @@ getParamState=: 3 : 0
   select. y
     case. 'coltypes' do.
       seld=. <'phen'
-      vals=. ;:'phen genD genDe'
-      nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+      vals=. {."1 INFOTYPES
+      nmes=. {:"1 INFOTYPES
     case. 'cullage' do.
       vals=. <"0 ANIMINI getIniVals y
       nmes=. 'Female';'Male'
@@ -219,9 +198,7 @@ getParamState=: 3 : 0
       'seld vals nmes'=. getParamState 'coltypes'
       tmp=. ANIMINI getIniVals'respons2outpt'
       tmp=. getTrtsOnly tmp NB. only Traits
-      tmp=. ~.{:@>tmp   NB. unique last chars
-      tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  NB. last chars present
-      seld=. tmp#vals   NB. dependent on order of vals
+      seld=. getTrtInfoTyps tmp  
     case. 'trtsrecorded' do.
       vals=. ANIMINI getIniVals 'trtsavail'
       vals=. getTrtsPhn vals

@@ -20,7 +20,7 @@ makeMateAlloc=: 4 : 0
     ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. NB. continue checks
-      ANIMINI_z_=. 'animini' getScenarioInfo x
+      ANIMINI_z_=. 'animini' getInfo x
       'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
       NB.! add handling for across-herd as well as within-herd mating of sires
@@ -85,7 +85,7 @@ breedPopln=: 3 : 0
     if. 1-:msg do. NB. passed all checks
       if. okansim=. runAnimalSim y do.
         if. stge=1 do.
-          inipath=. 'animini' getFnme y
+          inipath=. 'animinipath' getFnme y
           writePPString inipath;'Control';'Resume';1
         end.
         stge=. (>:checkCycle y){1 21 99
@@ -112,7 +112,7 @@ validMateAlloc=: 4 : 0
       ma=. readcsv fnme
       oklen=. *# ma NB. not zero length
       'hdr ma'=. split ma
-      ANIMINI_z_=. 'animini' getScenarioInfo x
+      ANIMINI_z_=. 'animini' getInfo x
       'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       NB. Arguable as to whether additional checks should be made here or
@@ -144,7 +144,7 @@ NB.*checkCycle v Determines 0th, last or other cycle.
 NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
 NB. y is caseinstance id
 checkCycle=: 3 : 0
-  'crcyc ncyc'=. 'status' getScenarioInfo y
+  'crcyc ncyc'=. 'caseprogress' getInfo y
   fnme=. 'animsumry' getFnme y
   issm=. fexist fnme
   res=. (issm *. crcyc = ncyc)-crcyc=0
@@ -154,11 +154,11 @@ NB.*runAnimalSim v calls AnimalSim for caseinstance
 NB. returns 0 if error, 1 if successful
 NB. y is caseinstance id
 runAnimalSim=: 3 : 0
-  inipath=. 'animini' getFnme y
+  inipath=. 'animinipath' getFnme y
   if. -.fexist inipath do. 0 return. end.
   crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
-  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. NB.AnimalSim error
+  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstpath' getFnme y do. NB.AnimalSim error
     if. crcyc< getIniValue key do.
       writePPString key,<crcyc  NB. reset CurrYear
     end.

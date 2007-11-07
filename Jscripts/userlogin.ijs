@@ -7,7 +7,7 @@ createSession=: 3 : 0
  if. isdefseed_rgspasswd_'' do. randomize'' end.
  sid=. >:?<:-:2^32 NB. random session id
  sh=. salthash ":sid 
- 'session' insertDBTable  sid;y;sh
+ 'newsession' insertInfo  sid;y;sh
  tk=. writeTicket sid;{:sh
 )
 
@@ -16,12 +16,12 @@ NB. maybe better to delete expired sessions?
 expireSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'sessionexpire' updateDBTable ".sid
+  'expiresession' updateInfo ".sid
 )
 
 NB.*isActive v checks if username is inactive (needs to be reinitalised)
 isActive=: 3 : 0
-  s=. {:'status' getDBTable y
+  s=. 'userstatus' getInfo y
 )
 
 NB.*readTicket v reads ticket string
@@ -40,29 +40,24 @@ NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0
   'action uname fname lname refnum email passwd'=.y
   if. action-:'guest' do. uname=. randPassword 16  end.
-  uinfo =. {:'login' getDBTable uname  NB. retrieve data for username
-  if. -.uinfo-:'' do. _2 return. end. NB. check usrname not already in use
-  pinfo =. {:'email' getDBTable  email
-  if. -.pinfo-:''  do. NB. if email address already used in people table
-    pid=. 0{::pinfo    NB. get pid of person with that email address
-  else.
-    pid=. 'newperson' insertDBTable fname;lname;email NB. insert person in people table
+  if. *#'userlogin' getInfo uname  do. _2 return. end. NB. check usrname not already in use
+  if. 0=# pid=. 'idfromemail' getInfo email  do. NB. if email address not already used in people table
+    pid=. 'newperson' insertInfo fname;lname;email NB. insert person in people table
   end.
   sph=. salthash passwd NB. create salt and passhash
-  uid=.'newuser' insertDBTable pid;uname;refnum;|.sph NB. insert user into database
-  NB. uid=.'newuser' insertDBTable (}:y),|.sph NB. insert user into database
+  uid=.'newuser' insertInfo pid;uname;refnum;|.sph NB. insert user into database
 )
 
 NB.*updateSession v updates expiry of session
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'session' updateDBTable ".sid
+  'extendsession' updateInfo ".sid
 )
 
 NB.*validCase v Checks if case id is valid for user offering
 NB. returns 0 if not, otherwise returns 3-item boxed list of userID;offeringID;caseID
-NB. y is optional numeric offering id (of_id), otherwise reads cookie
+NB. y is optional numeric offering id (cs_id), otherwise reads cookie
 NB. x is optional 2-item boxed list of user id;offering id, otherwise gets via enrolledIn
 NB. calling with no left argument will update session expiry if valid
 validCase=: 3 : 0
@@ -70,7 +65,7 @@ validCase=: 3 : 0
   uofid validCase y
 :
   if. 0=#y do. y=.0 qcookie 'CaseID' end.
-  vldcs=.'validcase' getDBTable x,<y
+  vldcs=.'validcase' getInfo x,<y
   if. #vldcs do. x,<y else. 0 end.
 )
 
@@ -84,7 +79,7 @@ validEnrolment=: 3 : 0
   uid validEnrolment y
 :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getDBTable x;y
+  enrld=.'enrolled' getInfo x;y
   if. #enrld do. x;y else. 0 end.
 )
 
@@ -93,9 +88,9 @@ NB.  y is boxed list of two strings 'username';'password'
 NB.  result is numeric _1 if not valid, string userid if valid
 validLogin=: 3 : 0
  'usrnme passwd'=. y
-  if. usrnme -: '' do. _1 return. end. NB. check for empty usrname
-  uinfo =. {:'login' getDBTable usrnme  NB. retrieve data for username
-  if. ''-: uinfo   do. _2 return. end.   NB. check username exists
+  if. 0=# usrnme do. _1 return. end. NB. check for empty usrname
+  uinfo =. 'userlogin' getInfo usrnme  NB. retrieve data for username
+  if. 0=# uinfo   do. _2 return. end.   NB. check username exists
   'duid dunme dhash dsalt' =. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. NB. check password is valid
   duid
@@ -109,16 +104,16 @@ NB. y is content (session ticket) of sessionID cookie
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'session' getDBTable ".sid
+  sinfo=.'sessioninfo' getInfo sid
   if. 0=#sinfo do. 0 return. end. NB. no (active) session
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   NB. assign hdrnames
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
-    'sessionexpire' updateDBTable ".sid
+    'expiresession' updateInfo sid
     0
   else.
-    'session' updateDBTable ".sid
+    'extendsession' updateInfo sid
     ss_urid
   end.
 )

@@ -1,5 +1,8 @@
 coclass 'rgssqliteq'
 
+NB.! rgssqliteq should probably be coinserted in path of the locale
+NB.! containing the SQL commands (call it rgssqlcmds)
+
 NB. =========================================================
 NB. Login, validate & register users/sessions
 
@@ -8,7 +11,7 @@ NB.   SELECT users.ur_id ur_id
 NB.   FROM users
 NB.   WHERE users.ur_uname=?;
 NB. )
-sqlsel_login=: 0 : 0
+sqlsel_userlogin=: 0 : 0
   SELECT users.ur_id ur_id, 
          users.ur_uname ur_uname,
          users.ur_passhash ur_passhash,
@@ -17,7 +20,7 @@ sqlsel_login=: 0 : 0
   WHERE users.ur_uname=?;
 )
 
-sqlsel_status=: 0 : 0
+sqlsel_userstatus=: 0 : 0
   SELECT users.ur_status ur_status
   FROM users
   WHERE users.ur_id=?;
@@ -27,7 +30,7 @@ sqlsel_username=: 0 : 0
   FROM users
   WHERE users.ur_id=?;
 )
-sqlsel_email=: 0 : 0
+sqlsel_idfromemail=: 0 : 0
   SELECT pp.pp_id pp_id ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
@@ -45,12 +48,12 @@ sqlins_newuser=: 0 : 0
   VALUES(?,?,?,?,?);
 )
 
-sqlins_session=: 0 : 0
+sqlins_newsession=: 0 : 0
   INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
   VALUES(?,?,?,?,julianday('now','20 minutes'));
 )
 
-sqlsel_session=: 0 : 0
+sqlsel_sessioninfo=: 0 : 0
   SELECT ss.ss_urid ss_urid ,
          ss.ss_salt ss_salt ,
          (ss.ss_expire-julianday('now')) timeleft 
@@ -58,12 +61,12 @@ sqlsel_session=: 0 : 0
   WHERE (ss.ss_id =?) AND (ss.ss_status >0);
 )
 
-sqlupd_session=: 0 : 0
+sqlupd_extendsession=: 0 : 0
   UPDATE sessions
   SET ss_expire=julianday('now','20 minutes')
   WHERE ss_id=?;
 )
-sqlupd_sessionexpire=: 0 : 0
+sqlupd_expiresession=: 0 : 0
   UPDATE sessions
   SET ss_status=0
   WHERE ss_id=?;
@@ -94,18 +97,25 @@ sqlsel_validcase=: 0 : 0
   WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
 )
 
-sqlins_caseinstance=: 0 : 0
+sqlins_newcaseinstance=: 0 : 0
   INSERT INTO caseinstances (ci_urid,ci_ofid,ci_csid)
   VALUES(?,?,?);
 )
 
-sqlsel_caseinstance=: 0 : 0
+sqlsel_caseinstanceid=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
-sqlsel_caseinstfolder=: 0 : 0
+sqlsel_caseinststatus=: 0 : 0
+  SELECT ci.ci_stored ci_stored ,
+         ci.ci_status ci_status 
+  FROM   main.`caseinstances`  ci 
+  WHERE (ci.ci_id =?);
+)
+
+sqlsel_caseinstpath=: 0 : 0
   SELECT ur.ur_uname ur_uname ,
          off_info.cr_code cr_code ,
          off_info.of_year of_year ,
@@ -120,7 +130,7 @@ sqlsel_caseinstfolder=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
-sqlsel_scendef=: 0 : 0
+sqlsel_scendefpath=: 0 : 0
   SELECT sd.sd_code sd_code 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
@@ -141,19 +151,19 @@ sqlupd_expirecaseinst=: 0 : 0
 
 sqlupd_storecaseinst=: 0 : 0
   UPDATE caseinstances
-  SET ci_sumry=1
+  SET ci_stored=1
   WHERE ci_id=?;
 )
 
 sqlupd_delstoredcaseinst=: 0 : 0
   UPDATE caseinstances
-  SET ci_sumry=0
+  SET ci_stored=0
   WHERE ci_id=?;
 )
 NB. =========================================================
 NB. Case SQL
 
-sqlsel_animini=: 0 : 0
+sqlsel_animinipath=: 0 : 0
   SELECT sd.sd_filen sd_filen 
   FROM  `cases` cases INNER JOIN `caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 

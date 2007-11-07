@@ -3,31 +3,14 @@ coclass 'rgssqliteq'
 NB. =========================================================
 NB. Interface SQL
 
-sqlsel_greeting=: 0 : 0
+sqlsel_usergreeting=: 0 : 0
   SELECT pp.pp_fname pp_fname,
          pp.pp_lname pp_lname
   FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
   WHERE ur.ur_id=?;
 )
 
-sqlsel_mycoursesOLD=: 0 : 0
-  SELECT off_info.of_id of_id ,
-         off_info.cr_name cr_name ,
-         off_info.cr_code cr_code ,
-         off_info.of_year of_year ,
-         off_info.sm_code sm_code ,
-         off_info.dm_code dm_code ,
-         off_info.pp_adminfname pp_adminfname ,
-         off_info.pp_adminlname pp_adminlname ,
-         rl.rl_name rl_name 
-  FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
-        INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
-  WHERE (en.en_urid =?) AND (off_info.of_status >0)
-  GROUP BY of_id
-  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
-)
-
-sqlsel_mycourses=: 0 : 0
+sqlsel_usercourses=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
          off_info.cr_code cr_code ,
@@ -78,7 +61,7 @@ sqlsel_effrole=: 0 : 0
 )
 
 
-sqlsel_course=: 0 : 0
+sqlsel_coursedetails=: 0 : 0
   SELECT off_info.of_id of_id ,
         off_info.cr_name cr_name ,
         off_info.cr_code cr_code ,
@@ -122,13 +105,13 @@ sqlsel_coursesumrys=: 0 : 0
          ci.ci_usrdescr ci_usrdescr 
   FROM   main.`scendefs` sd INNER JOIN main.`cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
          INNER JOIN main.`caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
-  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_sumry =1)
-  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc
+  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_stored =1)
+  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc;
 )
 
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
-         ci.ci_sumry ci_sumry
+         ci.ci_stored ci_stored
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_id =?);
 )
@@ -139,12 +122,12 @@ sqlupd_casestage=: 0 : 0
   WHERE (ci_id=?);
 )
 
-sqlsel_case=: 0 : 0
+sqlsel_casedetails=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
          sd.sd_descr sd_descr ,
          xn.xn_name xn_name ,
-         cx.cx_text cx_text 
+         cx.cx_text cx_text
 FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
       INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
       INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 

@@ -11,6 +11,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/scenarios
 ~Projects/selectj/mating
 ~Projects/selectj/summary
+~Projects/selectj/virtualdata
 ~Projects/selectj/sqlcmds
 ~Projects/selectj/sqlcmds_interface
 ~Projects/selectj/jrails

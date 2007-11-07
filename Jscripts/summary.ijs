@@ -30,14 +30,13 @@ NB.           1{x is boxed list of trait column labels to summarise
 NB. e.g. ((<'YOB');< ;:'pLW8 pFW12') sumSummaryCSV 1
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  fnme =. <"1&dtb"1 'summaryCSV' getFnme y  
-  'hdr invtble'=. readStoredCaseInst fnme
+  'hdr invtble'=. 'summaryCSV' getInfo y
   keyidx=. hdr idxfnd keylbls NB. indexes of only keylbls found in hdr
   key=. listatom keyidx{invtble  NB. get keycols (listatom nolonger reqd?)
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble NB. append column of zeros to invtble to handle datlbls not in hdr
   sum=. key tkeytble (<tfreq key),key tkeyavg dat NB.! keep tfreq??
-  ini=. >readStoredCaseInst <"1&dtb"1 'summaryINI' getFnme y
+  ini=. >'summaryINI' getInfo y
   yr0=. ini getIniString 'yearzero' NB. yearzero as string
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
