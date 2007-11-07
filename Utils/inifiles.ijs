@@ -5,7 +5,7 @@ require 'files regex strings'
 coclass 'rgsini'
 
 Note 'get Ini string'
-inistr=. freads 'animini' getFnme 2  NB. use for file on disk
+inistr=. freads 'animinipath' getFnme 2  NB. use for file on disk
 inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y NB. use for file in zip
 )
 
