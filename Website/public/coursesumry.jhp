@@ -12,7 +12,7 @@ try.
       NB.! open new page with form to choose parameters to summarise by
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
       ciids=. 4 qparamList 'ciid'
-      cfform=: 'defsumry' buildcfForm ciids
+      cfform=: 'defsumry' buildSJForm ciids
       ('action';'home') redirect 'coursesumry.jhp'
       NB. (ciids) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
       NB. transfer page
@@ -20,9 +20,9 @@ try.
 	  DeleteCookie 'CaseID'
       page=. '~CGI/coursesumry_home.asp'  NB. destination page
 	  'uid ofid'=. uofid
-	  setcolnames 'greeting' getDBTable uid
-      setcolnames 'course' getDBTable ofid
-	  setcolnames 'coursesumrys' getDBTable uofid
+	  setcolnames 'usergreeting' getInfo uid
+      setcolnames 'coursedetails' getInfo ofid
+	  setcolnames 'coursesumrys' getInfo uofid
       NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	  transfer page
 	case. 'download' do.
@@ -35,7 +35,7 @@ try.
       NB.! view selection details but no changing
       ('action';'home') redirect 'coursesumry.jhp'
     case. 'Delete' do. NB. delete stored cases
-      ciids=. 4 qparamList 'select'
+      ciids=. 4 qparamList 'ciid'
       deleteStoredCaseInst"0 ;ciids
       ('action';'home') redirect 'coursesumry.jhp'
 	case. do.  NB. default action

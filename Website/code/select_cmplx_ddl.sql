@@ -173,7 +173,7 @@ CREATE TABLE caseinstances (  -- case instance for user offering
   ci_csid  INTEGER NOT NULL REFERENCES cases (cs_id),
   ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
   ci_usrdescr TEXT DEFAULT NULL, -- user's description for CaseInstance
-  ci_sumry    INTEGER DEFAULT 0,        -- summary saved? 0 no; 1 yes
+  ci_stored   INTEGER DEFAULT 0, -- summary files stored? 0 no; 1 yes
   ci_stage    INTEGER DEFAULT 1 REFERENCES textblocks(xn_id),   -- stage, 
   ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current
 

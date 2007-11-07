@@ -6,7 +6,7 @@ try.
     case. 'login' do.
 	  uid=: validLogin qparam each 'usrname';'passwd'
 	  if. 0>uid do. NB. invalid login
-        qry=. 'action';'loginfail',:'uname';qparam 'usrname'
+        qry=. ('action';'loginfail'),:'uname';qparam 'usrname'
 		qry redirect 'default.jhp'
 	  else.
 	    tkt=. createSession uid
@@ -15,13 +15,13 @@ try.
 	  end.
 	case. 'home' do.
 	  if. 0-: uid=.validSession'' do.
-	    ('action';'sessionexpire')redirect 'default.jhp' 
+	    ('action';'expiresession')redirect 'default.jhp' 
 	  else.
 	    DeleteCookie 'CaseID'
 		DeleteCookie 'OfferingID'
         page=. '~CGI/user_home.asp'  NB. destination page
-        setcolnames 'greeting' getDBTable uid
-	    setcolnames 'mycourses' getDBTable uid
+        setcolnames 'usergreeting' getInfo uid
+	    setcolnames 'usercourses' getInfo uid
     	if. -.isnoun 'of_id' do. of_id=:i.0 0 end. NB. set of_id to empty if not defined above
 		if. 1=#of_id do. NB. if only one course then go direct
 		  ('of_id';":of_id) redirect 'course.jhp'

@@ -111,11 +111,11 @@ function callregsubmit() {
 		}
 	}
 
-function resetCase(cistage, cisumry) {
+function resetCase(cistage, cistored) {
 	//decides whether to prompt to store case first
 	act = "reset" //default to reset case
 	stc = false   //default to not store case
-	if ((99==cistage) && (!cisumry)) {
+	if ((99==cistage) && (!cistored)) {
 		stc = !confirm("Your case is complete but has not yet been stored.\n\nAre you sure you want to reset without storing first?");
 	}
 	else if((cistage>1) && (cistage<99)){

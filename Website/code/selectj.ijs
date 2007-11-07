@@ -343,16 +343,16 @@ createSession=: 3 : 0
  if. isdefseed_rgspasswd_'' do. randomize'' end.
  sid=. >:?<:-:2^32 
  sh=. salthash ":sid 
- 'session' insertDBTable  sid;y;sh
+ 'newsession' insertInfo  sid;y;sh
  tk=. writeTicket sid;{:sh
 )
 expireSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'sessionexpire' updateDBTable ".sid
+  'expiresession' updateInfo ".sid
 )
 isActive=: 3 : 0
-  s=. {:'status' getDBTable y
+  s=. 'userstatus' getInfo y
 )
 readTicket=: 3 : 0
   kVTable=. qsparse y  
@@ -364,29 +364,24 @@ readTicket=: 3 : 0
 registerUser=: 3 : 0
   'action uname fname lname refnum email passwd'=.y
   if. action-:'guest' do. uname=. randPassword 16  end.
-  uinfo =. {:'login' getDBTable uname  
-  if. -.uinfo-:'' do. _2 return. end. 
-  pinfo =. {:'email' getDBTable  email
-  if. -.pinfo-:''  do. 
-    pid=. 0{::pinfo    
-  else.
-    pid=. 'newperson' insertDBTable fname;lname;email 
+  if. *#'userlogin' getInfo uname  do. _2 return. end. 
+  if. 0=# pid=. 'idfromemail' getInfo email  do. 
+    pid=. 'newperson' insertInfo fname;lname;email 
   end.
   sph=. salthash passwd 
-  uid=.'newuser' insertDBTable pid;uname;refnum;|.sph 
-  
+  uid=.'newuser' insertInfo pid;uname;refnum;|.sph 
 )
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
   sid=.0{:: readTicket y
-  'session' updateDBTable ".sid
+  'extendsession' updateInfo ".sid
 )
 validCase=: 3 : 0
   if. 0-: uofid=.validEnrolment'' do. 0 return. end.
   uofid validCase y
 :
   if. 0=#y do. y=.0 qcookie 'CaseID' end.
-  vldcs=.'validcase' getDBTable x,<y
+  vldcs=.'validcase' getInfo x,<y
   if. #vldcs do. x,<y else. 0 end.
 )
 validEnrolment=: 3 : 0
@@ -394,14 +389,14 @@ validEnrolment=: 3 : 0
   uid validEnrolment y
 :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getDBTable x;y
+  enrld=.'enrolled' getInfo x;y
   if. #enrld do. x;y else. 0 end.
 )
 validLogin=: 3 : 0
  'usrnme passwd'=. y
-  if. usrnme -: '' do. _1 return. end. 
-  uinfo =. {:'login' getDBTable usrnme  
-  if. ''-: uinfo   do. _2 return. end.   
+  if. 0=# usrnme do. _1 return. end. 
+  uinfo =. 'userlogin' getInfo usrnme  
+  if. 0=# uinfo   do. _2 return. end.   
   'duid dunme dhash dsalt' =. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
   duid
@@ -409,16 +404,16 @@ validLogin=: 3 : 0
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'session' getDBTable ".sid
+  sinfo=.'sessioninfo' getInfo sid
   if. 0=#sinfo do. 0 return. end. 
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
   if. timeleft<0 do. 
-    'sessionexpire' updateDBTable ".sid
+    'expiresession' updateInfo sid
     0
   else.
-    'session' updateDBTable ".sid
+    'extendsession' updateInfo sid
     ss_urid
   end.
 )
@@ -428,12 +423,12 @@ writeTicket=: 3 : 0
 )
 
 cleanGuests=: 3 : 0
-  ginfo=. 'expiredguests' getDBTable ''
+  ginfo=. 'expiredguests' getInfo ''
   if. 0=#ginfo do. 0 return. end. 
   'hdr dat'=. split ginfo
   (hdr)=. |:dat                   
   if. *#ss_id do.
-    'sessionexpire' updateDBTable boxopenatoms ss_id
+    'expiresession' updateInfo boxopenatoms ss_id
   end.
   resetUsers ur_id
   ''
@@ -441,25 +436,32 @@ cleanGuests=: 3 : 0
 resetUsers=: 3 : 0
   if. *#y do.
     urids=. boxopenatoms y
-    cids=. 'caseinst2expire' getDBField urids
-    if. #cids do. 
-      'expirecaseinst' updateDBTable boxopenatoms cids
-    end.
+    cids=. 'caseinst2expire' getInfo urids
+    resetCaseInsts cids
     deleteUserFolders y 
-    'resetusers' updateDBTable urids
+    'resetusers' updateInfo urids
     ''
   end.
 )
+resetCaseInsts=: 3 : 0
+  if. *#y do.
+    ciids=. boxopenatoms y
+    'expirecaseinst' updateInfo ciids
+    'delstoredcaseinst' updateInfo ciids
+    ''
+  end.
+)
+
 setUsers=: 3 : 0
   if. *#y do.
-    'setusers' updateDBTable y
+    'setusers' updateInfo y
     ''
   end.
 )
 deleteUsers=: 3 : 0
   if. *#y do.
     deleteUserFolders y 
-    'deleteusers' updateDBTable boxopenatoms y
+    'deleteusers' updateInfo boxopenatoms y
     ''
   end.
 )
@@ -469,25 +471,25 @@ getFnme=: 4 : 0
   basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
   
   select. x
-    case. 'animini' do.
-      fdir=. 'caseinstfolder' getFnme y
-      fnme=. 'animini' getDBItem y
+    case. 'animinipath' do.
+      fdir=. 'caseinstpath' getFnme y
+      fnme=. 'animinipath' getInfo y
       fnme=. fdir,fnme
-    case. 'caseinstfolder' do.
+    case. 'caseinstpath' do.
       
-      pathinfo=. 'caseinstfolder' getDBTableStr y
+      pathinfo=. 'caseinstpath' getInfo y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
       fnme=. '/' pathdelim ur_uname;of_code;sd_code;ci_id
       fnme=. basefldr,'userpop/',fnme,'/'
-    case. 'scendef' do.
+    case. 'scendefpath' do.
       
-      cde=. 'scendef' getDBItem y
+      cde=. 'scendefpath' getInfo y
       fnme=. basefldr,'scendefs/',cde,'.zip'
     case. keys=. ;:'selnlist pedigree matealloc animsumry' do.
-      fdir=. 'caseinstfolder' getFnme y
-      inipath=. 'animini' getFnme y
+      fdir=. 'caseinstpath' getFnme y
+      inipath=. 'animinipath' getFnme y
       fkey=. 1 transName x
       fnme=. getIniString fkey;'FileNames';inipath
       if. *#fnme do. 
@@ -504,11 +506,11 @@ getFnme=: 4 : 0
       return. 
     case. 'summaryINI' do.
       
-      fnme=. 'animini' getDBItem y
+      fnme=. 'animinipath' getInfo y
       zipnme=. 'sumryzip' getFnme y
       fnme=. >fnme;zipnme
     case. 'sumryfiles' do. 
-      fnme=. >('animini';'animsumry') getFnme each y
+      fnme=. >('animinipath';'animsumry') getFnme each y
     case. 'sumryzip' do.
       
       fdir=. 'sumryfolder' getFnme y
@@ -516,34 +518,34 @@ getFnme=: 4 : 0
       fnme=. fdir,fnme,'.zip'
     case. 'sumryfolder' do.
       
-      pathinfo=. 'caseinstfolder' getDBTableStr y
+      pathinfo=. 'caseinstpath' getInfo y
       'hdr dat'=. split pathinfo
       (hdr)=. |:dat
       of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
       fnme=. '/' pathdelim ur_uname;of_code;'summaries'
       fnme=. basefldr,'userpop/',fnme,'/'
     case. 'trtinfo' do.
-      fdir=. 'caseinstfolder' getFnme y
-      inipath=. 'animini' getFnme y
+      fdir=. 'caseinstpath' getFnme y
+      inipath=. 'animinipath' getFnme y
       fkey=. 1 transName x
       fnme=. getIniString fkey;'QuantTrts';inipath
       if. *#fnme do. fnme=. 'TrtInfo.xls' end.
       fnme=. fdir,fnme
     case. 'userfolder' do. 
-      uns=.'username' getDBField y
+      uns=.'username' getInfo y
       fnme=. (basefldr,'userpop/'),"1 uns
     case. do.
   end.
   fnme=. jpath"1 fnme
 )
 createCaseInstance=: 3 : 0
-  ciid=. 'caseinstance' insertDBTable y
+  ciid=. 'newcaseinstance' insertInfo y
   uz=. createCaseInstFolder ciid
   ciid
 )
 createCaseInstFolder=: 3 : 0
-  zippath=. 'scendef' getFnme y
-  newpath=. 'caseinstfolder' getFnme y
+  zippath=. 'scendefpath' getFnme y
+  newpath=. 'caseinstpath' getFnme y
   uz=. unzip zippath;newpath 
 )
 getCaseInstance=: 3 : 0
@@ -552,7 +554,7 @@ getCaseInstance=: 3 : 0
   else.
     uofcsid=. y
   end.
-  ciid=. 'caseinstance' getDBItem uofcsid
+  ciid=. 'caseinstanceid' getInfo uofcsid
   if. #ciid do.
     ciid
   else. 
@@ -560,50 +562,33 @@ getCaseInstance=: 3 : 0
   end.
 )
 updateCaseStage=: 3 : 0
-  'casestage' updateDBTable y
+  'casestage' updateInfo y
 )
 storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y 
   zipnm=. 'sumryzip' getFnme y  
-  dirinf=. 'caseinstfolder' getFnme y
+  dirinf=. 'caseinstpath' getFnme y
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. 
-    'storecaseinst' updateDBTable y  
+    'storecaseinst' updateInfo y  
   end.
-)
-readStoredCaseInst=: 3 : 0
-  fnme=. y
-  kfnme=. 'ijf',~_3}. 1{:: fnme
-  ftyp=. _3{. 0{:: fnme
-  ns=. ((;:'csv ini') i. <ftyp){::(;:'csvhdr csvcnt');<<'ini' 
-  if. -.fexist kfnme do. keycreate kfnme end.
-  if. _4-: res=. keyread kfnme;<ns do. 
-    
-    select. ftyp
-    case. 'csv' do.
-      res=. split fixcsv toJ zread fnme
-      res=. (ifa each 1{res) 1}res
-    case. 'ini' do.      
-      res=. <(toJ zread fnme) getIniAllSections ''
-    end.
-    s=. res keywrite kfnme;<ns
-  end.
-  res
 )
 deleteStoredCaseInst=: 3 :0
-  if. 0=#y do. '' return. end.
-  zipnm=. 'sumryzip' getFnme y
-  ferase zipnm
-  if. -. fexist zipnm do.
-    'delstoredcaseinst' updateDBTable y  
+  if. *#y do.
+    zipnm=. 'sumryzip' getFnme y
+    ferase zipnm
+    if. -. fexist zipnm do.
+      'delstoredcaseinst' updateInfo y  
+    end.
+    ''
   end.
 )
 expireCaseInstance=: 3 : 0
-  'expirecaseinst' updateDBTable y
+  'expirecaseinst' updateInfo y
   deleteCaseInstFolder y
 )
 deleteCaseInstFolder=: 3 : 0
-  delpath=. 'caseinstfolder' getFnme y
+  delpath=. 'caseinstpath' getFnme y
   res=.deltree delpath
   if. 1=*./res do. 1 else. 0 end.
 )
@@ -612,40 +597,10 @@ deleteUserFolders=: 3 : 0
   res=.deltree every delpath
   if. 1=*./res do. 1 else. 0 end.
 )
-getScenarioInfo=: 3 : 0
-  'animini' getScenarioInfo y
-  :
-  infotyp=. boxopen x
-  select. infotyp
-    case. <'animini' do.
-      fnme=. 'animini' getFnme y
-      res=. getIniAllSections fnme
-    case. <'alltrtinfo' do.  
-      xlfnme=. 'trtinfo' getFnme y
-      'tDefn' readexcel xlfnme
-    case. <'status' do. 
-      fnme=. 'animini' getFnme y
-      ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      crcyc;ncyc
-  end.
-)
-
-updateScenarioInfo=: 3 : 0
-  'animini' updateScenarioInfo y
-  :
-  infotyp=. boxopen x
-  select. infotyp
-    case. <'animini' do.
-      fnme=. <'animini' getFnme y
-      res=. writePPString"1 fnme,. 2}."1 ANIMINI
-  end.
-)
 updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS 
-  ANIMINI_z_=: 'animini' getScenarioInfo y
-  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
+  ANIMINI_z_=: 'animini' getInfo y
+  TRTINFO_z_=: 'alltrtinfo' getInfo y
   
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
@@ -695,6 +650,14 @@ sortTrtColLbl=: ] /: ,@|:@i.@[
 getTrtBase=: ((<'pgde') -.&.>~ ])
 getTrtsOnly=: ] #~ 'pg' e.~ {.@>
 getTrtsNot=:  ] #~ [: -. 'pg' e.~ {.@>
+getTrtInfoTyps=: 3 : 0
+  lst=. {:&>y
+  msk=. 0 e. lst e. 'de'
+  msk=. msk, 'de' e. lst
+  res=. msk#{."1 INFOTYPES
+)
+
+INFOTYPES=:  (;:'phen genD genDe'),. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
 getTrtInfo=: 3 : 0
 'TrtCaption' getTrtInfo y
 :
@@ -714,8 +677,8 @@ getParamState=: 3 : 0
   select. y
     case. 'coltypes' do.
       seld=. <'phen'
-      vals=. ;:'phen genD genDe'
-      nmes=. 'Phenotypes';'Genotypes';'Estimated Breeding Values'
+      vals=. {."1 INFOTYPES
+      nmes=. {:"1 INFOTYPES
     case. 'cullage' do.
       vals=. <"0 ANIMINI getIniVals y
       nmes=. 'Female';'Male'
@@ -744,9 +707,7 @@ getParamState=: 3 : 0
       'seld vals nmes'=. getParamState 'coltypes'
       tmp=. ANIMINI getIniVals'respons2outpt'
       tmp=. getTrtsOnly tmp 
-      tmp=. ~.{:@>tmp   
-      tmp=. (0<+/-.tmp e. 'de'),'de'e.tmp  
-      seld=. tmp#vals   
+      seld=. getTrtInfoTyps tmp  
     case. 'trtsrecorded' do.
       vals=. ANIMINI getIniVals 'trtsavail'
       vals=. getTrtsPhn vals
@@ -875,7 +836,7 @@ makeMateAlloc=: 4 : 0
     ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. 
-      ANIMINI_z_=. 'animini' getScenarioInfo x
+      ANIMINI_z_=. 'animini' getInfo x
       'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   
       
@@ -924,7 +885,7 @@ breedPopln=: 3 : 0
     if. 1-:msg do. 
       if. okansim=. runAnimalSim y do.
         if. stge=1 do.
-          inipath=. 'animini' getFnme y
+          inipath=. 'animinipath' getFnme y
           writePPString inipath;'Control';'Resume';1
         end.
         stge=. (>:checkCycle y){1 21 99
@@ -946,7 +907,7 @@ validMateAlloc=: 4 : 0
       ma=. readcsv fnme
       oklen=. *# ma 
       'hdr ma'=. split ma
-      ANIMINI_z_=. 'animini' getScenarioInfo x
+      ANIMINI_z_=. 'animini' getInfo x
       'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       
@@ -974,17 +935,17 @@ validMateAlloc=: 4 : 0
   end.
 )
 checkCycle=: 3 : 0
-  'crcyc ncyc'=. 'status' getScenarioInfo y
+  'crcyc ncyc'=. 'caseprogress' getInfo y
   fnme=. 'animsumry' getFnme y
   issm=. fexist fnme
   res=. (issm *. crcyc = ncyc)-crcyc=0
 )
 runAnimalSim=: 3 : 0
-  inipath=. 'animini' getFnme y
+  inipath=. 'animinipath' getFnme y
   if. -.fexist inipath do. 0 return. end.
   crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
-  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstfolder' getFnme y do. 
+  if. fexist  'errorlog.txt',~ cifldr=. 'caseinstpath' getFnme y do. 
     if. crcyc< getIniValue key do.
       writePPString key,<crcyc  
     end.
@@ -1009,14 +970,13 @@ datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
 )
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  fnme =. <"1&dtb"1 'summaryCSV' getFnme y  
-  'hdr invtble'=. readStoredCaseInst fnme
+  'hdr invtble'=. 'summaryCSV' getInfo y
   keyidx=. hdr idxfnd keylbls 
   key=. listatom keyidx{invtble  
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble 
   sum=. key tkeytble (<tfreq key),key tkeyavg dat 
-  ini=. >readStoredCaseInst <"1&dtb"1 'summaryINI' getFnme y
+  ini=. >'summaryINI' getInfo y
   yr0=. ini getIniString 'yearzero' 
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
@@ -1258,9 +1218,131 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
+QRYci=: ;:'animinipath caseinstpath casedetails caseinststatus casestage paramform scendefpath'
+UPDci=: ;:'casestage delstoredcaseinst expirecaseinst storecaseinst'
+INSci=: ;:'newcaseinstance'
+QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
+QRYcomb=: ;:'caseinstanceid enrolled validcase'
+QRYother=: ;:'idfromemail userlogin'
+UPDur=: ;:'deleteusers resetusers setusers'
+INSur=: ;:'newuser newperson'
+QRYof=: ;:'coursecases coursedetails coursename coursesumrys'
+UPDof=: ;:''
+INSof=: ;:''
+QRYss=: ;:'sessioninfo'
+UPDss=: ;:'expiresession extendsession'
+INSss=: ;:'newsession'
+DBQRY=: QRYci,QRYof,QRYur,QRYss,QRYcomb,QRYother
+DBUPD=: UPDci,UPDur,UPDof,UPDss
+DBINS=: INSci,INSur,INSof,INSss
+  DBtable   =:          ;:'casedetails paramform'
+  DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
+  DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
+DBtable   =: DBtable, ;:'sessioninfo'
+DBtablestr=: ;:'caseinstpath'
+DBrow     =: ;:'casestage userlogin caseinststatus'
+DBcol     =: ;:'caseinst2expire username'
+DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
+FLQRY=: ;:'animini alltrtinfo caseprogress'
+FLQRY=: FLQRY, ;:'animsumry animsumryhdr animsumrycnt'
+FLQRY=: FLQRY, ;:'summaryINI summaryCSV'
+getInfo=: 4 : 0
+  
+  
+  if. (boxopen x) e. DBQRY do.
+    x getInfoDB y
+  else. 
+    (x,':query undefined') assert (boxopen x) e. FLQRY
+    sts=. 'caseinststatus' getInfoDB y 
+    select. <sts
+      case. <0;0  do. 
+        '' 
+      case. (0;1);<(1;1) do.  
+        x getScenarioInfo y  
+      case. <1;0 do.  
+        x readStoredCaseInst y  
+    end.
+  end.
+)
+updateInfo=: 4 : 0
+  (x,':query undefined') assert (boxopen x) e. DBUPD
+  x updateDBTable y
+)
+insertInfo=: 4 : 0
+  (x,':query undefined') assert (boxopen x) e. DBINS
+  x insertDBTable y
+)
+
+getInfoDB=: 4 : 0
+  select. x
+    case. DBtable do.
+      res=. x getDBTable y
+    case. DBtablestr do.
+      res=. x getDBTableStr y
+    case. DBrow do.
+      res=. {: x getDBTable y
+    case. DBcol do.
+      res=. x getDBField y
+    case. DBitem do.
+      res=. x getDBItem y
+    case. do. 
+      (x,':querytype undefined') assert 0
+  end.
+  res
+)
+
+readStoredCaseInst=: 4 : 0
+  fnme=. <"1&dtb"1 x getFnme y 
+  kfnme=. 'ijf',~_3}. 1{:: fnme
+  ftyp=. _3{. 0{:: fnme
+  ns=. (<'csvhdr');(;:'csvhdr csvcnt');<<'ini'
+  ns=. ((;:'hdr csv ini') i. <ftyp){:: ns 
+  if. -.fexist kfnme do. keycreate kfnme end.
+  if. _4-: res=. keyread kfnme;<ns do.
+  
+    select. ftyp
+      case. 'hdr';'csv' do.
+        res=. split fixcsv toJ zread fnme
+        res=. (ifa each 1{res) 1}res
+      case. 'ini' do.
+        res=. <(toJ zread fnme) getIniAllSections ''
+    end.
+    s=. res keywrite kfnme;<ns
+    if. ftyp-:'hdr' do. res=. 0{res end.
+  end.
+  res
+)
+getScenarioInfo=: 4 : 0
+  infotyp=. boxopen x
+  select. infotyp
+    case. <'animini' do.
+      fnme=. 'animinipath' getFnme y
+      res=. getIniAllSections fnme
+    case. <'alltrtinfo' do.  
+      xlfnme=. 'trtinfo' getFnme y
+      'tDefn' readexcel xlfnme
+    case. <'caseprogress' do. 
+      fnme=. 'animinipath' getFnme y
+      ini=. getIniAllSections fnme
+      crcyc=. ini getIniValue 1&transName 'curryear'
+      ncyc=.  ini getIniValue 'ncycles'
+      crcyc;ncyc
+  end.
+)
+
+updateScenarioInfo=: 3 : 0
+  'animini' updateScenarioInfo y
+  :
+  infotyp=. boxopen x
+  select. infotyp
+    case. <'animini' do.
+      fnme=. <'animinipath' getFnme y
+      res=. writePPString"1 fnme,. 2}."1 ANIMINI
+  end.
+)
 
 coclass 'rgssqliteq'
-sqlsel_login=: 0 : 0
+sqlsel_userlogin=: 0 : 0
   SELECT users.ur_id ur_id, 
          users.ur_uname ur_uname,
          users.ur_passhash ur_passhash,
@@ -1269,7 +1351,7 @@ sqlsel_login=: 0 : 0
   WHERE users.ur_uname=?;
 )
 
-sqlsel_status=: 0 : 0
+sqlsel_userstatus=: 0 : 0
   SELECT users.ur_status ur_status
   FROM users
   WHERE users.ur_id=?;
@@ -1279,7 +1361,7 @@ sqlsel_username=: 0 : 0
   FROM users
   WHERE users.ur_id=?;
 )
-sqlsel_email=: 0 : 0
+sqlsel_idfromemail=: 0 : 0
   SELECT pp.pp_id pp_id ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
@@ -1297,12 +1379,12 @@ sqlins_newuser=: 0 : 0
   VALUES(?,?,?,?,?);
 )
 
-sqlins_session=: 0 : 0
+sqlins_newsession=: 0 : 0
   INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
   VALUES(?,?,?,?,julianday('now','20 minutes'));
 )
 
-sqlsel_session=: 0 : 0
+sqlsel_sessioninfo=: 0 : 0
   SELECT ss.ss_urid ss_urid ,
          ss.ss_salt ss_salt ,
          (ss.ss_expire-julianday('now')) timeleft 
@@ -1310,12 +1392,12 @@ sqlsel_session=: 0 : 0
   WHERE (ss.ss_id =?) AND (ss.ss_status >0);
 )
 
-sqlupd_session=: 0 : 0
+sqlupd_extendsession=: 0 : 0
   UPDATE sessions
   SET ss_expire=julianday('now','20 minutes')
   WHERE ss_id=?;
 )
-sqlupd_sessionexpire=: 0 : 0
+sqlupd_expiresession=: 0 : 0
   UPDATE sessions
   SET ss_status=0
   WHERE ss_id=?;
@@ -1346,18 +1428,25 @@ sqlsel_validcase=: 0 : 0
   WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
 )
 
-sqlins_caseinstance=: 0 : 0
+sqlins_newcaseinstance=: 0 : 0
   INSERT INTO caseinstances (ci_urid,ci_ofid,ci_csid)
   VALUES(?,?,?);
 )
 
-sqlsel_caseinstance=: 0 : 0
+sqlsel_caseinstanceid=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
-sqlsel_caseinstfolder=: 0 : 0
+sqlsel_caseinststatus=: 0 : 0
+  SELECT ci.ci_stored ci_stored ,
+         ci.ci_status ci_status 
+  FROM   main.`caseinstances`  ci 
+  WHERE (ci.ci_id =?);
+)
+
+sqlsel_caseinstpath=: 0 : 0
   SELECT ur.ur_uname ur_uname ,
          off_info.cr_code cr_code ,
          off_info.of_year of_year ,
@@ -1372,7 +1461,7 @@ sqlsel_caseinstfolder=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
-sqlsel_scendef=: 0 : 0
+sqlsel_scendefpath=: 0 : 0
   SELECT sd.sd_code sd_code 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
@@ -1393,16 +1482,16 @@ sqlupd_expirecaseinst=: 0 : 0
 
 sqlupd_storecaseinst=: 0 : 0
   UPDATE caseinstances
-  SET ci_sumry=1
+  SET ci_stored=1
   WHERE ci_id=?;
 )
 
 sqlupd_delstoredcaseinst=: 0 : 0
   UPDATE caseinstances
-  SET ci_sumry=0
+  SET ci_stored=0
   WHERE ci_id=?;
 )
-sqlsel_animini=: 0 : 0
+sqlsel_animinipath=: 0 : 0
   SELECT sd.sd_filen sd_filen 
   FROM  `cases` cases INNER JOIN `caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
@@ -1450,31 +1539,14 @@ sqlupd_deleteusers=: 0 : 0
 )
 
 coclass 'rgssqliteq'
-sqlsel_greeting=: 0 : 0
+sqlsel_usergreeting=: 0 : 0
   SELECT pp.pp_fname pp_fname,
          pp.pp_lname pp_lname
   FROM `users` ur INNER JOIN `people` pp ON ur.ur_ppid=pp.pp_id
   WHERE ur.ur_id=?;
 )
 
-sqlsel_mycoursesOLD=: 0 : 0
-  SELECT off_info.of_id of_id ,
-         off_info.cr_name cr_name ,
-         off_info.cr_code cr_code ,
-         off_info.of_year of_year ,
-         off_info.sm_code sm_code ,
-         off_info.dm_code dm_code ,
-         off_info.pp_adminfname pp_adminfname ,
-         off_info.pp_adminlname pp_adminlname ,
-         rl.rl_name rl_name 
-  FROM  `offering_info` off_info INNER JOIN `enrolments` en ON ( `off_info`.`of_id` = `en`.`en_ofid` ) 
-        INNER JOIN `roles` rl ON ( `en`.`en_rlid` = `rl`.`rl_id` ) 
-  WHERE (en.en_urid =?) AND (off_info.of_status >0)
-  GROUP BY of_id
-  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
-)
-
-sqlsel_mycourses=: 0 : 0
+sqlsel_usercourses=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
          off_info.cr_code cr_code ,
@@ -1522,7 +1594,7 @@ sqlsel_effrole=: 0 : 0
 )
 
 
-sqlsel_course=: 0 : 0
+sqlsel_coursedetails=: 0 : 0
   SELECT off_info.of_id of_id ,
         off_info.cr_name cr_name ,
         off_info.cr_code cr_code ,
@@ -1563,13 +1635,13 @@ sqlsel_coursesumrys=: 0 : 0
          ci.ci_usrdescr ci_usrdescr 
   FROM   main.`scendefs` sd INNER JOIN main.`cases` cases ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
          INNER JOIN main.`caseinstances` ci ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
-  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_sumry =1)
-  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc
+  WHERE  (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_stored =1)
+  ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc;
 )
 
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
-         ci.ci_sumry ci_sumry
+         ci.ci_stored ci_stored
   FROM  `caseinstances`  ci 
   WHERE (ci.ci_id =?);
 )
@@ -1580,12 +1652,12 @@ sqlupd_casestage=: 0 : 0
   WHERE (ci_id=?);
 )
 
-sqlsel_case=: 0 : 0
+sqlsel_casedetails=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
          sd.sd_descr sd_descr ,
          xn.xn_name xn_name ,
-         cx.cx_text cx_text 
+         cx.cx_text cx_text
 FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
       INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
       INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 
@@ -1633,9 +1705,9 @@ buildButtons=: 3 : 0
   DIV class 'buttonrow' bt
 )
 buildForm=: 3 : 0
-  ANIMINI_z_=: 'animini' getScenarioInfo y
-  TRTINFO_z_=: 'alltrtinfo' getScenarioInfo y
-  info=. 'paramform' getDBTable y  
+  ANIMINI_z_=: 'animini' getInfo y
+  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  info=. 'paramform' getInfo y  
   'hdr dat'=. split info
   (hdr)=. |:dat                   
   lgd=. P class 'legend' 'This is the legend for my form'
@@ -1753,6 +1825,30 @@ buildTag=:4 :0
   tgdefs=. ,each/"1 |: (<toupper tgn),attr
   ".each tgdefs ,each (' ',each quote each y)
 )
+
+buildSJForm=: 3 : 0
+  '' buildSJForm y
+:
+  select. x
+  case. 'sumrydef' do.
+    ciids=. y
+    fnme =. <"1&dtb"1 each 'summaryCSV'&getFnme each y  
+    fnme =. (<'csvhdr')&,each }.each fnme 
+    hdrs=. readStoredCaseInst every fnme  
+    trtflds=. getTrtsOnly each hdrs
+    trts=. ~.&getTrtBase each trtflds 
+    
+      
+    inftyps=. getTrtInfoTyps each trtflds 
+    alltrts=. ~.; trts 
+    
+    allinftyps=. ~.; inftyps 
+    
+    
+  case. do.
+  end.
+)
+
 
 Note  'Build Sumrydef Table'
  cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'
@@ -2088,7 +2184,7 @@ require 'files regex strings'
 coclass 'rgsini'
 
 Note 'get Ini string'
-inistr=. freads 'animini' getFnme 2  
+inistr=. freads 'animinipath' getFnme 2  
 inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y 
 )
 

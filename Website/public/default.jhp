@@ -11,7 +11,7 @@ try.
       page=.'~CGI/default_loginfail.asp'
     case. 'nouser' do.
       page=.'~CGI/default_nouser.html'
-    case. 'sessionexpire' do.
+    case. 'expiresession' do.
       page=.'~CGI/default_sessionexpire.html'
     case. do. NB. default action
       page=.'~CGI/default_welcome.html'

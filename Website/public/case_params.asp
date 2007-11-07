@@ -46,8 +46,8 @@
       <dd><a href="case.jhp?action=home">CaseHome</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed">Breed  population</a></dd> 
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cisumry{::'case.jhp?action=store">Store completed case';'#">Case is stored' %></a></dd> 
-      <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cisumry %>)">Reset case</a></dd>
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store">Store completed case';'#">Case is stored' %></a></dd> 
+      <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
       <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;
   </div> 

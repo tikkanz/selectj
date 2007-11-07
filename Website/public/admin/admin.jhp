@@ -12,7 +12,7 @@ try.
   fltactivechkd=: fltactive {:: '';'checked="checked"'
   fltguestchkd =: fltguest  {:: '';'checked="checked"'
 
-  setcolnames 'userlist' getDBTable (-.fltactive);-.fltguest NB. database call to get users
+  setcolnames 'userlist' getInfo (-.fltactive);-.fltguest NB. database call to get users
   select. ' ' taketo action
   case. 'Reset' do.  NB. reset selected recs
     if. urid-:,_99 do. urid=: ur_id end.
@@ -23,10 +23,10 @@ try.
     tmp=. deleteUsers urid
     erase 'ur_id'
   case. 'Index' do. NB. select & display user record
-    Item=: |:'userrec' getDBTable urid
+    Item=: |:'userrec' getInfo urid
   case.  do.
   end.
-  setcolnames 'userlist' getDBTable (-.fltactive);-.fltguest NB. database call to get users
+  setcolnames 'userlist' getInfo (-.fltactive);-.fltguest NB. database call to get users
   if. 0>4!:0 <'ur_id' do. ur_id=: '' end.
 catch. Error=: 13!:12'' 
 end.

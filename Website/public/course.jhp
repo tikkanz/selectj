@@ -11,9 +11,9 @@ try.
 	  	DeleteCookie 'CaseID'
         page=. '~CGI/course_home.asp'  NB. destination page
 		'uid ofid'=. uofid
-	    setcolnames 'greeting' getDBTable uid
-        setcolnames 'course' getDBTable ofid
-		setcolnames 'coursecases' getDBTable ofid
+	    setcolnames 'usergreeting' getInfo uid
+        setcolnames 'coursedetails' getInfo ofid
+		setcolnames 'coursecases' getInfo ofid
     	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	    transfer page
 	  end.

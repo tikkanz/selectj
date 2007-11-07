@@ -25,18 +25,18 @@ try.
 	case. 'download' do.
       page=. 'download.jhp'
 	  fpth=. jpath qparam 'filepath'
-	  fpth=. ('caseinstfolder' getFnme ciid),fpth
+	  fpth=. ('caseinstpath' getFnme ciid),fpth
 	  fnme=. qparam 'filename'
       qry=. ('filepath';fpth),:'filename';fnme
 	  qry redirect page
 	case. 'home';'storefin';'resetfin';'chgdparams';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
-	  'cistage cisumry'=: {:'casestage' getDBTable ciid
+	  'cistage cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'greeting' getDBTable uid
-	  setcolnames 'coursename' getDBTable ofid
-      setcolnames 'case' getDBTable csid;cistage
-	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
+	  setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      setcolnames 'casedetails' getInfo csid;cistage
+	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
       errormsg=: qparam 'err'
 	  transfer page
 	case. 'chgparams' do.
@@ -46,18 +46,18 @@ try.
 	case. 'params' do.
 	  page=. '~CGI/case_params.asp'
       cistage=: 11  NB. 11 is instruct txt
-      cisumry=: 1   NB. dummy value for menu
+      cistored=: 1   NB. dummy value for menu
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'greeting' getDBTable uid
-	  setcolnames 'coursename' getDBTable ofid
-      setcolnames 'case' getDBTable csid;cistage
-	  'currcycle ncycles'=: 'status' getScenarioInfo ciid
+	  setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      setcolnames 'casedetails' getInfo csid;cistage
+	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
 	  caseform=: buildForm ciid NB. dynamically create form with controls
 	  transfer page
 	case. 'reset' do.
       dostore=. 'true'-: qparam 'store'
-	  'cistage cisumry'=. {: 'casestage' getDBTable ciid
-	  if. dostore *. (99=cistage) *. -. cisumry do.
+	  'cistage cistored'=. 'casestage' getInfo ciid
+	  if. dostore *. (99=cistage) *. -. cistored do.
         storeCaseInstance ciid
 	  end.
 	  expireCaseInstance ciid
