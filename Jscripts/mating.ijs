@@ -35,7 +35,7 @@ makeMateAlloc=: 4 : 0
     end.
   end.
   if. *./*./ok do. NB. passed all checks
-    fpth=. 'matealloc' getFnme x
+    fpth=. 'mateallocpath' getFnme x
     dat=. xhrd allocateMatings hdrs,.fcs
     ok=. 0<(;dat) writecsv fpth
     msg=. ok{:: 'Error writing Mate Allocation file';1
@@ -106,7 +106,7 @@ NB. y is integer, stage of case instance.
 NB. x is ciid
 validMateAlloc=: 4 : 0
   if. y=21 do. NB. stage 21 (between cycles Manual selection)
-    okexist=. fexist fnme=. 'matealloc' getFnme x
+    okexist=. fexist fnme=. 'mateallocpath' getFnme x
     msg=. boxopen 'Mate Allocation list not found.<br/>Did you upload your selected parents?'
     if. *./ok=. okexist do. NB. continue checks
       ma=. readcsv fnme
@@ -118,7 +118,7 @@ validMateAlloc=: 4 : 0
       NB. Arguable as to whether additional checks should be made here or
       NB.  within AnimalSim. Do here for now.
       NB. check that animals in matealloc.csv all present in selection lists.
-      slsts=. <@readcsv"1 'selnlist' getFnme x
+      slsts=. <@readcsv"1 'selnlistpath' getFnme x
       lbls=. >{.each slsts NB. get labels
       slsts=. }.each slsts NB. drop labels
       idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
@@ -145,8 +145,7 @@ NB. returns -1, 0, 1 for initial cycle, inbetween, last cycle respectively
 NB. y is caseinstance id
 checkCycle=: 3 : 0
   'crcyc ncyc'=. 'caseprogress' getInfo y
-  fnme=. 'animsumry' getFnme y
-  issm=. fexist fnme
+  issm=. fexist 'animsumrypath' getFnme y
   res=. (issm *. crcyc = ncyc)-crcyc=0
 )
 

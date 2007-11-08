@@ -6,7 +6,7 @@ NB. y is caseinstance id
 updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS NB. required until SelectJ and AnimalSim parameter names match
   ANIMINI_z_=: 'animini' getInfo y
-  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  TRTINFO_z_=: 'trtinfoall' getInfo y
   NB. Names of ini keys that need to be updated by processing form info
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
@@ -20,16 +20,16 @@ updateSelnDetails=: 3 : 0
 
 NB.*TransNames n Tab-delimited mapping of old to new names.
 TransNames=: makeTable 0 : 0
-animsummaryfnme  animsumry
+animsummaryfnme  animsumrypath
 curryear         currcycle
 flkdams2sire     dams2hrdsire
 flksizes         hrdsizes
 flkspecfnme      hrdspecfnme
-mateallocfnme    matealloc
-pedigreefnme     pedigree
+mateallocfnme    mateallocpath
+pedigreefnme     pedigreepath
 sampleflkeffects samplehrdeffects
-selnlistfnme     selnlist
-traitinfofnme    trtinfo
+selnlistfnme     selnlistpath
+traitinfofnme    trtinfopath
 usesiresxflk     usesiresxhrd
 flocks           herds
 flock            herd

@@ -21,7 +21,7 @@ NB.*buildForm v builds xhtml form code for a case
 NB. y is ci_id of case
 buildForm=: 3 : 0
   ANIMINI_z_=: 'animini' getInfo y
-  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  TRTINFO_z_=: 'trtinfoall' getInfo y
   info=. 'paramform' getInfo y  NB. gets legend, fs_ids,cf_value
   'hdr dat'=. split info
   (hdr)=. |:dat                   NB. assign hdrnames
@@ -192,9 +192,9 @@ buildSJForm=: 3 : 0
   select. x
   case. 'sumrydef' do.
     ciids=. y
-    fnme =. <"1&dtb"1 each 'summaryCSV'&getFnme each y  
-    fnme =. (<'csvhdr')&,each }.each fnme NB. replace 1st item of each fnme with 'csvhdr'
-    hdrs=. readStoredCaseInst every fnme  NB.! fix this up to use getInfo
+NB.     fnme =. <"1&dtb"1 each 'animsumry'&getFnme each y  
+NB.     fnme =. (<'csvhdr')&,each }.each fnme NB. replace 1st item of each fnme with 'csvhdr'
+    hdrs=. 'animsumryhdr'&getInfo every ciids
     trtflds=. getTrtsOnly each hdrs
     trts=. ~.&getTrtBase each trtflds NB. get trait abbrevs
     NB. get trait names for each ciid
