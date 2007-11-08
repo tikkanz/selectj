@@ -465,79 +465,6 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
-
-pathdelim=: 4 : '}.;([:x&,,)each y'  
-getFnme=: 4 : 0
-  basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
-  
-  select. x
-    case. 'animinipath' do.
-      fdir=. 'caseinstpath' getFnme y
-      fnme=. 'animinipath' getInfo y
-      fnme=. fdir,fnme
-    case. 'caseinstpath' do.
-      
-      pathinfo=. 'caseinstpath' getInfo y
-      'hdr dat'=. split pathinfo
-      (hdr)=. |:dat
-      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
-      fnme=. '/' pathdelim ur_uname;of_code;sd_code;ci_id
-      fnme=. basefldr,'userpop/',fnme,'/'
-    case. 'scendefpath' do.
-      
-      cde=. 'scendefpath' getInfo y
-      fnme=. basefldr,'scendefs/',cde,'.zip'
-    case. keys=. ;:'selnlist pedigree matealloc animsumry' do.
-      fdir=. 'caseinstpath' getFnme y
-      inipath=. 'animinipath' getFnme y
-      fkey=. 1 transName x
-      fnme=. getIniString fkey;'FileNames';inipath
-      if. *#fnme do. 
-        fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv output/animsummary.csv'
-      end.
-      fnme=.fdir&, @> boxopen fnme
-    case. 'summaryCSV' do.
-      
-      
-      
-      fnme=. 'output/animsummary.csv'
-      zipnme=. jpath 'sumryzip' getFnme y
-      fnme=. >fnme;zipnme
-      return. 
-    case. 'summaryINI' do.
-      
-      fnme=. 'animinipath' getInfo y
-      zipnme=. 'sumryzip' getFnme y
-      fnme=. >fnme;zipnme
-    case. 'sumryfiles' do. 
-      fnme=. >('animinipath';'animsumry') getFnme each y
-    case. 'sumryzip' do.
-      
-      fdir=. 'sumryfolder' getFnme y
-      fnme=. ":y
-      fnme=. fdir,fnme,'.zip'
-    case. 'sumryfolder' do.
-      
-      pathinfo=. 'caseinstpath' getInfo y
-      'hdr dat'=. split pathinfo
-      (hdr)=. |:dat
-      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
-      fnme=. '/' pathdelim ur_uname;of_code;'summaries'
-      fnme=. basefldr,'userpop/',fnme,'/'
-    case. 'trtinfo' do.
-      fdir=. 'caseinstpath' getFnme y
-      inipath=. 'animinipath' getFnme y
-      fkey=. 1 transName x
-      fnme=. getIniString fkey;'QuantTrts';inipath
-      if. *#fnme do. fnme=. 'TrtInfo.xls' end.
-      fnme=. fdir,fnme
-    case. 'userfolder' do. 
-      uns=.'username' getInfo y
-      fnme=. (basefldr,'userpop/'),"1 uns
-    case. do.
-  end.
-  fnme=. jpath"1 fnme
-)
 createCaseInstance=: 3 : 0
   ciid=. 'newcaseinstance' insertInfo y
   uz=. createCaseInstFolder ciid
@@ -566,7 +493,7 @@ updateCaseStage=: 3 : 0
 )
 storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y 
-  zipnm=. 'sumryzip' getFnme y  
+  zipnm=. 'sumryzippath' getFnme y  
   dirinf=. 'caseinstpath' getFnme y
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. 
@@ -575,7 +502,7 @@ storeCaseInstance=: 3 :0
 )
 deleteStoredCaseInst=: 3 :0
   if. *#y do.
-    zipnm=. 'sumryzip' getFnme y
+    zipnm=. 'sumryzippath' getFnme y
     ferase zipnm
     if. -. fexist zipnm do.
       'delstoredcaseinst' updateInfo y  
@@ -593,14 +520,14 @@ deleteCaseInstFolder=: 3 : 0
   if. 1=*./res do. 1 else. 0 end.
 )
 deleteUserFolders=: 3 : 0
-  delpath=. ,each 'userfolder'&getFnme each y
+  delpath=. ,each 'userfolderpath'&getFnme each y
   res=.deltree every delpath
   if. 1=*./res do. 1 else. 0 end.
 )
 updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS 
   ANIMINI_z_=: 'animini' getInfo y
-  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  TRTINFO_z_=: 'trtinfoall' getInfo y
   
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
@@ -612,16 +539,16 @@ updateSelnDetails=: 3 : 0
   'animini' updateScenarioInfo y 
 )
 TransNames=: makeTable 0 : 0
-animsummaryfnme  animsumry
+animsummaryfnme  animsumrypath
 curryear         currcycle
 flkdams2sire     dams2hrdsire
 flksizes         hrdsizes
 flkspecfnme      hrdspecfnme
-mateallocfnme    matealloc
-pedigreefnme     pedigree
+mateallocfnme    mateallocpath
+pedigreefnme     pedigreepath
 sampleflkeffects samplehrdeffects
-selnlistfnme     selnlist
-traitinfofnme    trtinfo
+selnlistfnme     selnlistpath
+traitinfofnme    trtinfopath
 usesiresxflk     usesiresxhrd
 flocks           herds
 flock            herd
@@ -851,7 +778,7 @@ makeMateAlloc=: 4 : 0
     end.
   end.
   if. *./*./ok do. 
-    fpth=. 'matealloc' getFnme x
+    fpth=. 'mateallocpath' getFnme x
     dat=. xhrd allocateMatings hdrs,.fcs
     ok=. 0<(;dat) writecsv fpth
     msg=. ok{:: 'Error writing Mate Allocation file';1
@@ -901,7 +828,7 @@ breedPopln=: 3 : 0
 )
 validMateAlloc=: 4 : 0
   if. y=21 do. 
-    okexist=. fexist fnme=. 'matealloc' getFnme x
+    okexist=. fexist fnme=. 'mateallocpath' getFnme x
     msg=. boxopen 'Mate Allocation list not found.<br/>Did you upload your selected parents?'
     if. *./ok=. okexist do. 
       ma=. readcsv fnme
@@ -913,7 +840,7 @@ validMateAlloc=: 4 : 0
       
       
       
-      slsts=. <@readcsv"1 'selnlist' getFnme x
+      slsts=. <@readcsv"1 'selnlistpath' getFnme x
       lbls=. >{.each slsts 
       slsts=. }.each slsts 
       idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
@@ -936,8 +863,7 @@ validMateAlloc=: 4 : 0
 )
 checkCycle=: 3 : 0
   'crcyc ncyc'=. 'caseprogress' getInfo y
-  fnme=. 'animsumry' getFnme y
-  issm=. fexist fnme
+  issm=. fexist 'animsumrypath' getFnme y
   res=. (issm *. crcyc = ncyc)-crcyc=0
 )
 runAnimalSim=: 3 : 0
@@ -970,13 +896,13 @@ datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
 )
 sumSummaryCSV=: 4 :0
   'keylbls datlbls'=. x
-  'hdr invtble'=. 'summaryCSV' getInfo y
+  'hdr invtble'=. 'animsumry' getInfo y
   keyidx=. hdr idxfnd keylbls 
   key=. listatom keyidx{invtble  
   datidx=. hdr i. datlbls
   dat=. 0".each datidx{(<@((,.'0') #~ ttally),~]) invtble 
   sum=. key tkeytble (<tfreq key),key tkeyavg dat 
-  ini=. >'summaryINI' getInfo y
+  ini=. 'animini' getInfo y
   yr0=. ini getIniString 'yearzero' 
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
   if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
@@ -1243,9 +1169,8 @@ DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
-FLQRY=: ;:'animini alltrtinfo caseprogress'
-FLQRY=: FLQRY, ;:'animsumry animsumryhdr animsumrycnt'
-FLQRY=: FLQRY, ;:'summaryINI summaryCSV'
+FLQRY=: ;:'animini trtinfoall caseprogress'
+FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 getInfo=: 4 : 0
   
   
@@ -1257,10 +1182,10 @@ getInfo=: 4 : 0
     select. <sts
       case. <0;0  do. 
         '' 
-      case. (0;1);<(1;1) do.  
-        x getScenarioInfo y  
-      case. <1;0 do.  
-        x readStoredCaseInst y  
+      case. <(0;1) do.  
+        x getCIInfoCurr y  
+      case. (1;0);<(1;1) do.  
+        x getCIInfoStored y
     end.
   end.
 )
@@ -1290,44 +1215,57 @@ getInfoDB=: 4 : 0
   end.
   res
 )
-
-readStoredCaseInst=: 4 : 0
-  fnme=. <"1&dtb"1 x getFnme y 
+getCIInfoStored=: 4 : 0
+  fnme=. <"1&dtb"1 (x,'pathSTORED') getFnme y 
   kfnme=. 'ijf',~_3}. 1{:: fnme
-  ftyp=. _3{. 0{:: fnme
-  ns=. (<'csvhdr');(;:'csvhdr csvcnt');<<'ini'
-  ns=. ((;:'hdr csv ini') i. <ftyp){:: ns 
+  ns=. (x-:'animsumry'){:: (<x);< 'animsumryhdr';'animsumrycnt'
   if. -.fexist kfnme do. keycreate kfnme end.
-  if. _4-: res=. keyread kfnme;<ns do.
-  
-    select. ftyp
-      case. 'hdr';'csv' do.
-        res=. split fixcsv toJ zread fnme
-        res=. (ifa each 1{res) 1}res
-      case. 'ini' do.
-        res=. <(toJ zread fnme) getIniAllSections ''
+  if. _4-: res=. keyread kfnme;<ns do.  
+    select. x
+      case. 'ansumrycsv' do.
+        res=. zread fnme return. 
+      case. 'animsumry';'animsumryhdr';'animsumrycnt' do.
+        dat=. split fixcsv toJ zread fnme
+        dat=. (ifa each 1{dat) 1}dat
+        res=. ((tmp=.'animsumryhdr';'animsumrycnt')i. ns){dat
+        ns=. tmp
+      case. 'animini' do.
+        res=. dat=. <(toJ zread fnme) getIniAllSections ''
+      case. 'caseprogress' do.
+        ini=. 'animini' getCIInfoStored y
+        dat=. ini getIniValue 1&transName 'curryear'
+        res=. dat=. <dat; ini getIniValue 'ncycles'
+      case. 'trtinfoall' do.
+        tmp=.  (getpath_j_ 1{::fnme),'tmp.xls' 
+        tmp fwrite~ zread fnme 
+        res=. dat=. <'tDefn' readexcel tmp
+        ferase tmp 
     end.
-    s=. res keywrite kfnme;<ns
-    if. ftyp-:'hdr' do. res=. 0{res end.
+    s=. dat keywrite kfnme;<ns
   end.
-  res
+  >^:(#=1:) res 
 )
-getScenarioInfo=: 4 : 0
-  infotyp=. boxopen x
-  select. infotyp
-    case. <'animini' do.
-      fnme=. 'animinipath' getFnme y
+getCIInfoCurr=: 4 : 0
+  fnme=. (x,'path') getFnme y
+  select. x
+    case. 'animini' do.
       res=. getIniAllSections fnme
-    case. <'alltrtinfo' do.  
-      xlfnme=. 'trtinfo' getFnme y
-      'tDefn' readexcel xlfnme
-    case. <'caseprogress' do. 
-      fnme=. 'animinipath' getFnme y
+    case. 'caseprogress' do. 
       ini=. getIniAllSections fnme
       crcyc=. ini getIniValue 1&transName 'curryear'
       ncyc=.  ini getIniValue 'ncycles'
-      crcyc;ncyc
+      res=. crcyc;ncyc
+    case. 'trtinfoall' do.  
+      res=. 'tDefn' readexcel fnme
+    case. 'ansumrycsv' do.
+      res=. freads fnme
+    case. nms=. 'animsumry';'animsumryhdr';'animsumrycnt' do.
+      dat=. split fixcsv freads fnme
+      dat=. (ifa each 1{dat) 1}dat
+      idx=. (nms i. boxopen x){:: 0 1;0;1
+      res=. >^:(#=1:) idx{dat
   end.
+  res
 )
 
 updateScenarioInfo=: 3 : 0
@@ -1339,6 +1277,104 @@ updateScenarioInfo=: 3 : 0
       fnme=. <'animinipath' getFnme y
       res=. writePPString"1 fnme,. 2}."1 ANIMINI
   end.
+)
+
+pathdelim=: 4 : '}.;([:x&,,)each y'  
+getFnme=: 4 : 0
+  basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
+  
+  select. x
+    case. 'animinipath';'caseprogresspath' do.
+      fdir=. 'caseinstpath' getFnme y
+      fnme=. 'animinipath' getInfo y
+      fnme=. fdir,fnme
+    case. 'animinipathSTORED';'caseprogresspathSTORED' do.
+      
+      fnme=. 'animinipath' getInfo y
+      zipnme=. 'sumryzippath' getFnme y
+      fnme=. >fnme;zipnme
+    case. 'ansumrycsvpath'; 'animsumry'&,each ('';'hdr';'cnt') ,each <'path' do.
+      fkey=. 1 transName 'animsumrypath'
+      fdir=. 'caseinstpath' getFnme y
+      ini=. 'animini' getInfo y
+      fnme=. ini getIniString fkey;'FileNames'
+      if. 0=*#fnme do. fnme=. 'output/animsummary.csv' end.
+      fnme=. extcsv fnme
+      fnme=.fdir,fnme
+    case. 'ansumrycsvpathSTORED';'animsumry'&,each ('';'hdr';'cnt') , each <'pathSTORED' do. 
+      
+      fkey=. 1 transName 'animsumrypath'
+      ini=. 'animini' getInfo y
+      fnme=. ini getIniString fkey;'FileNames'
+      if. 0=*#fnme do. fnme=. 'output/animsummary.csv' end.
+      fnme=. extcsv '\/' charsub fnme 
+      zipnme=. jpath 'sumryzippath' getFnme y
+      fnme=. >fnme;zipnme
+      return. 
+    case. 'caseinstpath' do.
+      
+      pathinfo=. 'caseinstpath' getInfo y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
+      fnme=. '/' pathdelim ur_uname;of_code;sd_code;ci_id
+      fnme=. basefldr,'userpop/',fnme,'/'
+    case. 'scendefpath' do.
+      
+      cde=. 'scendefpath' getInfo y
+      fnme=. basefldr,'scendefs/',cde,'.zip'
+    case. keys=. ;:'selnlistpath pedigreepath mateallocpath' do.
+      fkey=. 1 transName x
+      fdir=. 'caseinstpath' getFnme y
+      ini=. 'animini' getInfo y
+      fnme=. ini getIniString fkey;'FileNames'
+      if. 0=*#fnme do. 
+        fnme=. (keys i.<x){:: ('output/selectlstfem.csv';'output/selectlstmale.csv'); cut'output/pedigree.csv matealloc.csv'
+      elseif. x-:'selnlistpath' do.
+        fnme=. fnme&,each ;:'fem male'
+      end.
+      fnme=. extcsv each boxopen fnme
+      fnme=.fdir&, @> fnme
+    case. 'sumryfiles' do. 
+      fnme=. >(;:'animinipath animsumrypath trtinfopath') getFnme each y
+    case. 'sumryzippath' do.
+      
+      fdir=. 'sumryfolderpath' getFnme y
+      fnme=. ":y
+      fnme=. fdir,fnme,'.zip'
+    case. 'sumryfolderpath' do.
+      
+      pathinfo=. 'caseinstpath' getInfo y
+      'hdr dat'=. split pathinfo
+      (hdr)=. |:dat
+      of_code=. '_' pathdelim cr_code;of_year;sm_code;dm_code
+      fnme=. '/' pathdelim ur_uname;of_code;'summaries'
+      fnme=. basefldr,'userpop/',fnme,'/'
+    case. 'trtinfopath';'trtinfoallpath' do.
+      fkey=. 1 transName 'trtinfopath'
+      fdir=. 'caseinstpath' getFnme y
+      ini=. 'animini' getInfo y
+      fnme=. ini getIniString fkey;'QuantTrts'
+      if. *#fnme do. fnme=. 'TrtInfo.xls' end.
+      fnme=. (, #&'.xls'@(0: = '.'"_ e. (# | i:&PATHSEP_j_) }. ])) fnme
+      fnme=. fdir,fnme
+    case. 'trtinfo'&,each ('';'all') , each <'pathSTORED' do.
+      fkey=. 1 transName 'trtinfopath'
+      ini=. 'animini' getInfo y
+      fnme=. ini getIniString fkey;'FileNames'
+      if. 0=*#fnme do. fnme=. 'TrtInfo.xls' end.
+      fnme=. (, #&'.xls'@(0: = '.'"_ e. (# | i:&PATHSEP_j_) }. ])) fnme
+      fnme=. '\/' charsub fnme 
+      zipnme=. jpath 'sumryzippath' getFnme y
+      fnme=. >fnme;zipnme
+      return. 
+    case. 'userfolderpath' do. 
+      uns=.'username' getInfo y
+      fnme=. (basefldr,'userpop/'),"1 uns
+    case. do.
+      '' return.
+  end.
+  fnme=. jpath"1 fnme
 )
 
 coclass 'rgssqliteq'
@@ -1706,7 +1742,7 @@ buildButtons=: 3 : 0
 )
 buildForm=: 3 : 0
   ANIMINI_z_=: 'animini' getInfo y
-  TRTINFO_z_=: 'alltrtinfo' getInfo y
+  TRTINFO_z_=: 'trtinfoall' getInfo y
   info=. 'paramform' getInfo y  
   'hdr dat'=. split info
   (hdr)=. |:dat                   
@@ -1832,9 +1868,7 @@ buildSJForm=: 3 : 0
   select. x
   case. 'sumrydef' do.
     ciids=. y
-    fnme =. <"1&dtb"1 each 'summaryCSV'&getFnme each y  
-    fnme =. (<'csvhdr')&,each }.each fnme 
-    hdrs=. readStoredCaseInst every fnme  
+    hdrs=. 'animsumryhdr'&getInfo every ciids
     trtflds=. getTrtsOnly each hdrs
     trts=. ~.&getTrtBase each trtflds 
     
@@ -2185,7 +2219,7 @@ coclass 'rgsini'
 
 Note 'get Ini string'
 inistr=. freads 'animinipath' getFnme 2  
-inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y 
+inistr=. toJ zread <"1&dtb"1 'animinipathSTORED' getFnme y 
 )
 
 boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'

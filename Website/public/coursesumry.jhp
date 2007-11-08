@@ -27,7 +27,7 @@ try.
 	  transfer page
 	case. 'download' do.
       page=. 'download.jhp'
-	  'fpth zipnme' =. <"1&dtb"1 'summaryCSV' getFnme qparam 'ciid'
+	  'fpth zipnme' =. <"1&dtb"1 'animsumrypathSTORED' getFnme qparam 'ciid'
       fnme=. 'Summary.csv'
       qry=. ('zipname';zipnme),('filepath';fpth),:'filename';fnme
 	  qry redirect page
