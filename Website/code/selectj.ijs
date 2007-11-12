@@ -1144,7 +1144,7 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath casedetails caseinststatus casestage paramform scendefpath'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
 UPDci=: ;:'casestage delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1161,7 +1161,7 @@ INSss=: ;:'newsession'
 DBQRY=: QRYci,QRYof,QRYur,QRYss,QRYcomb,QRYother
 DBUPD=: UPDci,UPDur,UPDof,UPDss
 DBINS=: INSci,INSur,INSof,INSss
-  DBtable   =:          ;:'casedetails paramform'
+  DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo'
@@ -1504,6 +1504,16 @@ sqlsel_scendefpath=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlsel_caseinstname=: 0 : 0
+  SELECT ci.ci_usrname ci_usrname ,
+         sd.sd_name sd_name ,
+         ci.ci_usrdescr ci_usrdescr ,
+         sd.sd_code sd_code 
+  FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
+)
+
 sqlsel_caseinst2expire=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM   main.`users` ur INNER JOIN main.`caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 
@@ -1755,7 +1765,7 @@ buildForm=: 3 : 0
 )
 buildFieldset=: 3 : 0
   1 buildFieldset y
-:
+  :
   info=. 'fieldset' getDBTable y 
   'hdr dat'=. split info
   (hdr)=. |:dat                   
@@ -1779,19 +1789,19 @@ buildParamDiv=: 3 : 0
   ctrlprops=. boxopen pr_cprops
   ctrlprops=. (#vals)#ctrlprops
   idx=. makeidx (<:^:(=1:)) #vals 
-  if. 'select'-: pr_ctype do. idx=.a: end. 
+  if. 'select'-: pr_ctype do. idx=. a: end. 
   if. pr_class-:'controlset' do.
     lbl=. LABEL class 'controlset' pr_name
-    ctrls=.seld buildControlset  ctrlprops;vals;nms;<idx
-    ctrls=.boxopen DIV ctrls
+    ctrls=. seld buildControlset  ctrlprops;vals;nms;<idx
+    ctrls=. boxopen DIV ctrls
     nte=. buildNote pr_note
     pdv=. DIV class 'controlset' LF join lbl;ctrls,<nte
   else.
     lbl=. 'pr_code' buildLabel pr_name;{.idx
     select. pr_ctype  
       case. 'select' do.
-        if. -.a:-:nms do. vals=.boxitemidx vals;<nms end.
-        ctrls=.boxopen seld buildSelect (0{::ctrlprops);<vals
+        if. -.a:-:nms do. vals=. boxitemidx vals;<nms end.
+        ctrls=. boxopen seld buildSelect (0{::ctrlprops);<vals
       case. 'textarea' do.
         ctrls=. buildTextarea ctrlprops;<vals
       case. 'input' do.
@@ -1804,25 +1814,25 @@ buildParamDiv=: 3 : 0
 )
 buildControlset=: 3 : 0
   '' buildControlset y
-:
+  :
   'cprops vals nms idx'=. 4{. y
   ctrls=. x&buildInput each boxitemidx cprops;vals;<idx
   lbls=. 'pr_code'&buildLabel each boxitemidx nms;<idx
   LF join ,ctrls,.lbls,.<BR ''
 )
 buildInput=: 3 : 0
- '' buildInput y
-:
+  '' buildInput y
+  :
   'Ctrlprops Val Idx'=. 3{. y
   Val=. ,8!:2 Val
   x=. 8!:0 x
-  Pcode=.'pr_code'
+  Pcode=. 'pr_code'
   Chk=. 'checked="checked"'
   ". '((x e.~ <Val)#Chk) INPUT id (Pcode,":Idx) value Val name Pcode disabled Pcode ',Ctrlprops,' '''''
 )
 buildLabel=: 3 : 0
   '' buildLabel y
-:
+  :
   'nme idx'=. 2{. boxopen y
   Pcode=. x 
   LABEL for (Pcode,":idx) nme
@@ -1834,17 +1844,19 @@ buildNote=: 3 : 0
 )
 buildOption=: 3 : 0
   '' buildOption y
-:
+  :
   'Val Descr'=. 2$y
   sel=. 'selected="selected"'
   ((x e.~ <Val)#sel) OPTION value Val ":Descr
 )
 buildSelect=: 3 : 0
   '' buildSelect y
-:
+  :
   'Ctrlprops opts'=. 2{. y
   opts=. ,each (<"0^:(L.=1:)) opts 
-  Pcode=.'pr_code'
+  
+  
+  Pcode=. 'pr_code'
   opts=. x&buildOption each opts
   opts=. LF join opts
   ". 'SELECT id Pcode name Pcode disabled Pcode ',Ctrlprops,' opts'
@@ -1855,68 +1867,151 @@ makeTable=: 3 : 0
 
 enclose=: [ , ,~
 
-buildTag=:4 :0
+buildTag=: 4 :0
   'tgn attn attv'=. x
   attr=. ((' 'enclose each boxopen attn),each quote each boxopen attv)
   tgdefs=. ,each/"1 |: (<toupper tgn),attr
   ".each tgdefs ,each (' ',each quote each y)
 )
+altclass=: 13 : '(<''class'') ,. x ,&.> (8!:0) >:2&| i.y'
 
 buildSJForm=: 3 : 0
   '' buildSJForm y
-:
+  :
   select. x
-  case. 'sumrydef' do.
-    ciids=. y
-    hdrs=. 'animsumryhdr'&getInfo every ciids
-    trtflds=. getTrtsOnly each hdrs
-    trts=. ~.&getTrtBase each trtflds 
+    case. 'sumrydef' do.
+      ciids=. y
+      hdrs=. 'animsumryhdr'&getInfo each ciids
+      trtflds=. getTrtsOnly each hdrs
+      trts=. ~.&getTrtBase each trtflds 
+      dict=. 0 _1&{"1&('trtinfoall'&getInfo) each ciids
+      trts=. trts ,. each (trts) keyval each each <"0 dict
+      unqtrts=. ~.; trts
+      inftyps=. getTrtInfoTyps each trtflds 
+      dict=. <(;:'phen genD genDe'),.(cut 'Phenotypes Genotypes Est.&nbsp;Genotypes')
+      inftyps=. inftyps ,. each (inftyps) keyval each each <"0 dict
+      unqinftyps=. ~.; inftyps 
+      trtmsk=. |:unqtrts&e. every trts
+      trtmsk=. trtmsk{ '-';'*'
+      
+      inftypmsk=. |:unqinftyps&e. every inftyps
+      inftypmsk=. inftypmsk{ '-';'*'
+      
+      csinsts=. 'caseinstname' getInfo  boxopenatoms ciids
+      lenunme=. 0=# every {."1 }. csinsts
+      csnmes=. (<"1 (i.<:#csinsts),.lenunme){}.csinsts
+    
     
       
-    inftyps=. getTrtInfoTyps each trtflds 
-    alltrts=. ~.; trts 
+      mkchks=.  elm"1~ (elm 'input') atr"2 1~ ]
+      mktblh2=. (;:'class tblheading2') atr"1 'td' elm~"1 ]
+      mktblbodyhdg=. ('th' (txt elm)~ [) , 'td' elm"0 1~ ' ' #~ [: >:@# ]
+      S=. LF elm ''
+      nhcols=. 2
+      trtids=. ('traits'&,each 8!:0 i. #unqtrts)
+      inftypids=. ('inftyps'&,each 8!:0 i. #unqinftyps)
+      caseids=. ('ciid'&,each 8!:0 i. #ciids)
+      
     
-    allinftyps=. ~.; inftyps 
+      cinms=. 'th' elm~"1 ((<'for'),.caseids) atr"1 'label' (txt elm)~"1 >csnmes
+      cichks=. ((<'id'),.caseids ),"1 _ ('value';'1'),('type';'checkbox'),:('name';'ciids')
+      cichks=. 'th' mkchks cichks
+      hdr=. S,"2 ((('colspan';":nhcols) atr elm 'th'),"2 cinms,:cichks),"2 S
+      hdr=. 'thead' elm~ 'tr' elm~"1 2 hdr
+      
     
+      trtcnts=. ('class';'tbltick') atr"1 (>,each trtmsk) elm"1 'td'
+      trtchks=. ('value';'1'),('type';'checkbox'),:('name';'traits')
+      trtchks=. ((<'id'),.trtids),"1 _ trtchks
+      trtchks=. 'td' mkchks trtchks
+      
+      trtabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqtrts),.{."1 unqtrts
+      trtlbls=. ((<'for'),.trtids) atr"1 'label' elm"1 2~ trtabrs
+      trtlbls=. mktblh2 trtlbls
+      
+      trthdg=. 'Traits' mktblbodyhdg ciids
+      
+      trtbdy=. S,"2 (trthdg,trtlbls,.trtchks,.trtcnts) ,"2 S
+      trtbdy=. ('r' altclass >:#unqtrts) atr"1 'tr' (txt elm)~"1 2 trtbdy
+      trtbdy=. ('id';'trts')atr 'tbody' elm~ trtbdy
+      
     
-  case. do.
+      inftypcnts=. ('class';'tbltick') atr"1 (>,each inftypmsk) elm"1 'td'
+      inftypchks=. ('value';'1'),('type';'checkbox'),:('name';'inftyps')
+      inftypchks=. ((<'id'),.'traits'&,each 8!:0 i.#unqinftyps),"1 _ inftypchks
+      inftypchks=. 'td' mkchks inftypchks
+      
+      inftypabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqinftyps),.{."1 unqinftyps
+      inftyplbls=. ((<'for'),.inftypids) atr"1 'label' elm"1 2~ inftypabrs
+      inftyplbls=. mktblh2 inftyplbls
+      
+      inftyphdg=. 'InfoTypes' mktblbodyhdg ciids
+      
+      inftypbdy=. S,"2 (inftyphdg,inftyplbls,.inftypchks,.inftypcnts) ,"2 S
+      inftypbdy=. ('r' altclass >:#unqinftyps) atr"1 'tr' (txt elm)~"1 2 inftypbdy
+      inftypbdy=. ('id';'inftyps')atr 'tbody' elm~ inftypbdy
+      
+    
+      tls=. 'Plot Summary';'Tabluate Summary'
+      tls=.  ((<'value'),.tls),"1 _('type';'submit'),:('name';'action')
+      tls=. ('colspan';":nhcols+#ciids) atr 'td' elm~ tls (atr elm)"2 'input'
+      ftr=. 'tfoot' elm~ ('class';'tbltools') atr 'tr' elm~ tls
+      
+    
+      tbl=. ('cellspacing';'0') atr 'table' elm~ hdr,trtbdy,inftypbdy,:ftr
+      frm=. (<;._1' id action method name'),.<;._1' defsumry coursesumry.jhp post defsumry'
+      frm=. tag frm atr 'form' elm~ tbl
+      
+    case. do.
   end.
 )
 
-
 Note  'Build Sumrydef Table'
- cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'
- cols4row=. (TD class 'tbltick') every '1st';'&nbsp;';'hello'
- row=. TR class 'r1' vfm cols4row
- INPUT type 'checkbox' name 'traits' id 'traits0' ''
- LF join TR each ,each/"1 |: TD classA ('r1';'r2';'r3') |: 8!:0 i.  4 3
- LF join TR each ,each/"1    TD classA  'r1' 8!:0 i.  4 3
+cols4row=. (TD class 'tbltick')"1  '1st','&nbsp;',:'hello'
+cols4row=. (TD class 'tbltick') every '1st';'&nbsp;';'hello'
+row=. TR class 'r1' vfm cols4row
+INPUT type 'checkbox' name 'traits' id 'traits0' ''
+LF join TR each ,each/"1 |: TD classA ('r1';'r2';'r3') |: 8!:0 i.  4 3
+LF join TR each ,each/"1    TD classA  'r1' 8!:0 i.  4 3
 TABLE id 'sumrydef' TBODY id 'infotyps' LF join TR each ,each/"1 |: TD class2 ('r1';'r2';'r3') |: 8!:0 i.  4 3
 (TD classA ('trait'&,each 8!:0 >:i.4) 8!:0 i.  4 1),.TD classA ('tbletick') 8!:0 i.  4 3
 unbox1=: >^:(<:&L.) 
 unbox1 TD ismap noresize checked 8!:0 i. 3 4
 TABLE id 'sumrydef' TBODY id 'trts' LF join TR classA ('r1';'r2';'r1') ,each/"1(TD each tst),. TD classA ('s1';'s2';'s3') 8!:0 i.3 2
- ((;:'n1 n2 n3') <@,"0 ;:'s1 s2 s3') cell each 8!:0 i.3 2
- ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag '3'
- ('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag 8!:0 i.3 2
- ('TD' ;('name';'id';'class');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) cell1 8!:0 i.3 2
- ('TD' ;('name';'id';'disabled');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) buildTag 8!:0 i.3 2
+((;:'n1 n2 n3') <@,"0 ;:'s1 s2 s3') cell each 8!:0 i.3 2
+('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag '3'
+('TD' ;('name';'id';'class');< ('n1';'id1';'s3')) buildTag 8!:0 i.3 2
+('TD' ;('name';'id';'class');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) cell1 8!:0 i.3 2
+('TD' ;('name';'id';'disabled');< ((;:'n1 n2 n3') , (;:'id1 id2 id3') ,: ;:'s1 s2 s3')) buildTag 8!:0 i.3 2
 
 )
-makeidx=:[: 8!:0 i.
 
-boxitemidx=:<"1@:|:@:>
+
+Note 'using `tag` verb'
+]smrytbl=. ('class';'r1') atr 'tr' elm~('class';'tbltick') atr"1 (>8!:0 i.4) txt"1 elm"1 'td'
+tag smrytbl
+]smrytbl=. ('class';'r1') atr"1 'tr'elm~"1 2 ('class';'tbltick') atr"1 (>8!:0 i.3 4) txt"1 elm"1 'td'
+,(tag"1 smrytbl),.LF
+]smrytbl=. (('class';'r1'),('class';'r2'),:('class';'r1')) atr"1 'tr'elm~"1 2 ('class';'tbltick') atr"1 (>8!:0 i.3 4) txt"1 elm"1 'td'
+,(tag"1 smrytbl),.LF
+]icls=.   ((<'id'),.'traits'&,each 8!:0 i.4),"1 _ (('value';'1'),('type';'checkbox'),:('name';'traits'))
+tag"1 icls atr"2 1 elm 'input'
+((icls atr"2 1 elm 'input') elm"1 'td'),. ('class';'tbltick') atr"1 (>8!:0 i.4 3 ) elm"1 'td'
+)
+makeidx=: [: 8!:0 i.
+
+boxitemidx=: <"1@:|:@:>
 Note 'tests'
 tst=: ('Dollar';'$')
-rarg=:('Dollar';'$');(<'Kroner';'DKK')
-larg=:''
+rarg=: ('Dollar';'$');(<'Kroner';'DKK')
+larg=: ''
 selectoptions rarg
 larg selectoptions rarg
 rarg=: ('VISA';'MasterCard')
 larg=: 'MasterCard'
 larg selectoptions rarg
 rarg=: dict 'Basic="$20"';'Plus="$40"'
-larg=:'$40'
+larg=: '$40'
 larg selectoptions rarg
 rarg=:  'VISA';'MasterCard';'Discover'
 larg=:  'VISA';'Discover'
@@ -1926,6 +2021,7 @@ larg=:  'NLB';'FD'
 larg buildSelect rarg
 )
 
+buildSJForm_z_=: buildSJForm_rgswebforms_
 buildForm_z_=:  buildForm_rgswebforms_
 makeTable_z_=:  makeTable_rgswebforms_
 buildTable_z_=: buildTable_rgswebforms_
@@ -2052,6 +2148,95 @@ ftitle=: verb def '(''H'',{.y)tag }.}:y'
 fraw=: ]
 flist=: UL@(LI all lines)
 
+coclass 'rgswebforms'
+tag=: 3 : 0
+  if. 0=L.y do. htsafe ":y return. end.
+  'e a c'=. y
+  if. 0=#e do. htsafe ":c return. end.
+  e assert (<e) e. tagsC,tagsNC
+  A=. C=. ''
+  for_i. ,:^:((0<#) *. 1=#@$) a do.
+    'n v'=. i
+    n assert (<n) e. a:,attrV,attrNV
+    if. (<n) e. attrNV do. v=. n end.
+    A=. A,<' ',n,'="',(htsafe ":v),'"'
+  end.
+  for_i. ,:^:((0<#) *. 1=#@$) c do.
+    C=. C,<tag i
+  end.
+  r=. '<',e,;A
+  if. (0<#C) +. -.(<e) e. tagsNC do. 
+    r,'>',(;C),'</',e,'>'
+  else. r,' />' end.
+)
+
+buildTag=: 3 : 0
+  try.
+    tag y
+  catch.
+    13!:12''
+  end.
+)
+rp=.  2 : '; }. ,(<m) ,. ,.<;._1 n , y'
+htsafe=: [:'&gt;'rp'>'[:'&lt;'rp'<'[:'&quot;'rp'"' '&amp;'rp'&'
+
+tagsC=: ;: noun define-.LF  
+  a abbr acronym address applet area b base basefont big blockquote
+  body button caption cite code col colgroup dd del dfn dir div dl
+  dt em fieldset font form frameset h1 h2 h3 h4 h5 h6 head html 
+  i iframe ins kbd label legend li link menu noframes noscript 
+  object ol optgroup option p pre q samp script select small span 
+  strike strong style sub sup table tbody td textarea tfoot th
+  thead title tr tt u ul var xmp
+)
+tagsNC=: ;: noun define-.LF  
+   br hr img input isindex map meta param 
+)
+attrV=: ;: noun define-.LF  
+  abbr accept accesskey action align alink alt archive axis bgcolor
+  border cellpadding cellspacing char charoff charset cite class 
+  classid clear codebase codetype color cols colspan content coords 
+  data datetime dir enctype face for frame frameborder headers height 
+  href hreflang hspace id lang language link longdesc marginheight 
+  marginwidth maxlength media method name object onblur onchange onclick 
+  ondblclick onfocus onkeydown onkeypress onkeyup onload onmousedown 
+  onmousemove onmouseout onmouseover onmouseup onreset onselect onsubmit
+  onunload prompt rel rel rev rows rowspan rules scope scrolling shape 
+  size span src standby start style summary tabindex target text title 
+  type usemap value valuetype vlink vspace width
+)
+attrNV=: ;: noun define-.LF  
+    checked compact declare defer disabled ismap multiple
+    nohref noresize noshade nowrap readonly selected
+)
+elm=: (a: ,~ ;&a:) : ((<@[ ,~ a:;~])`(a: ,~ ];<@[)@.(1=L.@[))
+atr=: <@(, ,:^:(1=#@$)@(,.^:(0=#))@(1&{::))`1:`] }
+txt=: <@(, ,:^:(1=#@$)@(,.^:(0=#))@(2&{::))`2:`] }
+
+Note 'test'  
+  ]t1=. 'td';(_2]\;:'name n1 class c1');<'';'';'test 1'
+  tag t1
+  ]t2=. 'test <2>'elm'td'   
+  tag t2
+  ]t3=. 'td'elm~(;:'name class');&>1 2
+  tag t3
+  ]t=. 'tr'elm~t1,S,t2,S,:t3 [ S=. LF elm''
+  tag t
+  ]t=. 'br'elm~'class';'b"1"'
+  tag t
+  ]t=. 'input'elm~'checked';''
+  tag t
+  ]t=. ('id';'zz') atr ('name';'zz') atr (,:~'1'elm'td') txt elm 'tr'
+  tag t
+
+  ]e1=. ('td'elm~_2]\;:'NotAnAttrib n1 class c1')txt~'test 1'
+  buildTag e1
+  ]e2=. 'NotATag'elm~'test <2>'   
+  buildTag e2
+  ]e=. 'tr'elm~t1,S,t2,S,:t3 [ S=. 'NotATagDeep'elm~LF
+  buildTag e
+  tag e
+)
 require 'data/sqlite'
 coclass 'rgssqliteq'
 3 : 0 ''
