@@ -16,6 +16,7 @@ PRIMARYFILES=: 0 : 0
 ~Projects/selectj/sqlcmds_interface
 ~Projects/selectj/jrails
 ~Projects/utils/webxhtml
+~Projects/utils/tag
 ~Projects/utils/sqliteq
 ~Projects/utils/passwdhash
 ~Projects/utils/dir_add

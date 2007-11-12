@@ -137,6 +137,16 @@ sqlsel_scendefpath=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlsel_caseinstname=: 0 : 0
+  SELECT ci.ci_usrname ci_usrname ,
+         sd.sd_name sd_name ,
+         ci.ci_usrdescr ci_usrdescr ,
+         sd.sd_code sd_code 
+  FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
+        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
+)
+
 sqlsel_caseinst2expire=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM   main.`users` ur INNER JOIN main.`caseinstances` ci ON ( `ur`.`ur_id` = `ci`.`ci_urid` ) 

@@ -12,7 +12,7 @@ NB.  * updateInfo
 NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id
-QRYci=: ;:'animinipath caseinstpath casedetails caseinststatus casestage paramform scendefpath'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
 UPDci=: ;:'casestage delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
@@ -43,7 +43,7 @@ DBINS=: INSci,INSur,INSof,INSss
 NB. =========================================================
 NB. Classify database query names according to result type required
 NB. (table, tablestr, row, column, item etc)
-  DBtable   =:          ;:'casedetails paramform'
+  DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo'
