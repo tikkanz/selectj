@@ -6,7 +6,7 @@ coclass 'rgsini'
 
 Note 'get Ini string'
 inistr=. freads 'animinipath' getFnme 2  NB. use for file on disk
-inistr=. toJ zread <"1&dtb"1 'summaryINI' getFnme y NB. use for file in zip
+inistr=. toJ zread <"1&dtb"1 'animinipathSTORED' getFnme y NB. use for file in zip
 )
 
 boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
