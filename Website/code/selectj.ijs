@@ -6,9 +6,10 @@ script_z_ '~system\packages\files\csv.ijs'
 script_z_ '~system\main\dir.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
-script_z_ '~system\classes\plot\jzplot.ijs'
 script_z_ '~system\packages\files\keyfiles.ijs'
 script_z_ '~addons\convert\misc\md5.ijs'
+script_z_ '~addons\media\platimg\platimg.ijs'
+script_z_ '~system\classes\plot\plot.ijs'
 script_z_ '~system\packages\stats\random.ijs'
 script_z_ '~addons\data\sqlite\sqlite.ijs'
 script_z_ '~addons\data\sqlite\def.ijs'
@@ -66,6 +67,9 @@ CGIKEYS=: <;._1 '|action|Upld_fem|Upld_male'
 CGIVALS=: <;._1 '|uploadSL|Tag,Flk,YOB,Mtd,AOD,BR,DOB,pLW8,pFD,pFAT,pLEAN  200400274,1,2004,12,3,1,-0.9,48.95325177,4.030984783,,  200100346,1,2001,11112,2,1,-6.3,48.86565182,4.271521078,,  200100370,1,2001,11112,1,1,5.3,46.89300694,4.762921181,,  200100343,1,2001,11112,3,1,-0.6,46.17547369,3.455460892,,  200500074,1,2005,1,4,1,-12.1,46.05296769,5.341503248,,  200200331,1,2002,1112,4,1,-1.1,45.39484645,4.142378276,,  200500028,1,2005,1,1,1,3.9,38.67851262,1.56124158  199900425,1,1999,1111112,3,2,-2.8,34.83060492,1.756794846  200200332,1,2002,1112,2,2,6,34.79601909,3.198942513  200500079,1,2005,1,1,2,6.5,34.79466461,3.741469411  200500072,1,2005,1,4,1,-1.9,34.69026073,3.489232777  200500085,1,2005,1,4,1,8.4,32.873602,1.026880573  200500004,1,2005,1,3,2,-1.4,32.70060414,2.662249756  200500044,1,2005,1,2,2,0.1,32.62690318,2.856263165  199900439,1,1999,1111112,3,1,14,32.6039013,3.401926152  200500009,1,2005,1,3,1,-2.7,32.55296755,0.981724313  200400244,1,2004,12,1,2,-3.5,32.46166876,2.770021921  200500070,1,2005,1,1,1,-6.2,32.37781276,3.188548712  200500092,1,2005,1,1,2,-3.9,32.3485021,4.505456237  200100366,1,2001,11112,3,2,8.7,32.27643367,2.598342709  200500091,1,2005,1,4,2,3.5,32.22780809,1.8170505  200200324,1,2002,1112,2,2,6.3,32.05034764,3.000975391  200300277,1,2003,112,1,1,-0.6,31.99438592,2.940832441  200500100,1,2005,1,4,2,6.3,31.96962864,4.320502691  200500008,1,2005,1,2,1,5.5,31.96679559,1.796884848  |Tag,Flk,YOB,Mtd,AOD,BR,DOB,pLW8,pFD,pFAT,pLEAN  200500174,1,2005,1,4,1,-1.5,49.27337484,3.324896691,,  200500148,1,2005,1,2,1,-2.3,49.14943999,5.410582075,,  200300442,1,2003,112,4,1,0.8,48.90579541,2.810506745,,  200500126,1,2005,1,3,2,4.6,46.94914573,2.853458612,,  '
 CGIFILES=: <;._1 '||SelectLstFEM.csv|SelectLstMALE-1.csv'
 CGIMIMES=: <;._1 '||application/csv|application/csv'
+
+parseQRY=: 3 : '<"1|:> <;._1 each ''='',each <;._1 ''&'',y'
+'CGIKEYS CGIVALS' =. parseQRY 'ciids=1&ciids=2&ciids=13&trts=NLB&trts=FW12&trts=FD&inftyps=genD'
 )
 postrequest=: 4 : 0
   uri=. x
@@ -905,7 +909,7 @@ sumSummaryCSV=: 4 :0
   ini=. 'animini' getInfo y
   yr0=. ini getIniString 'yearzero' 
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
-  if. (#hdr)>idx=.datlbls i.<'pNLB' do. 
+  if. (#datlbls)>idx=.datlbls i.<'pNLB' do. 
     
     popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
@@ -962,7 +966,7 @@ preplotsummry=: 4 :0
   X=. 0". &> each keylen{.each data
   Y=. > each (>:keylen)}. each data 
   Y=. ;,.each/ <"1 each Y  
-  
+  inftyps=. getTrtInfoTyps getTrtsOnly collbls
   inftyps=. >inftyps
   
   
@@ -971,13 +975,21 @@ preplotsummry=: 4 :0
   
   trtnms =. >~.getTrtBase getTrtsOnly collbls 
   
-  cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' 
-  (trtnms;inftyps;cinms) ;< X;<Y
+  cinms=. 'caseinstname' getInfo  boxopenatoms y
+  cinmsidx=. 0=# every {."1 }. cinms
+  cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
+ 
+  fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
+  res=. (trtnms;inftyps;cinms;fnme) ;< X;<Y
 )
 plotSummaries=: 4 :0 
+ 
  sumrys=. (<x) sumSummaryCSV each y
+ 
  'names data'=. sumrys preplotsummry y
+ 
  names plotsummry data
+ 
 )
 
 Note 'test data for plotsummry'
@@ -1000,12 +1012,10 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv1 each x
+  'trtnms inftyps cinms fnme'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   nplots=. */#every trtnms;inftyps;cinms
-  
-  
   msksnull=. <"1 +./@:*every Y 
   mskpnull=. -.+./every msksnull 
   frmt=. [: vfms dquote"1@dtb"1
@@ -1041,9 +1051,9 @@ plotsummry=: 3 : 0
   data=. ,.each/"1 (<X),. <"1 Y
   data=. msksnull# each data
   pd ,.each/"1 opts ,. <"1 each data
-  pd 'isi'
   
   
+  pd 'pdf ',(,fnme),' 600 400'
 )
 captureIsi=: 3 :0
   800 600 captureIsi y
@@ -1879,6 +1889,13 @@ buildSJForm=: 3 : 0
   '' buildSJForm y
   :
   select. x
+    case. 'sumryplotsrc' do.
+      ciids=. y
+      page=. 'coursesumry_plot.jhp'
+      qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
+      frm=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
+      qry=. '?',args (<'ciids'),.{.ciids
+      frm=. tag  ('href';'coursesumry_plotpdf.jhp',qry) atr (,'a') (txt elm)~(frm) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y
       hdrs=. 'animsumryhdr'&getInfo each ciids
@@ -1898,8 +1915,8 @@ buildSJForm=: 3 : 0
       inftypmsk=. inftypmsk{ '-';'*'
       
       csinsts=. 'caseinstname' getInfo  boxopenatoms ciids
-      lenunme=. 0=# every {."1 }. csinsts
-      csnmes=. (<"1 (i.<:#csinsts),.lenunme){}.csinsts
+      csinstsidx=. 0=# every {."1 }. csinsts
+      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts
     
     
       
@@ -1913,16 +1930,19 @@ buildSJForm=: 3 : 0
       caseids=. ('ciid'&,each 8!:0 i. #ciids)
       
     
+      csnmes=. csnmes ,each (' (';')') prefsuf 8!:0 ciids
       cinms=. 'th' elm~"1 ((<'for'),.caseids) atr"1 'label' (txt elm)~"1 >csnmes
-      cichks=. ((<'id'),.caseids ),"1 _ ('value';'1'),('type';'checkbox'),:('name';'ciids')
+      cichks=. ('checked';''),('type';'checkbox'),:('name';'ciid')
+      cichks=. (((<'id'),.caseids ),:"1 ((<'value'),.ciids)),"2 _ cichks
       cichks=. 'th' mkchks cichks
       hdr=. S,"2 ((('colspan';":nhcols) atr elm 'th'),"2 cinms,:cichks),"2 S
       hdr=. 'thead' elm~ 'tr' elm~"1 2 hdr
       
     
       trtcnts=. ('class';'tbltick') atr"1 (>,each trtmsk) elm"1 'td'
-      trtchks=. ('value';'1'),('type';'checkbox'),:('name';'traits')
-      trtchks=. ((<'id'),.trtids),"1 _ trtchks
+      trtchks=. ('type';'checkbox'),:('name';'traits')
+      trtchks=. (('checked';'') (({."1 unqtrts) idxfnd trtsseld)}((#unqtrts),2)$a:),"1 _ trtchks
+      trtchks=. (((<'id'),.trtids),:"1 ((<'value'),.{."1 unqtrts)),. trtchks
       trtchks=. 'td' mkchks trtchks
       
       trtabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqtrts),.{."1 unqtrts
@@ -1937,8 +1957,9 @@ buildSJForm=: 3 : 0
       
     
       inftypcnts=. ('class';'tbltick') atr"1 (>,each inftypmsk) elm"1 'td'
-      inftypchks=. ('value';'1'),('type';'checkbox'),:('name';'inftyps')
-      inftypchks=. ((<'id'),.'traits'&,each 8!:0 i.#unqinftyps),"1 _ inftypchks
+      inftypchks=. ('type';'checkbox'),:('name';'inftyps')
+      inftypchks=. (('checked';'') (({."1 unqinftyps) idxfnd inftypsseld)}((#unqinftyps),2)$a:),"1 _ inftypchks
+      inftypchks=. (((<'id'),.inftypids),:"1 ((<'value'),.{."1 unqinftyps)),. inftypchks
       inftypchks=. 'td' mkchks inftypchks
       
       inftypabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqinftyps),.{."1 unqinftyps
@@ -1952,7 +1973,7 @@ buildSJForm=: 3 : 0
       inftypbdy=. ('id';'inftyps')atr 'tbody' elm~ inftypbdy
       
     
-      tls=. 'Plot Summary';'Tabluate Summary'
+      tls=. 'Plot Summary';'Tabulate Summary'
       tls=.  ((<'value'),.tls),"1 _('type';'submit'),:('name';'action')
       tls=. ('colspan';":nhcols+#ciids) atr 'td' elm~ tls (atr elm)"2 'input'
       ftr=. 'tfoot' elm~ ('class';'tbltools') atr 'tr' elm~ tls
@@ -2159,7 +2180,9 @@ tag=: 3 : 0
     'n v'=. i
     n assert (<n) e. a:,attrV,attrNV
     if. (<n) e. attrNV do. v=. n end.
-    A=. A,<' ',n,'="',(htsafe ":v),'"'
+    if. #n do.
+      A=. A,<' ',n,'="',(htsafe ":v),'"'
+    end.
   end.
   for_i. ,:^:((0<#) *. 1=#@$) c do.
     C=. C,<tag i

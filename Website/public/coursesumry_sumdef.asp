@@ -25,8 +25,11 @@
   <h2 id="pageName"><%=cr_code%> - <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
   <div class="story">
     <h3>Summarise Cases</h3>
-    <p>Select one or more traits and one or more info types to summarise.</p>
+    <p>Select one or more cases, traits and info types to summarise. <br /> At least one case, one trait and one info type should be selected.</p>
     <%=cfform%>
+    <%=sumryfig%>
+<!--    <img src="img/ht8a.jhp?iwidth=300&iheight=200" alt="here should be image"/>  
+    <img src="coursesumry_plot.jhp" alt="here should be plot image"/> -->
   </div>
   <!-- InstanceEndEditable --></div>
 <!--end content -->

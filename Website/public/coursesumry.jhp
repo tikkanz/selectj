@@ -8,16 +8,25 @@ try.
   end.
   action=. qparam 'action'
   select. ' ' taketo action
-    case. 'Compare' do.
+    case. 'Compare';'Plot';'Tabulate' do.
       NB.! open new page with form to choose parameters to summarise by
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
 	  'uid ofid'=. uofid
 	  setcolnames 'usergreeting' getInfo uid
       setcolnames 'coursedetails' getInfo ofid
       ciids=. 4 qparamList 'ciid'
+      trtsseld_rgswebforms_=:  qparamList 'traits'
+      inftypsseld_rgswebforms_=: qparamList 'inftyps'
       cfform=: 'sumrydef' buildSJForm ciids
-      NB. ('action';'home') redirect 'coursesumry.jhp'
-      (cfform) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
+      NB. (cfform) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
+      select. ' ' taketo action
+      case. 'Plot' do.
+        sumryfig=: 'sumryplotsrc' buildSJForm ciids
+      case. 'Tabluate' do.
+        sumryfig=:''
+      case. do.
+        sumryfig=:''
+      end.
       transfer page
     case. 'Delete' do. NB. delete stored cases
       ciids=. 4 qparamList 'ciid'
@@ -41,8 +50,6 @@ try.
 	case. 'params' do.
       NB.! view selection details but no changing
       ('action';'home') redirect 'coursesumry.jhp'
-    case. 'Plot' do.
-      ('action';'home') redirect 'coursesumry.jhp'    
 	case. do.  NB. default action
       ('action';'home') redirect 'coursesumry.jhp'
   end.
@@ -52,6 +59,8 @@ catch.
   println '<html><body><p>'
   println 'There was an error: <pre>',Error
   println 4!:0 <'uid'
+  println CGIKEYS
+  println CGIVALS
   println COOKIEKEYS
   println COOKIEVALS
   println '</pre></p></body></html>'

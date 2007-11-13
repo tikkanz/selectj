@@ -1,0 +1,6 @@
+ load '~.CGI/code/selectj.ijs'
+  csinsts=. 1 qparam 'ciids'
+  fpth=. 'sumryfolderpath' getFnme ;{.csinsts
+  fpdf=. fpth,'sumryplot.pdf'
+  transfer fpdf
+

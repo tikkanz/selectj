@@ -557,16 +557,16 @@ html>body #navBar dd {border-bottom: none;}
 	background-color:#FFFFDD;
 }
 #defsumry #inftyps .r1{
-	background-color:#CCFFCC;
+	background-color:#E8F0FF;
 }
 #defsumry #inftyps .r2{
-	background-color:#EEFFEE;
+	background-color:#FAFCFF;
 }
 .tblheading2 {
  text-align:right;
 }
 .tbltools {
-	background-color:#CCCCCC;
+	background-color:#B8E65C;
 }
 .tbltools input{
 	margin:2px 7px;
@@ -579,6 +579,6 @@ html>body #navBar dd {border-bottom: none;}
 	font-size:80%;
 }
 thead th {
-	background-color:#f0f0a0;;
+	background-color:#B8E65C;;
 	padding:3px 2px;
 }

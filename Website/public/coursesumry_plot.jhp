@@ -1,0 +1,18 @@
+load '~.CGI/code/selectj.ijs'
+  NB. generate plot (pdf for now)
+  keylbls=. ;:'YOB'
+  csinsts=. 1 qparamList 'ciids'
+  trtlbls=.  qparamList 'trts'
+  inftyps=. qparamList 'inftyps'
+  datlbls=. ((#trtlbls),#inftyps) sortTrtColLbl inftyps makeTrtColLbl trtlbls
+  tmp=. (keylbls;< datlbls) plotSummaries csinsts
+  fpth=. 'sumryfolderpath' getFnme ;{.csinsts
+  NB. fpth=. 'D:\Web\SelectJ\userpop\tikka\117352_2007_12_XM\summaries\'
+  fpdf=. fpth,'sumryplot.pdf'
+  fpng=. fpth,'sumryplot.png'
+  NB. convert to png using ghostscript
+  _1 fork '"c:\Program Files\gs\gs8.60\bin\gswin32c.exe" -dSAFER -dBATCH -dNOPAUSE -r96 -q -sDEVICE=png16m -sOutputFile=',fpng,' ',fpdf
+  transfer fpng
+NB.   image=. readimg fpng   NB. read png file
+NB. ContentType'image/png' [ Expires 0
+NB.   stdout image putimg 'png'  NB. write to stdout
