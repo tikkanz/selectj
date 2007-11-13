@@ -33,9 +33,10 @@ csv
 dir
 dll
 files
-jzplot
 keyfiles
 md5
+platimg
+plot
 random
 sqlite
 sqlitedef
@@ -61,6 +62,8 @@ d:/web/selectj/public/admin/test.jhp
 d:/web/selectj/public/case.jhp
 d:/web/selectj/public/course.jhp
 d:/web/selectj/public/coursesumry.jhp
+d:/web/selectj/public/coursesumry_plot.jhp
+d:/web/selectj/public/coursesumry_plotpdf.jhp
 d:/web/selectj/public/default.jhp
 d:/web/selectj/public/direct.jhp
 d:/web/selectj/public/download.jhp

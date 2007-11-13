@@ -193,6 +193,13 @@ buildSJForm=: 3 : 0
   '' buildSJForm y
   :
   select. x
+    case. 'sumryplotsrc' do.
+      ciids=. y
+      page=. 'coursesumry_plot.jhp'
+      qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
+      frm=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
+      qry=. '?',args (<'ciids'),.{.ciids
+      frm=. tag  ('href';'coursesumry_plotpdf.jhp',qry) atr (,'a') (txt elm)~(frm) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y
       hdrs=. 'animsumryhdr'&getInfo each ciids
@@ -212,8 +219,8 @@ buildSJForm=: 3 : 0
       inftypmsk=. inftypmsk{ '-';'*'
       NB. inftypmsk=. inftypmsk{ '&nbsp;';'&#9679;'
       csinsts=. 'caseinstname' getInfo  boxopenatoms ciids
-      lenunme=. 0=# every {."1 }. csinsts
-      csnmes=. (<"1 (i.<:#csinsts),.lenunme){}.csinsts
+      csinstsidx=. 0=# every {."1 }. csinsts
+      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts
     NB.! could also add headerrow to table with sd_name in it as well as
     NB.! put in ciid in headerrow too.
       
@@ -227,16 +234,19 @@ buildSJForm=: 3 : 0
       caseids=. ('ciid'&,each 8!:0 i. #ciids)
       
     NB. header rows
+      csnmes=. csnmes ,each (' (';')') prefsuf 8!:0 ciids
       cinms=. 'th' elm~"1 ((<'for'),.caseids) atr"1 'label' (txt elm)~"1 >csnmes
-      cichks=. ((<'id'),.caseids ),"1 _ ('value';'1'),('type';'checkbox'),:('name';'ciids')
+      cichks=. ('checked';''),('type';'checkbox'),:('name';'ciid')
+      cichks=. (((<'id'),.caseids ),:"1 ((<'value'),.ciids)),"2 _ cichks
       cichks=. 'th' mkchks cichks
       hdr=. S,"2 ((('colspan';":nhcols) atr elm 'th'),"2 cinms,:cichks),"2 S
       hdr=. 'thead' elm~ 'tr' elm~"1 2 hdr
       
     NB. trts 
       trtcnts=. ('class';'tbltick') atr"1 (>,each trtmsk) elm"1 'td'
-      trtchks=. ('value';'1'),('type';'checkbox'),:('name';'traits')
-      trtchks=. ((<'id'),.trtids),"1 _ trtchks
+      trtchks=. ('type';'checkbox'),:('name';'traits')
+      trtchks=. (('checked';'') (({."1 unqtrts) idxfnd trtsseld)}((#unqtrts),2)$a:),"1 _ trtchks
+      trtchks=. (((<'id'),.trtids),:"1 ((<'value'),.{."1 unqtrts)),. trtchks
       trtchks=. 'td' mkchks trtchks
       
       trtabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqtrts),.{."1 unqtrts
@@ -251,8 +261,9 @@ buildSJForm=: 3 : 0
       
     NB. inftyps
       inftypcnts=. ('class';'tbltick') atr"1 (>,each inftypmsk) elm"1 'td'
-      inftypchks=. ('value';'1'),('type';'checkbox'),:('name';'inftyps')
-      inftypchks=. ((<'id'),.'traits'&,each 8!:0 i.#unqinftyps),"1 _ inftypchks
+      inftypchks=. ('type';'checkbox'),:('name';'inftyps')
+      inftypchks=. (('checked';'') (({."1 unqinftyps) idxfnd inftypsseld)}((#unqinftyps),2)$a:),"1 _ inftypchks
+      inftypchks=. (((<'id'),.inftypids),:"1 ((<'value'),.{."1 unqinftyps)),. inftypchks
       inftypchks=. 'td' mkchks inftypchks
       
       inftypabrs=. (<'abbr'),.(<"1(<'title'),.{:"1 unqinftyps),.{."1 unqinftyps
@@ -266,7 +277,7 @@ buildSJForm=: 3 : 0
       inftypbdy=. ('id';'inftyps')atr 'tbody' elm~ inftypbdy
       
     NB. footer rows
-      tls=. 'Plot Summary';'Tabluate Summary'
+      tls=. 'Plot Summary';'Tabulate Summary'
       tls=.  ((<'value'),.tls),"1 _('type';'submit'),:('name';'action')
       tls=. ('colspan';":nhcols+#ciids) atr 'td' elm~ tls (atr elm)"2 'input'
       ftr=. 'tfoot' elm~ ('class';'tbltools') atr 'tr' elm~ tls

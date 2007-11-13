@@ -23,7 +23,7 @@ NB.*sumSummaryCSV v Summarise CSV data cols by key cols
 NB. returns 2-row boxed table of labels & summarised info
 NB.                 0{ is boxed list of column labels
 NB.                 1{ is summary info in inverted table form                      
-NB. y is case instance ids of summary.csv to summarise
+NB. y is case instance id of summary.csv to summarise
 NB. x is 2-item boxed list. 
 NB.           0{x is boxed list of column labels to use as summary keys
 NB.           1{x is boxed list of trait column labels to summarise
@@ -39,7 +39,7 @@ sumSummaryCSV=: 4 :0
   ini=. 'animini' getInfo y
   yr0=. ini getIniString 'yearzero' NB. yearzero as string
   strt=. ((keylbls i. <'YOB'){tnub key) tindexof boxopen yr0
-  if. (#hdr)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
+  if. (#datlbls)>idx=.datlbls i.<'pNLB' do. NB. replace pNLB with number born each year % popln size
     NB.! handle for keys other than just <'YOB'
     popsz=. +/ ini getIniValue 1 transName 'hrdsizes' 
     sum=. (<popsz %~ tfreq key ) (idx+>:#keyidx)}  sum
@@ -101,17 +101,21 @@ preplotsummry=: 4 :0
   X=. 0". &> each keylen{.each data
   Y=. > each (>:keylen)}. each data NB. drop key
   Y=. ;,.each/ <"1 each Y  NB. make table
-  NB. 
+  inftyps=. getTrtInfoTyps getTrtsOnly collbls
   inftyps=. >inftyps
-  NB. Format for trait names needs some thought
+  NB.! Format for trait names needs some thought
   NB. Could just use base trait labels
   NB. Or if only a few (1-3) traits to display could look up full Trait name
   NB. could investigate wrapping Trait name label over multiple lines if long.
   NB. trtnms =. >'Fleece weight 12';'Live weight 8' NB. get text for base traits
-  trtnms =. >~.getTrtBase getTrtsOnly collbls NB. safer to do lookup of getTrtBase collbls to look for valid trait names
+  trtnms =. >~.getTrtBase getTrtsOnly collbls NB. just base trait labels for now
   NB. database lookup of (user) names for case instances.
-  cinms=. (#csinsts)$ >'My first one';'My second version';'Base case' NB. get summary names for case instances
-  (trtnms;inftyps;cinms) ;< X;<Y
+  cinms=. 'caseinstname' getInfo  boxopenatoms y
+  cinmsidx=. 0=# every {."1 }. cinms
+  cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
+ NB. cinms=. (#csinsts)$ >'My first one';'My second version';'Base case'
+  fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
+  res=. (trtnms;inftyps;cinms;fnme) ;< X;<Y
 )
 
 NB.*plotSummaries v 
@@ -120,9 +124,13 @@ NB. x is 2-item boxed list.
 NB.        0{x is boxed list of column labels to use as summary keys
 NB.        1{x is boxed list of trait column labels to summarise
 plotSummaries=: 4 :0 
+ NB.  ('starting',LF)fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
  sumrys=. (<x) sumSummaryCSV each y
+ NB.  ('sumSummaryCSV complete',LF) fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
  'names data'=. sumrys preplotsummry y
+ NB.  ('preplotsummry complete',LF)fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
  names plotsummry data
+ NB.  ('plotsummry complete',LF)fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
 )
 
 Note 'test data for plotsummry'
@@ -147,7 +155,7 @@ NB.        numeric lists (length #cycles in caseinstance)
 NB.    ydata is rank-2 boxed array. 
 NB.        row for each plot in multiplot ((#traits) * #infotypes)
 NB.        col for each case instance
-NB. x is boxed list of rank-2 lists trtnames;infotypes;ci names;
+NB. x is boxed list of rank-2 lists trtnames;infotypes;ci names;filename for plot image
 plotsummry=: 3 : 0
   inftyps=. >;:'phen genD genDe' NB. assumes all infotypes but can't know
   ntrts  =. %/# every (1{::y);inftyps NB. tally ydata divided by num info types.
@@ -157,12 +165,10 @@ plotsummry=: 3 : 0
   (trtnms;inftyps;cinms) plotsummry y
 :
   'X Y'=. 2{. boxopen y
-  'trtnms inftyps cinms'=. mfv1 each x
+  'trtnms inftyps cinms fnme'=. mfv1 each x
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   nplots=. */#every trtnms;inftyps;cinms
-  NB. msksnull=. (+./@:*each #each ]) Y  NB. non-zero y series
-  NB. msksnull=. <"1 *&#every Y NB. non-zero y series
   msksnull=. <"1 +./@:*every Y NB. non-zero y series
   mskpnull=. -.+./every msksnull NB. plots with no non-zero y series
   frmt=. [: vfms dquote"1@dtb"1
@@ -198,9 +204,9 @@ plotsummry=: 3 : 0
   data=. ,.each/"1 (<X),. <"1 Y
   data=. msksnull# each data
   pd ,.each/"1 opts ,. <"1 each data
-  pd 'isi'
-  NB. pd 'pdf'
+  NB. pd 'isi'
   NB. pd 'save png'
+  pd 'pdf ',(,fnme),' 600 400'
 )
 
 NB.*captureIsi v capture the contents of an isigraph form
