@@ -11,7 +11,9 @@ tag=: 3 : 0
     'n v'=. i
     n assert (<n) e. a:,attrV,attrNV
     if. (<n) e. attrNV do. v=. n end.
-    A=. A,<' ',n,'="',(htsafe ":v),'"'
+    if. #n do.
+      A=. A,<' ',n,'="',(htsafe ":v),'"'
+    end.
   end.
   for_i. ,:^:((0<#) *. 1=#@$) c do.
     C=. C,<tag i
