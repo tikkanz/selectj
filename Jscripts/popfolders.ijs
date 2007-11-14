@@ -61,13 +61,26 @@ NB. y is ciid(s)
 deleteStoredCaseInst=: 3 :0
   if. *#y do.
     zipnm=. 'sumryzippath' getFnme y
-    ferase zipnm
+    kfnm=. 'ijf',~_3}. zipnm
+    ferase zipnm;kfnm
     if. -. fexist zipnm do.
       'delstoredcaseinst' updateInfo y  NB. update ci_stored in caseinstances table.
     end.
     ''
   end.
 )
+
+NB.*cleanStoredKeyFiles v Deletes key files older than 4 days.
+cleanStoredKeyFiles=: 3 :0
+  pth=. getpath_j_ ,'userfolderpath' getFnme 1 NB. should be at least 1 user?
+  kfls=. 2{."1 dirtree pth,'*.ijf'
+  if. #kfls do.
+    oldmsk=. (4%365)<,(3{. 6!:0 '')&tsdiff&(3&{.) every 1{"1 kfls
+    kfls=. oldmsk# {."1 kfls
+    ferase kfls
+  end.
+)
+
 
 NB.*expireCaseInstance v updates caseinstance status to 0 and deletes folder
 NB. y is caseinstanceid

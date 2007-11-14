@@ -30,6 +30,7 @@ PRIMARYFILES=: 0 : 0
 PRIMARYLIBS=: 0 : 0
 convert
 csv
+dates
 dir
 dll
 files

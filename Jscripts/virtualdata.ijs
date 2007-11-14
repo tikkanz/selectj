@@ -57,6 +57,7 @@ NB. Valid query names where info not sourced from database (probably file)
 
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
+FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
 
 NB.*getInfo v get info for a case instance
 NB. y is case instance id(s)
@@ -158,20 +159,23 @@ getCIInfoCurr=: 4 : 0
   select. x
     case. 'animini' do.
       res=. getIniAllSections fnme
-    case. 'caseprogress' do. NB. returns currcycle;ncycles from animalsim.ini
-      ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      res=. crcyc;ncyc
-    case. 'trtinfoall' do.  NB. reads tDefn sheet from TrtInfo.xls
-      res=. 'tDefn' readexcel fnme
-    case. 'ansumrycsv' do.
-      res=. freads fnme
     case. nms=. 'animsumry';'animsumryhdr';'animsumrycnt' do.
       dat=. split fixcsv freads fnme
       dat=. (ifa each 1{dat) 1}dat
       idx=. (nms i. boxopen x){:: 0 1;0;1
       res=. >^:(#=1:) idx{dat
+    case. 'ansumrycsv' do.
+      res=. freads fnme
+    case. 'caseprogress' do. NB. returns currcycle;ncycles from animalsim.ini
+      ini=. getIniAllSections fnme
+      crcyc=. ini getIniValue 1&transName 'curryear'
+      ncyc=.  ini getIniValue 'ncycles'
+      res=. crcyc;ncyc
+    case. nms=. 'selnlistfem';'selnlistmale' do.
+      fnme=. (nms i. boxopen x){ 'selnlistpath' getFnme y
+      res=. freads fnme
+    case. 'trtinfoall' do.  NB. reads tDefn sheet from TrtInfo.xls
+      res=. 'tDefn' readexcel fnme
   end.
   res
 )

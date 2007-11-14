@@ -197,9 +197,10 @@ buildSJForm=: 3 : 0
       ciids=. y
       page=. 'coursesumry_plot.jhp'
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
-      frm=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
+      imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
       qry=. '?',args (<'ciids'),.{.ciids
-      frm=. tag  ('href';'coursesumry_plotpdf.jhp',qry) atr (,'a') (txt elm)~(frm) atr elm 'img'
+      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),: 'title';'Click to see PDF version of plot'
+      frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y
       hdrs=. 'animsumryhdr'&getInfo each ciids
