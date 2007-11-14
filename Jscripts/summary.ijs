@@ -109,11 +109,9 @@ preplotsummry=: 4 :0
   NB. could investigate wrapping Trait name label over multiple lines if long.
   NB. trtnms =. >'Fleece weight 12';'Live weight 8' NB. get text for base traits
   trtnms =. >~.getTrtBase getTrtsOnly collbls NB. just base trait labels for now
-  NB. database lookup of (user) names for case instances.
   cinms=. 'caseinstname' getInfo  boxopenatoms y
   cinmsidx=. 0=# every {."1 }. cinms
   cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
- NB. cinms=. (#csinsts)$ >'My first one';'My second version';'Base case'
   fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
   res=. (trtnms;inftyps;cinms;fnme) ;< X;<Y
 )
@@ -127,7 +125,7 @@ plotSummaries=: 4 :0
  NB.  ('starting',LF)fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
  sumrys=. (<x) sumSummaryCSV each y
  NB.  ('sumSummaryCSV complete',LF) fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
- 'names data'=. sumrys preplotsummry y
+ 'names data'=. (listatom sumrys) preplotsummry y
  NB.  ('preplotsummry complete',LF)fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
  names plotsummry data
  NB.  ('plotsummry complete',LF)fappends 'D:\Web\SelectJ\userpop\tikka\jhp.log'
@@ -169,7 +167,7 @@ plotsummry=: 3 : 0
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes NB. which infotypes
   nplots=. */#every trtnms;inftyps;cinms
-  msksnull=. <"1 +./@:*every Y NB. non-zero y series
+  msksnull=. <"_1 +./@:*every Y NB. non-zero y series
   mskpnull=. -.+./every msksnull NB. plots with no non-zero y series
   frmt=. [: vfms dquote"1@dtb"1
   clrs=. ;:'blue red green purple fuchsia olive teal yellow tan aqua brown gray'
@@ -201,7 +199,7 @@ plotsummry=: 3 : 0
   NB.opts=. (<allcmd),each ; each <"1 itmclr,.fbclr,.option3,.option4
   opts=. (nplots $(#cinms){.1)<;.1 opts NB. group plot series together
   opts=. msksnull# each opts  NB. blank where no Y series
-  data=. ,.each/"1 (<X),. <"1 Y
+  data=. ,.each/"1 (<X),. <"_1 Y
   data=. msksnull# each data
   pd ,.each/"1 opts ,. <"1 each data
   NB. pd 'isi'
