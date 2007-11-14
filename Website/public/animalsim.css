@@ -317,7 +317,10 @@ img.figure{
 .objlist a{
 	font-weight:bold;
 }
-.coursecode{
+.objname{
+	font-weight:bold;
+}
+.objcode{
 	font-size:80%;
 }
 
@@ -567,18 +570,21 @@ html>body #navBar dd {border-bottom: none;}
 }
 .tbltools {
 	background-color:#B8E65C;
+	line-height:1.8em;
 }
 .tbltools input{
 	margin:2px 7px;
 }
 .tbltools a{
-    font-size: 80%;
 	margin:2px 5px;
 }
-.tbldetails {
-	font-size:80%;
-}
+
 thead th {
 	background-color:#B8E65C;;
 	padding:3px 2px;
+}
+#sumryplot {
+	float:left;
+	margin:8px;
+	border-color:#669900;
 }

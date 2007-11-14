@@ -3,6 +3,7 @@ NB. built from project: ~Projects/selectj/selectj
 IFJIJX_j_=: 1
 script_z_ '~system\main\convert.ijs'
 script_z_ '~system\packages\files\csv.ijs'
+script_z_ '~system\main\dates.ijs'
 script_z_ '~system\main\dir.ijs'
 script_z_ '~system\main\dll.ijs'
 script_z_ '~system\main\files.ijs'
@@ -507,13 +508,24 @@ storeCaseInstance=: 3 :0
 deleteStoredCaseInst=: 3 :0
   if. *#y do.
     zipnm=. 'sumryzippath' getFnme y
-    ferase zipnm
+    kfnm=. 'ijf',~_3}. zipnm
+    ferase zipnm;kfnm
     if. -. fexist zipnm do.
       'delstoredcaseinst' updateInfo y  
     end.
     ''
   end.
 )
+cleanStoredKeyFiles=: 3 :0
+  pth=. getpath_j_ ,'userfolderpath' getFnme 1 
+  kfls=. 2{."1 dirtree pth,'*.ijf'
+  if. #kfls do.
+    oldmsk=. (4%365)<,(3{. 6!:0 '')&tsdiff&(3&{.) every 1{"1 kfls
+    kfls=. oldmsk# {."1 kfls
+    ferase kfls
+  end.
+)
+
 expireCaseInstance=: 3 : 0
   'expirecaseinst' updateInfo y
   deleteCaseInstFolder y
@@ -1181,6 +1193,7 @@ DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
+FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
 getInfo=: 4 : 0
   
   
@@ -1260,20 +1273,23 @@ getCIInfoCurr=: 4 : 0
   select. x
     case. 'animini' do.
       res=. getIniAllSections fnme
-    case. 'caseprogress' do. 
-      ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      res=. crcyc;ncyc
-    case. 'trtinfoall' do.  
-      res=. 'tDefn' readexcel fnme
-    case. 'ansumrycsv' do.
-      res=. freads fnme
     case. nms=. 'animsumry';'animsumryhdr';'animsumrycnt' do.
       dat=. split fixcsv freads fnme
       dat=. (ifa each 1{dat) 1}dat
       idx=. (nms i. boxopen x){:: 0 1;0;1
       res=. >^:(#=1:) idx{dat
+    case. 'ansumrycsv' do.
+      res=. freads fnme
+    case. 'caseprogress' do. 
+      ini=. getIniAllSections fnme
+      crcyc=. ini getIniValue 1&transName 'curryear'
+      ncyc=.  ini getIniValue 'ncycles'
+      res=. crcyc;ncyc
+    case. nms=. 'selnlistfem';'selnlistmale' do.
+      fnme=. (nms i. boxopen x){ 'selnlistpath' getFnme y
+      res=. freads fnme
+    case. 'trtinfoall' do.  
+      res=. 'tDefn' readexcel fnme
   end.
   res
 )
@@ -1893,9 +1909,10 @@ buildSJForm=: 3 : 0
       ciids=. y
       page=. 'coursesumry_plot.jhp'
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
-      frm=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
+      imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
       qry=. '?',args (<'ciids'),.{.ciids
-      frm=. tag  ('href';'coursesumry_plotpdf.jhp',qry) atr (,'a') (txt elm)~(frm) atr elm 'img'
+      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),: 'title';'Click to see PDF version of plot'
+      frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y
       hdrs=. 'animsumryhdr'&getInfo each ciids

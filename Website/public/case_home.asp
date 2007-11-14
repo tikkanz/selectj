@@ -49,15 +49,13 @@
     <div id="SelListDwn" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
       <fieldset>
         <legend>Download selection lists </legend>
-  		<form action="case.jhp" method="post" name="DwnldSL" id="DwnldFSL">
-           <input type="hidden" id="action" name="action" value="download"/>
-           <input type="hidden" id="filepath" name="filepath" value="Output/SelectLstFEM.csv"/>
+  		<form action="download.jhp" method="post" name="DwnldSL" id="DwnldFSL">
+           <input type="hidden" id="filetype" name="filetype" value="selnlistfem"/>
            <input type="hidden" id="filename" name="filename" value="SelectLstFEM.csv"/>
            <input type="submit" id="dwnldfsl" value="Potential dams" />
   		</form>
-  		<form action="case.jhp" method="post" name="DwnldSL" id="DwnldMSL">
-           <input type="hidden" id="action" name="action" value="download"/>
-           <input type="hidden" id="filepath" name="filepath" value="Output/SelectLstMALE.csv"/>
+  		<form action="download.jhp" method="post" name="DwnldSL" id="DwnldMSL">
+           <input type="hidden" id="filetype" name="filetype" value="selnlistmale"/>
            <input type="hidden" id="filename" name="filename" value="SelectLstMALE.csv"/>
            <input type="submit" id="dwnldmsl" value="Potential sires" />
   		</form>
@@ -76,15 +74,8 @@
       </fieldset>
     </div>
     <div id="casesumry" style="display:<%=('Conclusion'-:,xn_name){::'none';'block'%>">
-  		<form action="case.jhp" method="post" name="DwnldSumry" id="DwnldSumry">
-                <fieldset>
-                <legend>Download detailed population summary </legend>
-                <input type="hidden" id="action" name="action" value="download"/>
-                <input type="hidden" id="filepath" name="filepath" value="Output/AnimSummary.csv"/>
-                <input type="hidden" id="filename" name="filename" value="Summary.csv"/>
-                <input type="submit" id="dwnldsmry" value="Population Summary" />
-                </fieldset>
-  		</form>
+        <a href="download.jhp?filetype=ansumrycsv&filename=Summary.csv" title="Download detailed population summary in csv format">Download population summary</a> <br />
+        <a href="case.jhp?action=compare" title="Store completed case and compare with other cases">Store and compare</a>
     </div>
   </div>
 <!-- InstanceEndEditable --></div> 
@@ -93,14 +84,11 @@
 
     <dl> 
       <dt>Case Menu</dt>
-      <!--<dd><a href="../poplntype.asp">Choose Question </a></dd>
-	  <dd><a href="../usrhome.asp">Home page </a></dd> --> 
       <dd><a href="case.jhp?action=home">CaseHome</a></dd>
 	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed">Breed  population</a></dd> 
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store">Store completed case';'#">Case is stored' %></a></dd> 
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store">Store completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
       <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
-      <!--<dd><a href="../default.jhp?action=logout">Logout </a></dd>--> 
     </dl>&nbsp;
   </div> 
 </div>

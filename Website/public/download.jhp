@@ -1,6 +1,8 @@
 load '~.CGI/code/selectj.ijs'
-fpath=.qparam 'filepath'  NB. file to read
-fnme=.qparam 'filename'   NB. default name for user to save as
-zipnme=. qparam 'zipname' NB. use if file to download is contained in a zip
-dat=. (*#zipnme) {:: '';zread fpath;zipnme
-dat transfer fpath;fnme
+
+ftype=.qparam 'filetype'  NB. file to read
+fnme=. qparam 'filename'   NB. default name for user to save as
+ciid=. qparam 'ciid'
+ciid=. ('caseinstanceid' getInfo validCase)^:(#=0:) ciid
+dat=. ftype getInfo ciid
+dat transfer fnme;fnme

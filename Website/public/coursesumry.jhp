@@ -9,14 +9,16 @@ try.
   action=. qparam 'action'
   select. ' ' taketo action
     case. 'Compare';'Plot';'Tabulate' do.
-      NB.! open new page with form to choose parameters to summarise by
+      ciids=. 0 qparamList 'ciid'
+      if. 0=#ciids do. redirect 'coursesumry.jhp' return. end.
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
 	  'uid ofid'=. uofid
 	  setcolnames 'usergreeting' getInfo uid
       setcolnames 'coursedetails' getInfo ofid
-      ciids=. 4 qparamList 'ciid'
       trtsseld_rgswebforms_=:  qparamList 'traits'
       inftypsseld_rgswebforms_=: qparamList 'inftyps'
+      if. (0=#inftypsseld_rgswebforms_) +. 0=#trtsseld_rgswebforms_ do.
+        action=.'Compare' end.
       cfform=: 'sumrydef' buildSJForm ciids
       NB. (cfform) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
       select. ' ' taketo action
@@ -32,12 +34,6 @@ try.
       ciids=. 4 qparamList 'ciid'
       deleteStoredCaseInst"0 ;ciids
       ('action';'home') redirect 'coursesumry.jhp'
-	case. 'download' do.
-      page=. 'download.jhp'
-	  'fpth zipnme' =. <"1&dtb"1 'animsumrypathSTORED' getFnme qparam 'ciid'
-      fnme=. 'Summary.csv'
-      qry=. ('zipname';zipnme),('filepath';fpth),:'filename';fnme
-	  qry redirect page
 	case. 'home' do.
 	  DeleteCookie 'CaseID'
       page=. '~CGI/coursesumry_home.asp'  NB. destination page

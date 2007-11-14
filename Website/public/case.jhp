@@ -22,13 +22,6 @@ try.
         qry=. ('action';'mateerr'),:'err';msg
       end.
         qry redirect page
-	case. 'download' do.
-      page=. 'download.jhp'
-	  fpth=. jpath qparam 'filepath'
-	  fpth=. ('caseinstpath' getFnme ciid),fpth
-	  fnme=. qparam 'filename'
-      qry=. ('filepath';fpth),:'filename';fnme
-	  qry redirect page
 	case. 'home';'storefin';'resetfin';'chgdparams';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  'cistage cistored'=: 'casestage' getInfo ciid
@@ -62,9 +55,13 @@ try.
 	  end.
 	  expireCaseInstance ciid
 	  ('action';'resetfin') redirect 'case.jhp'
-    case. 'store' do.
+    case. 'store';'compare' do.
       storeCaseInstance ciid
-      ('action';'storefin') redirect 'case.jhp'
+      if. action-:'store' do.
+        ('action';'storefin') redirect 'case.jhp'
+      elseif. action-:'compare' do.
+        redirect 'coursesumry.jhp'
+      end.
     case. 'uploadSL' do.
       NB. transfer 'page'
       'fcs'=. ,}."1 qparamPrefix 'Upld_'             NB. file contents

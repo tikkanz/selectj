@@ -6,6 +6,7 @@ try.
     case. 'logout' do.
       page=.'~CGI/default_logout.html'
 	  expireSession''
+      cleanStoredKeyFiles''
     case. 'loginfail' do.
 	  uname=: qparam 'uname'
       page=.'~CGI/default_loginfail.asp'

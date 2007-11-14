@@ -23,13 +23,13 @@
   </div> 
 </div> 
 <!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" -->breadCrumb<!-- InstanceEndEditable --> </div>
+<!-- InstanceBeginEditable name="pageBase" --><!-- InstanceEndEditable -->
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
   <div id="breadCrumb"> </div>
   <h2 id="pageName">Manage Users </h2>
   <div class="story">
     <p>This page can be used to manage users.</p>
-  </div>
   <form name="manageusers" id="manageusers" method="post" enctype="" action="">
     <fieldset><legend>Filters</legend>
       <label for="Flt_active"> Show inactive users</label><input name="Flt_active" type="checkbox" id="Flt_active" value="1" <%= fltactivechkd %> />
@@ -112,6 +112,7 @@
   </tr>
   </table>
 </form>
+</div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><!-- InstanceBeginEditable name="navbar" --><!-- InstanceEndEditable --> 
 <!--end navbar --> 

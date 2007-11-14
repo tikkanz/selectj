@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default_user.dwt" codeOutsideHTMLIsLocked="false" -->
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/default_course.dwt" codeOutsideHTMLIsLocked="false" -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
@@ -22,21 +22,29 @@
   </div> 
 </div> 
 <!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <a href="user.jhp?action=home">myCourses</a> &gt; <span class="current">CourseHome</span><!-- InstanceEndEditable --> </div>
+<div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %> <span class="objcode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span><!-- InstanceEndEditable --></div>
+
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <h2 id="pageName"><%=cr_code%> - <%=cr_name%> <span class="coursecode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></h2>
   <div class="story">
     <h3>Introduction</h3>
     <p><%=ox_intro%></p>
-        <table cellspacing=0 width=78%><tr class=rh>
-      <th>AnimalSim Cases</th> 
-      </tr>
+        <table cellspacing=0 width=78%><thead><tr class=rh>
+      <th>AnimalSim Cases</th>
+      </tr></thead>
+      <tbody>
       <% for_idx. i.#cs_id do. %><tr class="r<%=,":2|idx%>">
-        <td class="objlist"><a href="case.jhp?cs_id=<%= idx{cs_id %>"><%= idx{sd_name %></a> <span class="coursecode">(<%= dtb idx{sd_code%>)</span><br/>
+        <td class="objlist"><span class="objname"><a href="case.jhp?cs_id=<%= idx{cs_id %>"><%= idx{sd_name %></a></span> <span class="objcode">(<%= dtb idx{sd_code%>)</span><br/>
             <%=idx{sd_descr%><br/>
             &nbsp;
             </td>
         </tr><% end. %>
+      </tbody>
+      <tfoot>
+        <tr class="tbltools">
+          <td><a href="coursesumry.jhp" title="Summarise and compare cases you have previously completed and stored for this course">Compare stored cases</a></td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 <!-- InstanceEndEditable --></div> 

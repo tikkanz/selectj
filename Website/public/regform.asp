@@ -22,6 +22,7 @@
   </div> 
 </div> 
 <!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp">Login</a> &gt; <span class="current">Register </span><!-- InstanceEndEditable --> </div>
+<!-- InstanceBeginEditable name="pageBase" --><!-- InstanceEndEditable -->
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
 
