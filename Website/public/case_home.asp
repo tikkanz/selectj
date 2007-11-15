@@ -25,7 +25,7 @@
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
   <div id="caseInfo">
-  <div id="caseName"><h2><%= sd_name %> </h2>
+  <div id="caseName"><h2><%= sd_name %> <span class="objcode" title="ID number for your case">(<%=cinstid%>)</span> <span class="subhead"><%=ci_usrname%></span></h2>
     <p><%= sd_descr %> </p>
   </div>
   <div id="caseStatus">
@@ -35,6 +35,7 @@
   </div>
   <div id="caseMsg">
     <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
+    <p class="info" style="display:<%=(action-:'chgdusrdescr'){::'none';'block'%>">Your Case description was successfully changed. </p>
     <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
     <p class="info" style="display:<%=(action-:'storefin'){::'none';'block'%>">The case was successfully stored. </p>
     <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
@@ -49,12 +50,12 @@
     <div id="SelListDwn" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
       <fieldset>
         <legend>Download selection lists </legend>
-  		<form action="download.jhp" method="post" name="DwnldSL" id="DwnldFSL">
+  		<form action="download.jhp" method="post" name="dlSLf" id="dlSLf">
            <input type="hidden" id="filetype" name="filetype" value="selnlistfem"/>
            <input type="hidden" id="filename" name="filename" value="SelectLstFEM.csv"/>
            <input type="submit" id="dwnldfsl" value="Potential dams" />
   		</form>
-  		<form action="download.jhp" method="post" name="DwnldSL" id="DwnldMSL">
+  		<form action="download.jhp" method="post" name="dlSLm" id="dlSLm">
            <input type="hidden" id="filetype" name="filetype" value="selnlistmale"/>
            <input type="hidden" id="filename" name="filename" value="SelectLstMALE.csv"/>
            <input type="submit" id="dwnldmsl" value="Potential sires" />
@@ -73,9 +74,19 @@
       </form>
       </fieldset>
     </div>
-    <div id="casesumry" style="display:<%=('Conclusion'-:,xn_name){::'none';'block'%>">
-        <a href="download.jhp?filetype=ansumrycsv&filename=Summary.csv" title="Download detailed population summary in csv format">Download population summary</a> <br />
-        <a href="case.jhp?action=compare" title="Store completed case and compare with other cases">Store and compare</a>
+    <div class="tbltools" id="casesumry" style="display:<%=('Conclusion'-:,xn_name){::'none';'block'%>">
+      <fieldset> <legend>What to do with completed Case?</legend>
+   		<form action="case.jhp" method="post" name="dlSUM" id="dlSUM">
+           <input title="Save completed case" type="submit" id="action0" name="action" value="Save case" />
+           <input title="Save completed case and compare with other stored cases" type="submit" id="action1" name="action" value="Compare case" />
+           <input title="Discard completed case and start a new one" type="submit" id="action0" name="action" value="Discard case" />
+  		</form>
+   		<form action="download.jhp" method="post" name="dlSUM" id="dlSUM">
+           <input type="hidden" id="filetype" name="filetype" value="ansumrycsv"/>
+           <input type="hidden" id="filename" name="filename" value="Summary.csv"/>
+           <input title="Download detailed population summary in csv format" type="submit" id="dwnldfsl" value="Download Summary file" />
+  		</form>
+      </fieldset>
     </div>
   </div>
 <!-- InstanceEndEditable --></div> 
@@ -84,11 +95,12 @@
 
     <dl> 
       <dt>Case Menu</dt>
-      <dd><a href="case.jhp?action=home">CaseHome</a></dd>
-	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=breed">Breed  population</a></dd> 
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store">Store completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
-      <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
+      <dd><a href="case.jhp?action=home" title="Return to case home (make no changes)">CaseHome</a></dd>
+	  <dd><a href="case.jhp?action=usrdescr" title="Give this case its own name and description">Describe case</a></dd> 
+	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
+      <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
+      <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can compare it with others later">Save completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
     </dl>&nbsp;
   </div> 
 </div>

@@ -24,7 +24,11 @@
 <div class="courseName"><!-- TemplateBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- TemplateEndEditable --></div>
 <div id="content">
   <!-- TemplateBeginEditable name="pgContent" -->
-  <h2 id="pageName">Case Name</h2>
+  <div id="caseInfo">
+  <div id="caseName"><h2><%= sd_name %> <span class="objcode" title="ID number for your case">(<%=cinstid%>)</span> <span class="subhead"><%=ci_usrname%></span></h2>
+    <p><%= sd_descr %> </p>
+  </div>
+  </div>
   <div class="story">
     <h3>Story Title</h3>
     <p> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec molestie. Sed aliquam sem ut arcu. Phasellus sollicitudin. Vestibulum condimentum facilisis nulla. In hac habitasse platea dictumst. Nulla nonummy. Cras quis libero. Cras venenatis. Aliquam posuere lobortis pede. Nullam fringilla urna id leo. Praesent aliquet pretium erat. Praesent non odio. Pellentesque a magna a mauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Aliquam lacus. Mauris magna eros, semper a, tempor et, rutrum et, tortor. </p>
@@ -36,11 +40,12 @@
 
     <dl> 
       <dt>Case Menu</dt>
-      <dd><a href="case.jhp?action=home">CaseHome</a></dd>
-	  <dd><a href="case.jhp?action=params">Selection details</a></dd> 
-      <dd><a href="case.jhp?action=breed">Breed  population</a></dd> 
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store">Store completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
-      <dd><a href="case.jhp?action=reset&store=false" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
+      <dd><a href="case.jhp?action=home" title="Return to case home (make no changes)">CaseHome</a></dd>
+	  <dd><a href="case.jhp?action=usrdescr" title="Give this case its own name and description">Describe case</a></dd> 
+	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
+      <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
+      <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can compare it with others later">Save completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
     </dl>&nbsp;
   </div> 
 </div>

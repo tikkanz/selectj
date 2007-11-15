@@ -19,11 +19,11 @@ try.
       inftypsseld_rgswebforms_=: qparamList 'inftyps'
       if. (0=#inftypsseld_rgswebforms_) +. 0=#trtsseld_rgswebforms_ do.
         action=.'Compare' end.
-      cfform=: 'sumrydef' buildSJForm ciids
+      cfform=: 'sumrydef' buildForm ciids
       NB. (cfform) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
       select. ' ' taketo action
       case. 'Plot' do.
-        sumryfig=: 'sumryplotsrc' buildSJForm ciids
+        sumryfig=: 'sumryplotsrc' buildForm ciids
       case. 'Tabluate' do.
         sumryfig=:''
       case. do.

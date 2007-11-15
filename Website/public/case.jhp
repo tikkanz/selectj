@@ -1,7 +1,7 @@
 <%
 load '~.CGI/code/selectj.ijs'
 try.
-  action=: qparam 'action'
+  action=: ' ' taketo tolower qparam 'action'
   if. -.''-:action do.  NB. if action specified check user/case/offering is valid
   	 if. 0-: uofcsid=. validCase'' do.
 	   DeleteCookie 'CaseID' 
@@ -22,47 +22,55 @@ try.
         qry=. ('action';'mateerr'),:'err';msg
       end.
         qry redirect page
-	case. 'home';'storefin';'resetfin';'chgdparams';'cyclefin';'mateerr';'slerr' do.
+	case. 'home';'storefin';'resetfin';'chgdparams';'chgdusrdescr';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
 	  'cistage cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'usergreeting' getInfo uid
 	  setcolnames 'coursename' getInfo ofid
       setcolnames 'casedetails' getInfo csid;cistage
+      setcolnames 'caseinstname' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      cinstid=: ciid
       errormsg=: qparam 'err'
 	  transfer page
 	case. 'chgparams' do.
 	  updateSelnDetails ciid NB. update caseinstance directory info from submitted form
       NB. transfer 'page' NB. causes error so can see problem
 	  ('action';'chgdparams') redirect 'case.jhp'
-	case. 'params' do.
-	  page=. '~CGI/case_params.asp'
-      cistage=: 11  NB. 11 is instruct txt
-      cistored=: 1   NB. dummy value for menu
+    case. 'chgusrdescr' do.
+      ciun=. qparam 'ciusrname'
+      ciud=. qparam 'ciusrdescr'
+      'caseinstusrdescr' updateInfo ciun;ciud;ciid
+	  ('action';'chgdusrdescr') redirect 'case.jhp'
+	case. 'params';'usrdescr' do.
+	  page=. '~CGI/case_',action,'.asp'
+	  'cistage cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'usergreeting' getInfo uid
 	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid;cistage
+      setcolnames 'casedetails' getInfo csid;11
+      setcolnames 'caseinstname' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
-	  caseform=: buildForm ciid NB. dynamically create form with controls
+      cinstid=: ciid
+	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
 	  transfer page
-	case. 'reset' do.
-      dostore=. 'true'-: qparam 'store'
+	case. 'reset';'discard' do.
+      dostore=. 'true'-: 'false' qparam 'store' NB. default to discard
 	  'cistage cistored'=. 'casestage' getInfo ciid
 	  if. dostore *. (99=cistage) *. -. cistored do.
         storeCaseInstance ciid
 	  end.
 	  expireCaseInstance ciid
 	  ('action';'resetfin') redirect 'case.jhp'
-    case. 'store';'compare' do.
+    case. 'save';'store';'compare' do.
       storeCaseInstance ciid
-      if. action-:'store' do.
+      if. (<action) e. 'save';'store' do.
         ('action';'storefin') redirect 'case.jhp'
       elseif. action-:'compare' do.
         redirect 'coursesumry.jhp'
       end.
-    case. 'uploadSL' do.
+    case. 'uploadsl' do.
       NB. transfer 'page'
       'fcs'=. ,}."1 qparamPrefix 'Upld_'             NB. file contents
       'fns'=. qparamFile each 'Upld_fem';'Upld_male' NB. file names

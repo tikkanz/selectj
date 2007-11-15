@@ -30,10 +30,23 @@
   </div>
   </div>
   <div class="story">
-     <h3><%= xn_name %> </h3>
-      <p><%=cx_text%> </p>
-    <p class="warning" style="display:<%=(0<currcycle){::'none';'block'%>">Editing your selection details once selection has started will often result in strange results and errors.<br/> If you really think you want to do this, check with your course administrator first! </p>
-      <%=caseform%>
+     <h3>Describe Case </h3>
+      <p>Create or edit this case's name and description. </p>
+      <p>It is a good idea to give each case its own name and description to remind you how it was special or different from other cases that you may wish to compare it to. </p>
+      <div class="form-container"><form id="usrdescr" name="usrdescr" method="post" action="case.jhp"><input class="input" type="hidden" name="action" id="action" value="chgusrdescr" />
+<fieldset><legend>Case Description</legend>
+<div>
+  <label for="ciusrname">Name this case</label>
+<input id="ciusrname" value="<%=ci_usrname%>" name="ciusrname" type="text" size="40"  />
+</div>
+<div>
+  <label for="ciusrdescr">Describe this case</label>
+<textarea name="ciusrdescr" id="ciusrdescr" cols="45" rows="5"><%=ci_usrdescr%></textarea>
+</div>
+</fieldset>
+<div class="buttonrow"><input class="button" type="submit" value="Save Changes" />
+<input class="button" type="reset" value="Discard Changes" /></div></form></div>
+  </div>      
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 

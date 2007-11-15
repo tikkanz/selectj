@@ -986,11 +986,9 @@ preplotsummry=: 4 :0
   
   
   trtnms =. >~.getTrtBase getTrtsOnly collbls 
-  
   cinms=. 'caseinstname' getInfo  boxopenatoms y
   cinmsidx=. 0=# every {."1 }. cinms
   cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
- 
   fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
   res=. (trtnms;inftyps;cinms;fnme) ;< X;<Y
 )
@@ -998,7 +996,7 @@ plotSummaries=: 4 :0
  
  sumrys=. (<x) sumSummaryCSV each y
  
- 'names data'=. sumrys preplotsummry y
+ 'names data'=. (listatom sumrys) preplotsummry y
  
  names plotsummry data
  
@@ -1028,7 +1026,7 @@ plotsummry=: 3 : 0
   infotypes=.('phen';'Phenotype'),('genD';'Genotype'),:('genDe';'EBV')
   idx=. (<"1&dtb"1 inftyps) i. ~{."1 infotypes 
   nplots=. */#every trtnms;inftyps;cinms
-  msksnull=. <"1 +./@:*every Y 
+  msksnull=. <"_1 +./@:*every Y 
   mskpnull=. -.+./every msksnull 
   frmt=. [: vfms dquote"1@dtb"1
   clrs=. ;:'blue red green purple fuchsia olive teal yellow tan aqua brown gray'
@@ -1060,7 +1058,7 @@ plotsummry=: 3 : 0
   
   opts=. (nplots $(#cinms){.1)<;.1 opts 
   opts=. msksnull# each opts  
-  data=. ,.each/"1 (<X),. <"1 Y
+  data=. ,.each/"1 (<X),. <"_1 Y
   data=. msksnull# each data
   pd ,.each/"1 opts ,. <"1 each data
   
@@ -1167,7 +1165,7 @@ plotsummry1=: 3 : 0
  
 )
 QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
-UPDci=: ;:'casestage delstoredcaseinst expirecaseinst storecaseinst'
+UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
@@ -1534,10 +1532,18 @@ sqlsel_caseinstname=: 0 : 0
   SELECT ci.ci_usrname ci_usrname ,
          sd.sd_name sd_name ,
          ci.ci_usrdescr ci_usrdescr ,
+         sd.sd_descr sd_descr ,
          sd.sd_code sd_code 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
   WHERE (ci.ci_id =?);
+)
+
+sqlupd_caseinstusrdescr=: 0 : 0
+  UPDATE caseinstances
+  SET    ci_usrname=? ,
+         ci_usrdescr=?
+  WHERE  ci_id=?;
 )
 
 sqlsel_caseinst2expire=: 0 : 0
@@ -1776,7 +1782,7 @@ buildButtons=: 3 : 0
   bt=. bt,LF, INPUT class 'button' type 'reset' value 'Discard Changes' ''
   DIV class 'buttonrow' bt
 )
-buildForm=: 3 : 0
+buildParamsForm=: 3 : 0
   ANIMINI_z_=: 'animini' getInfo y
   TRTINFO_z_=: 'trtinfoall' getInfo y
   info=. 'paramform' getInfo y  
@@ -1901,10 +1907,15 @@ buildTag=: 4 :0
 )
 altclass=: 13 : '(<''class'') ,. x ,&.> (8!:0) >:2&| i.y'
 
-buildSJForm=: 3 : 0
-  '' buildSJForm y
+buildForm=: 3 : 0
+  '' buildForm y
   :
   select. x
+    case. 'caseparams' do.
+      buildParamsForm y
+    case. 'caseusrdescr' do.
+      ciid=. y
+      
     case. 'sumryplotsrc' do.
       ciids=. y
       page=. 'coursesumry_plot.jhp'
@@ -2058,8 +2069,6 @@ rarg=:  '';('No. of Lambs Born';'NLB');('Live weight at 8-mon';'LW8');('Fleece w
 larg=:  'NLB';'FD'
 larg buildSelect rarg
 )
-
-buildSJForm_z_=: buildSJForm_rgswebforms_
 buildForm_z_=:  buildForm_rgswebforms_
 makeTable_z_=:  makeTable_rgswebforms_
 buildTable_z_=: buildTable_rgswebforms_

@@ -324,6 +324,12 @@ img.figure{
 	font-size:80%;
 }
 
+.subhead {
+	font-size:80%;
+	font-style:italic;
+	font-weight:lighter;
+}
+
 /************* #Form styles ***************/
 .small { font-family: Verdana,Geneva,Arial,Helvetica,sans-serif;
 font-size: 80%;
@@ -519,14 +525,18 @@ html>body #navBar dd {border-bottom: none;}
 }
 
 /************** #Upload/Download Forms **************/
-#SelListDwn, #casesumry{
+#SelListDwn {
 	width:15em;
+	float:left;
+}
+#casesumry{
+	width:33em;
 	float:left;
 }
 #SelListDwn fieldset {
 	margin:0 5px;
 }
-#SelListDwn form {
+#SelListDwn form, #casesumry form {
 	margin:0;
 	padding:6px;
 }
@@ -573,7 +583,7 @@ html>body #navBar dd {border-bottom: none;}
 	line-height:1.8em;
 }
 .tbltools input{
-	margin:2px 7px;
+	margin:2px 4px;
 }
 .tbltools a{
 	margin:2px 5px;
