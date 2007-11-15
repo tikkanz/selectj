@@ -13,7 +13,7 @@ NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id
 QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
-UPDci=: ;:'casestage delstoredcaseinst expirecaseinst storecaseinst'
+UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
 NB. y is mostly user id

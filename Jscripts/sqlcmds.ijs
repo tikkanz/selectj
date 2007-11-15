@@ -141,10 +141,18 @@ sqlsel_caseinstname=: 0 : 0
   SELECT ci.ci_usrname ci_usrname ,
          sd.sd_name sd_name ,
          ci.ci_usrdescr ci_usrdescr ,
+         sd.sd_descr sd_descr ,
          sd.sd_code sd_code 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
   WHERE (ci.ci_id =?);
+)
+
+sqlupd_caseinstusrdescr=: 0 : 0
+  UPDATE caseinstances
+  SET    ci_usrname=? ,
+         ci_usrdescr=?
+  WHERE  ci_id=?;
 )
 
 sqlsel_caseinst2expire=: 0 : 0

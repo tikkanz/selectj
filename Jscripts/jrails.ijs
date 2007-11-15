@@ -17,9 +17,9 @@ buildButtons=: 3 : 0
   DIV class 'buttonrow' bt
 )
 
-NB.*buildForm v builds xhtml form code for a case
+NB.*buildParmsForm v builds xhtml form code for the paramters of a case
 NB. y is ci_id of case
-buildForm=: 3 : 0
+buildParamsForm=: 3 : 0
   ANIMINI_z_=: 'animini' getInfo y
   TRTINFO_z_=: 'trtinfoall' getInfo y
   info=. 'paramform' getInfo y  NB. gets legend, fs_ids,cf_value
@@ -189,10 +189,15 @@ buildTag=: 4 :0
 NB. eg. 'r' altclass 4
 altclass=: 13 : '(<''class'') ,. x ,&.> (8!:0) >:2&| i.y'
 
-buildSJForm=: 3 : 0
-  '' buildSJForm y
+buildForm=: 3 : 0
+  '' buildForm y
   :
   select. x
+    case. 'caseparams' do.
+      buildParamsForm y
+    case. 'caseusrdescr' do.
+      ciid=. y
+      
     case. 'sumryplotsrc' do.
       ciids=. y
       page=. 'coursesumry_plot.jhp'
@@ -377,7 +382,7 @@ NB. <option value="FW12">Fleece weight at 12-mon</option>\n
 NB. <option value="FD" selected="selected">Ultrasound backfat depth</option>
 )
 
-buildSJForm_z_=: buildSJForm_rgswebforms_
+NB. buildSJForm_z_=: buildSJForm_rgswebforms_
 buildForm_z_=:  buildForm_rgswebforms_
 makeTable_z_=:  makeTable_rgswebforms_
 buildTable_z_=: buildTable_rgswebforms_
