@@ -42,7 +42,7 @@
       </tbody>
       <tfoot>
         <tr class="tbltools">
-          <td><a href="coursesumry.jhp" title="Summarise and compare cases you have previously completed and stored for this course">Compare stored cases</a></td>
+          <td><form name="storedcases" id="storedcases" action="coursesumry.jhp"> <input type="submit" value="Compare stored cases" title="Summarise and compare cases you have previously completed and stored for this course" /></form></td>
         </tr>
       </tfoot>
     </table>
