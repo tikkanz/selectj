@@ -27,7 +27,7 @@ NB. returns 'Ok' if successful or 'Unexpected error' if not
 NB. y is 2-item list of boxed strings
 NB.  0{::y filename zip file to extract
 NB.  1{::y name of directory to extract zip file to
-NB. can't extract to non-existant multilevel path.
+NB. can't extract to non-existing multilevel path.
 unzip=: 3 : 0
   'file dir'=.dquote each y
   e=. 'Unexpected error'

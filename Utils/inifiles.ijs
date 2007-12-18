@@ -65,13 +65,13 @@ NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
 NB.      3{:: is optional comment delimiter (defaults to '#')
 NB. x is optional. Either string contents of Ini file, 
-NB.      or 3-column table result of parsing Ini file using parseIni
+NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniIndex=: 3 :0
   '' getIniIndex y
   :
   'keyn secn fln delim'=. 4{. boxopen y
-  if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
+  if. -.*#delim do. delim=. '#' end. NB. default comment delimiter is #
   ini=. x
   ini=. ini getIniAllSections fln;delim
   if. -.*#ini do. '' return. end. NB. error (reading Ini from file)
@@ -97,7 +97,7 @@ NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
 NB.      3{:: is optional comment delimiter (defaults to '#')
 NB. x is optional. Either string contents of Ini file, 
-NB.      or 3-column table result of parsing Ini file using parseIni
+NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniString=: 3 : 0
   '' getIniString y
@@ -116,7 +116,7 @@ NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
 NB.      3{:: is optional comment delimiter (defaults to '#')
 NB. x is optional. Either string contents of Ini file, 
-NB.      or 3-column table result of parsing Ini file using parseIni
+NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniValue=: [: makeVals getIniString
 
