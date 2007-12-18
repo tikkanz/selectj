@@ -30,8 +30,8 @@ unziptree=: 4 : 0
   todirs=. }. ,each /\ <;.2 todir NB. base dirs
   msk=. -.direxist todirs
   NB. zero any 1s before 1st 0 (dir must exist so probably no read permissions)
-  msk=. 0 (i. msk i. 0)}msk     
-  resdir=. dircreate msk#todirs NB. create non-existing base dirs 
+  msk=. 0 (i. msk i. 0)}msk
+  resdir=. dircreate msk#todirs NB. create non-existing base dirs
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
   todirs=. repps dirmsk#fromall

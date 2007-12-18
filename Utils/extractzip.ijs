@@ -6,28 +6,13 @@ NB. Extracts Zip archive to desired sub-directory
 coclass 'rgsunzip'
 
 3 : 0 ''
-if. -.IFUNIX do. require 'task' end.
-if. IFCONSOLE do.
-  NB.  UNZIP=: '"',(jpath '~install/tools/zip/unzip.exe'),'" -o -C '
-  UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
-else.
-  UNZIP=: UNZIP_j_
-end.
+  if. -.IFUNIX do. require 'task' end.
 )
 
+UNZIP=: '"',(jpath '~tools/zip/unzip.exe'),'" -o -C '
 dquote=: '"'&, @ (,&'"')
 hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
 
-NB. =========================================================
-NB. exequote
-NB. ensure exe is wrapped in double quotes for Windows
-exequote=: 3 : 0
-  f=. deb y
-  if. '"' = {. f do. f return. end.
-  ndx=. 4 + 1 i.~ '.exe' E. f
-  if. ndx >: #f do. f return. end.
-  '"',(ndx{.f),'"',ndx }. f
-)
 NB. =========================================================
 shellcmd=: 3 : 0
   if. IFUNIX do.
@@ -42,20 +27,15 @@ NB. returns 'Ok' if successful or 'Unexpected error' if not
 NB. y is 2-item list of boxed strings
 NB.  0{::y filename zip file to extract
 NB.  1{::y name of directory to extract zip file to
+NB. can't extract to non-existant multilevel path.
 unzip=: 3 : 0
   'file dir'=.dquote each y
   e=. 'Unexpected error'
   if. IFUNIX do.
     e=. shellcmd 'tar -xzf ',file,' -C ',dir
   else.
-    z=. exequote UNZIP
-    if. +./'7z' E. UNZIP do. 
-      dirsw=.' -o'
-    else.  NB. assume using Info-Zip unzip
-      dirsw=.' -d'
-    end.
-    r=. z,' ',file,dirsw,dir
-    e=. shellcmd r
+    dir=. (_2&}. , PATHSEP_j_ -.~ _2&{.) dir
+    e=. shellcmd UNZIP,' ',file,' -d ',dir
     NB. if. 'Ok'-: _2{.e -. CRLF do. e=. 'Ok' end.
   end.
   e

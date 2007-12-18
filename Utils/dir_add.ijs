@@ -7,7 +7,7 @@ coclass 'rgsdiradd'
 addPS=: , PATHSEP_j_ -. {:          NB. ensure trailing path separator
 dropPS=: }:^:(PATHSEP_j_={:)  NB. drop trailing path separator
 
-NB.*createdir v Create directory(s)
+NB.*dircreate v Create directory(s)
 NB. y is one or more (boxed) directories to create
 NB. parent-directories must be created before their children
 NB. if user account calling createdir doesn't have 

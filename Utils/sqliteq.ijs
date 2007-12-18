@@ -17,11 +17,11 @@ NB. get path to database file
   if. 0=4!:0 <'CONNECTSTR_base_' do.
     ConStr=:  CONNECTSTR_base_  NB. constant set in base or z locales
   else.
-    NB. ConStr=: jpath '~.CGI/code/select_small.sqlite'
-    ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
-  end.
+  is2ndlevel=: (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/code/';'~..CGI/code/'
+  ConStr=: IFCONSOLE{:: 'c:/d/web/selectj/code/';is2ndlevel
+  ConStr=: jpath ConStr,'select_cmplx.sqlite'
+end.
 )
-
 NB. rgsselectq methods
 NB. =========================================================
 lasterr=: [: deb LF -.~ }.@(13!:12)
