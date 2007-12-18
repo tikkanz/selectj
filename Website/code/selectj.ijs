@@ -1,24 +1,24 @@
-NB. built from project: ~Projects/selectj/selectj
+NB. built from project: ~user/projects/selectj/selectj
 
 IFJIJX_j_=: 1
-script_z_ '~system\main\convert.ijs'
-script_z_ '~system\packages\files\csv.ijs'
-script_z_ '~system\main\dates.ijs'
-script_z_ '~system\main\dir.ijs'
-script_z_ '~system\main\dll.ijs'
-script_z_ '~system\main\files.ijs'
-script_z_ '~system\packages\files\keyfiles.ijs'
-script_z_ '~addons\convert\misc\md5.ijs'
-script_z_ '~addons\media\platimg\platimg.ijs'
-script_z_ '~system\classes\plot\plot.ijs'
-script_z_ '~system\packages\stats\random.ijs'
-script_z_ '~addons\data\sqlite\sqlite.ijs'
-script_z_ '~addons\data\sqlite\def.ijs'
-script_z_ '~system\main\strings.ijs'
-script_z_ '~addons\tables\tara\tara.ijs'
-script_z_ '~system\packages\misc\task.ijs'
-script_z_ '~system\packages\winapi\winapi.ijs'
-script_z_ '~addons\arc\zip\zfiles.ijs'
+script_z_ '~system/main/convert.ijs'
+script_z_ '~system/packages/files/csv.ijs'
+script_z_ '~system/main/dates.ijs'
+script_z_ '~system/main/dir.ijs'
+script_z_ '~system/main/dll.ijs'
+script_z_ '~system/main/files.ijs'
+script_z_ '~system/packages/files/keyfiles.ijs'
+script_z_ '~addons/convert/misc/md5.ijs'
+script_z_ '~addons/media/platimg/platimg.ijs'
+script_z_ '~system/classes/plot/plot.ijs'
+script_z_ '~system/packages/stats/random.ijs'
+script_z_ '~addons/data/sqlite/sqlite.ijs'
+script_z_ '~addons/data/sqlite/def.ijs'
+script_z_ '~system/main/strings.ijs'
+script_z_ '~addons/tables/tara/tara.ijs'
+script_z_ '~system/packages/misc/task.ijs'
+script_z_ '~system/packages/winapi/winapi.ijs'
+script_z_ '~addons/arc/zip/zfiles.ijs'
 
 coclass 'rgsselectj'
 
@@ -473,12 +473,13 @@ deleteUsers=: 3 : 0
 createCaseInstance=: 3 : 0
   ciid=. 'newcaseinstance' insertInfo y
   uz=. createCaseInstFolder ciid
+  
   ciid
 )
 createCaseInstFolder=: 3 : 0
   zippath=. 'scendefpath' getFnme y
   newpath=. 'caseinstpath' getFnme y
-  uz=. unzip zippath;newpath 
+  uz=. newpath unziptree zippath 
 )
 getCaseInstance=: 3 : 0
   if. 0=#y do.
@@ -1305,7 +1306,9 @@ updateScenarioInfo=: 3 : 0
 
 pathdelim=: 4 : '}.;([:x&,,)each y'  
 getFnme=: 4 : 0
-  basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
+  is2ndlevel=. (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/';'~..CGI/'
+  basefldr=. jpath IFCONSOLE{:: 'c:/d/web/selectj/';is2ndlevel
+  
   
   select. x
     case. 'animinipath';'caseprogresspath' do.
@@ -2292,9 +2295,10 @@ coclass 'rgssqliteq'
   if. 0=4!:0 <'CONNECTSTR_base_' do.
     ConStr=:  CONNECTSTR_base_  
   else.
-    
-    ConStr=:  'd:/web/selectj/code/select_cmplx.sqlite'
-  end.
+  is2ndlevel=: (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/code/';'~..CGI/code/'
+  ConStr=: IFCONSOLE{:: 'c:/d/web/selectj/code/';is2ndlevel
+  ConStr=: jpath ConStr,'select_cmplx.sqlite'
+end.
 )
 lasterr=: [: deb LF -.~ }.@(13!:12)
 sqldberr_z_=: (assert 0=#) f.
@@ -2645,24 +2649,12 @@ dat=: 4 5 6{invtble
 coclass 'rgsunzip'
 
 3 : 0 ''
-if. -.IFUNIX do. require 'task' end.
-if. IFCONSOLE do.
-  
-  UNZIP=: '"c:\program files\7-zip\7z.exe" x -y'
-else.
-  UNZIP=: UNZIP_j_
-end.
+  if. -.IFUNIX do. require 'task' end.
 )
 
+UNZIP=: '"',(jpath '~tools/zip/unzip.exe'),'" -o -C '
 dquote=: '"'&, @ (,&'"')
 hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
-exequote=: 3 : 0
-  f=. deb y
-  if. '"' = {. f do. f return. end.
-  ndx=. 4 + 1 i.~ '.exe' E. f
-  if. ndx >: #f do. f return. end.
-  '"',(ndx{.f),'"',ndx }. f
-)
 shellcmd=: 3 : 0
   if. IFUNIX do.
     hostcmd y
@@ -2676,21 +2668,14 @@ unzip=: 3 : 0
   if. IFUNIX do.
     e=. shellcmd 'tar -xzf ',file,' -C ',dir
   else.
-    z=. exequote UNZIP
-    if. +./'7z' E. UNZIP do. 
-      dirsw=.' -o'
-    else.  
-      dirsw=.' -d'
-    end.
-    r=. z,' ',file,dirsw,dir
-    e=. shellcmd r
+    dir=. (_2&}. , PATHSEP_j_ -.~ _2&{.) dir
+    e=. shellcmd UNZIP,' ',file,' -d ',dir
     
   end.
   e
 )
 
 unzip_z_=: unzip_rgsunzip_
-
 require 'dir arc/zip/zfiles'
 require 'strings files'  
 3 : 0 ''
@@ -2713,7 +2698,7 @@ unziptree=: 4 : 0
   todirs=. }. ,each /\ <;.2 todir 
   msk=. -.direxist todirs
   
-  msk=. 0 (i. msk i. 0)}msk     
+  msk=. 0 (i. msk i. 0)}msk
   resdir=. dircreate msk#todirs 
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
