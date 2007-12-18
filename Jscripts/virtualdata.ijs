@@ -198,7 +198,9 @@ NB. result is string of filename, or numeric _1 if file doesn't exist
 NB. y is ciid
 NB. x is string describing file to get
 getFnme=: 4 : 0
-  basefldr=. IFCONSOLE{:: 'd:/web/selectj/';'~.CGI/'
+  is2ndlevel=. (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/';'~..CGI/'
+  basefldr=. jpath IFCONSOLE{:: 'c:/d/web/selectj/';is2ndlevel
+  NB. basefldr=. IFCONSOLE{:: 'c:/d/web/selectj/';'~.CGI/'
   NB. basefldr=. '~.CGI/' NB. 'd:\web\selectj\'
   select. x
     case. 'animinipath';'caseprogresspath' do.

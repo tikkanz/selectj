@@ -1,5 +1,5 @@
 NB. test
 
 buildproject_jproject_ ''
-load 'd:\web\selectj\code\selectj.ijs'
-load '~Projects\selectj\test0.ijs'
+load '~home\Documents\web\selectj\code\selectj.ijs'
+load '~user\projects\selectj\test0.ijs'

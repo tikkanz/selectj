@@ -1,30 +1,30 @@
-NB. project file: d:/jprg/user/projects/selectj/selectj
+NB. project file: c:/users/rsherloc/documents/j602-user/projects/selectj/selectj
 
 coclass 'jproject'
 
 PRIMARYFILES=: 0 : 0
-~Projects/selectj/jhpadd
-~Projects/selectj/utils
-~Projects/selectj/userlogin
-~Projects/selectj/adminusers
-~Projects/selectj/popfolders
-~Projects/selectj/scenarios
-~Projects/selectj/mating
-~Projects/selectj/summary
-~Projects/selectj/virtualdata
-~Projects/selectj/sqlcmds
-~Projects/selectj/sqlcmds_interface
-~Projects/selectj/jrails
-~Projects/utils/webxhtml
-~Projects/utils/tag
-~Projects/utils/sqliteq
-~Projects/utils/passwdhash
-~Projects/utils/dir_add
-~Projects/utils/dirtrees
-~Projects/utils/inifiles
-~Projects/utils/invtables
-~Projects/utils/extractzip
-~Projects/utils/ziptrees
+~user/projects/selectj/jhpadd
+~user/projects/selectj/utils
+~user/projects/selectj/userlogin
+~user/projects/selectj/adminusers
+~user/projects/selectj/popfolders
+~user/projects/selectj/scenarios
+~user/projects/selectj/mating
+~user/projects/selectj/summary
+~user/projects/selectj/virtualdata
+~user/projects/selectj/sqlcmds
+~user/projects/selectj/sqlcmds_interface
+~user/projects/selectj/jrails
+~user/projects/utils/webxhtml
+~user/projects/utils/tag
+~user/projects/utils/sqliteq
+~user/projects/utils/passwdhash
+~user/projects/utils/dir_add
+~user/projects/utils/dirtrees
+~user/projects/utils/inifiles
+~user/projects/utils/invtables
+~user/projects/utils/extractzip
+~user/projects/utils/ziptrees
 )
 
 PRIMARYLIBS=: 0 : 0
@@ -49,7 +49,7 @@ zip
 )
 
 DEVFILES=: 0 : 0
-~Projects/selectj/testdb
+~user/projects/selectj/testdb
 ~addons/web/jhp/jhp
 ~addons/web/jhp/request
 ~addons/web/jhp/run
@@ -58,22 +58,22 @@ DEVFILES=: 0 : 0
 DEVLIBS=: ''
 
 OTHERFILES=: 0 : 0
-d:/web/selectj/public/admin/admin.jhp
-d:/web/selectj/public/admin/test.jhp
-d:/web/selectj/public/case.jhp
-d:/web/selectj/public/course.jhp
-d:/web/selectj/public/coursesumry.jhp
-d:/web/selectj/public/coursesumry_plot.jhp
-d:/web/selectj/public/coursesumry_plotpdf.jhp
-d:/web/selectj/public/default.jhp
-d:/web/selectj/public/direct.jhp
-d:/web/selectj/public/download.jhp
-d:/web/selectj/public/register.jhp
-d:/web/selectj/public/user.jhp
-~Projects/selectj/test0.ijs
+~home/documents/web/selectj/public/admin/admin.jhp
+~home/documents/web/selectj/public/admin/test.jhp
+~home/documents/web/selectj/public/case.jhp
+~home/documents/web/selectj/public/course.jhp
+~home/documents/web/selectj/public/coursesumry.jhp
+~home/documents/web/selectj/public/coursesumry_plot.jhp
+~home/documents/web/selectj/public/coursesumry_plotpdf.jhp
+~home/documents/web/selectj/public/default.jhp
+~home/documents/web/selectj/public/direct.jhp
+~home/documents/web/selectj/public/download.jhp
+~home/documents/web/selectj/public/register.jhp
+~home/documents/web/selectj/public/user.jhp
+~user/projects/selectj/test0.ijs
 )
 
-TARGETFILE=: 'd:/web/selectj/code/selectj.ijs'
+TARGETFILE=: '~home/documents/web/selectj/code/selectj.ijs'
 
 TARGETLOCALE=: 'rgsselectj'
 
@@ -87,7 +87,7 @@ PREBUILDFILE=: ''
 
 POSTBUILDFILE=: ''
 
-TESTFILE=: '~Projects/selectj/test.ijs'
+TESTFILE=: '~user/projects/selectj/test.ijs'
 
 NOTES=: ''
 

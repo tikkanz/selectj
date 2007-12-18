@@ -8,6 +8,7 @@ NB. if y is '' then reads cookies and updates sessionticket
 createCaseInstance=: 3 : 0
   ciid=. 'newcaseinstance' insertInfo y
   uz=. createCaseInstFolder ciid
+  NB. what to do if folder not created?
   ciid
 )
 
@@ -17,7 +18,7 @@ NB. y is caseinstanceid
 createCaseInstFolder=: 3 : 0
   zippath=. 'scendefpath' getFnme y
   newpath=. 'caseinstpath' getFnme y
-  uz=. unzip zippath;newpath NB. newpath unziptree zippath 
+  uz=. newpath unziptree zippath NB. unzip zippath;newpath
 )
 
 NB.*getCaseInstance v get CaseInstance info for uid,ofid,csid
