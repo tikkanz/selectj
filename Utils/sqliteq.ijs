@@ -18,7 +18,7 @@ NB. get path to database file
     ConStr=:  CONNECTSTR_base_  NB. constant set in base or z locales
   else.
   is2ndlevel=: (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/code/';'~..CGI/code/'
-  ConStr=: IFCONSOLE{:: 'c:/d/web/selectj/code/';is2ndlevel
+  ConStr=: IFCONSOLE{:: '~home/documents/web/selectj/code/';is2ndlevel
   ConStr=: jpath ConStr,'select_cmplx.sqlite'
 end.
 )
