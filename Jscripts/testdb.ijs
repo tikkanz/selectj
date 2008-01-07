@@ -1,6 +1,6 @@
 require 'data/sqlite'
 NB. FBASE=: '~home/documents/web/'
-FBASE=: 'c:\d\web\'
+FBASE=: '~home/Documents/web/'
 FDIR=: jpath FBASE,'selectj/code/'
 'FDB FDDL FDATA'=: cut 'select_cmplx.sqlite select_cmplx_ddl.sql select_cmplx_data.sql '
 ferase FDIR,FDB NB. deletes database file
