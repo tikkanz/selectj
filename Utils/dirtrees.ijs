@@ -5,7 +5,7 @@ NB. needs addPS, dropPS, dircreate, verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
 if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
-  require 'dir_add' NB. mapped to ~Projects/utils/dir_add.ijs in startup.ijs
+  require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
 end.
 )
 coclass 'rgstrees'
@@ -43,8 +43,6 @@ deltree=: 3 : 0
     *./ res,0<ferase |.dirpath y
   catch. 0 end.
 )
-
-direxist=: 2 = ftype&>@: boxopen
 
 fcopy=: 4 : 0
   dat=. fread each boxopen y

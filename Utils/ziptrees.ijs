@@ -6,7 +6,7 @@ NB. needs addPS, dircreate verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
   if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
-    require 'dir_add' NB. mapped to ~Projects/utils/dir_add.ijs in startup.ijs
+    require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
   end.
 )
 
@@ -29,8 +29,8 @@ unziptree=: 4 : 0
   tofiles=. repps fromfiles
   todirs=. }. ,each /\ <;.2 todir NB. base dirs
   msk=. -.direxist todirs
-  NB. zero any 1s before 1st 0 (dir must exist so probably no read permissions)
-  msk=. 0 (i. msk i. 0)}msk
+  NB. zero any 1s before last 0 (dir must exist so probably no read permissions)
+  msk=. 0 (i. msk i: 0)}msk
   resdir=. dircreate msk#todirs NB. create non-existing base dirs
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
@@ -102,8 +102,8 @@ zipfiles=: 4 : 0
   zipdir=. PATHSEP_j_ dropafterlast tozip
   zipdir=. }.,each/\ <;.2  zipdir
   msk=. -.direxist zipdir
-  NB. zero any 1s before 1st 0 (dir must exist so probably no read permissions)
-  msk=. 0 (i. msk i. 0)}msk     
+  NB. zero any 1s before last 0 (dir must exist so probably no read permissions)
+  msk=. 0 (i. msk i: 0)}msk     
   resdir=. dircreate msk#zipdir NB. create non-existing dirs in tozip path
   resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs NB. create dirs in tozip
   resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
@@ -115,7 +115,7 @@ NB. vector of numeric types, file (1) dir (2)
 NB. eg. ztypes jpath '~addons/arc/zip/test.zip'
 ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
 
-direxist=: 2 = ftype&>@: boxopen
+NB. direxist=: 2 = ftype&>@: boxopen
 
 zextract=: 4 : 0
   dat=. zread y

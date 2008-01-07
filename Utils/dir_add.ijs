@@ -30,6 +30,6 @@ direxist=: 2 = ftype&>@: boxopen
 
 
 dircreate_z_=: dircreate_rgsdiradd_
-NB. direxist_z_=: direxist_rgsdiradd_
+direxist_z_=: direxist_rgsdiradd_
 addPS_z_=: addPS_rgsdiradd_
 dropPS_z_=: dropPS_rgsdiradd_
