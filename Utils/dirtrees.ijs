@@ -1,7 +1,7 @@
 NB. verbs for copying and deleting directory trees
 
 require 'dir files'
-NB. needs addPS, dropPS, dircreate, verbs from dir_add.ijs script
+NB. needs addPS, dropPS, dircreate, pathcreate, verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
 if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
@@ -9,9 +9,6 @@ if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
 end.
 )
 coclass 'rgstrees'
-
-addPS=: , PATHSEP_j_ -. {:          NB. ensure trailing path separator
-dropPS=: }:^:(PATHSEP_j_={:)  NB. drop trailing path separator
 
 NB.*copytree v copies directory tree from directory y to directory x
 NB. eg. todir copytree fromdir
@@ -22,14 +19,14 @@ copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
   if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
-  aprf=. ] ,&.>~ [: < [    NB. catenates x to start of each y
-  fromdirs=. dirpath fromdir
+  aprf=. ]  ,&.>~ [: < [    NB. catenates x to start of each y
+  fromdirs=. }. dirpath fromdir
   todirs=. todir aprf fromdir dprf fromdirs
-  todirs=. (}:}.,each/\ <;.2 todir), todirs
   fromfiles=. {."1 dirtree fromdir
   tofiles=. todir aprf fromdir dprf fromfiles
-  resdir=. dircreate todirs
-  resfile=. 0&< @>tofiles fcopy fromfiles
+  resdir=. pathcreate todir
+  resdir=. resdir, dircreate todirs
+  resfile=. 0&< @>tofiles fcopy"0 fromfiles
   (+/resdir),+/resfile
 )
 
@@ -44,10 +41,8 @@ deltree=: 3 : 0
   catch. 0 end.
 )
 
-fcopy=: 4 : 0
-  dat=. fread each boxopen y
-  dat fwrite each boxopen x
-)
+NB. tofile fcopy fromfile
+fcopy=: fwrite~ fread
 
 copytree_z_=: copytree_rgstrees_
 deltree_z_=: deltree_rgstrees_
