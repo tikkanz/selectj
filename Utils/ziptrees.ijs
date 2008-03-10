@@ -19,6 +19,7 @@ NB.                     1{ number of files successfully extracted
 NB. any existing files of the same name will be written over
 unziptree=: 4 : 0
   'todir fromzip'=. x;y
+  todir=. addPS todir
   if. -.fexist fromzip do. 0 0 return. end. NB. exit if fromzip not found
   fromall=. /:~{."1 zdir fromzip
   dirmsk=. '/'={:@> fromall
