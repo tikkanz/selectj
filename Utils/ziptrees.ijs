@@ -68,29 +68,33 @@ NB. y is 1 or more-item boxed list of file names to zip
 NB. x is 1 or 2-item boxed list.
 NB.         0{ is name of zip file
 NB.         1{ is optional info on what directory info to include in zip.
-NB.            0. don't include any directories
-NB.            1. (default) Base directory is highest directory common to all files.
-NB.           ''. (i.e. empty) include full paths
-NB.    <basedir>. explicitly specify base directory 
+NB.               0. don't include any directories
+NB.               1. include full directory paths
+NB.              ''. (i.e. empty) (default) Base directory is highest directory common to all files.
+NB.  <prfx2basedir>. explicitly specify directory(s) to prefix base directory with
+NB. eg.     tozip zipfiles fname1;fname2;fname3
 NB. eg. (tozip;0) zipfiles fname1;fname2;fname3
+NB. eg. (tozip;'testing') zipfiles fname1;fname2;fname3
 zipfiles=: 4 : 0
   fromfiles=. boxopen y
-  'tozip dirinf'=. 2{.!.(<1) boxopen x
+  'tozip dirinf'=. 2{. boxopen x
   if. *./-.fexist @> fromfiles do. 0 return. end. NB. stop if no fromfiles found
   repps=. (<PATHSEP_j_,'/') charsub&.> ] NB. replaces PATHSEP_j_ with '/'
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
-  if. (0-:dirinf) +. (1-:dirinf) *. 1=#fromfiles do.
+  aprf=. ]  ,&.>~ [: < [   NB. catenates x to start of each y
+  if. (0-:dirinf) +. (''-:dirinf) *. 1=#fromfiles do. NB. no dirs or only one file to zip
     tofiles=. '/' taketo&.|. each repps fromfiles
     tofiles=. tofiles,.<tozip
     todirs=. ''
   else.
+    basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles NB. find base directory of files
+    basedir=. PATHSEP_j_ dropto&.|. basedir
     if. 1-:dirinf do.
-      basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles NB. find base directory of files
-      basedir=. PATHSEP_j_ dropto&.|. basedir
+      dirinf=. basedir NB. prefix to add is basedir if dirinf is 1
     else.
-      basedir=. (, ('/' -. {:))^:(*@#) > repps <dirinf NB. ensure trailing / if not empty
+      dirinf=. (, ('/' -. {:))^:(*@#) > repps <dirinf NB. ensure trailing / if not empty
     end.
-    tofiles=. repps basedir dprf fromfiles NB. drop length of base directory from each fromfile
+    tofiles=. repps dirinf aprf basedir dprf fromfiles NB. drop base directory & prefix dirinf from each fromfile
     todirs=. '/' dropto&.|. each tofiles NB. dirs in tofiles
     todirs=. todirs #~ (a:~:todirs) *. ~: tolower each todirs NB. unique not empty dirs
     todirs=. todirs,.<tozip
