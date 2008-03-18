@@ -27,7 +27,7 @@ getIniAllSections=: 3 :0
     if. -.fexist fln do. '' return. end. NB. file not found or given
     ini=. freads fln
   end.
-  if. *(L.=0:) ini do. NB. parse string contents of Ini file
+  if. (L.=0:) ini do. NB. parse string contents of Ini file
     ini=. parseIni ini
   else. NB. x was already parsed
     ini
@@ -167,31 +167,59 @@ NB. returns Boolean, 1 if wrote OK, otherwise 0.
 NB. y is 2,3,4 or 5-item boxed list.
 NB.      0{:: y is key value to write
 NB.      1{:: y is key name to write
-NB.      2{:: y is optional section name of Ini to look for key in
-NB.      3{:: is optional file name of Ini file to write to.
-NB.      4{:: is optional comment delimiter (defaults to '#')
+NB.      2{:: y is section name of Ini to look for key in
+NB.      3{:: y is file name of Ini file to (read and) write.
+NB.      4{:: y is optional comment delimiter (defaults to '#')
 NB. x is optional. Either string contents of Ini file, 
 NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 writeIniString=: 3 : 0
   '' writeIniString y
   :
+  ini=. x updateIniString y
+  ini writeIniAllSections 3{::y NB. write ini boxed table to file
+)
+
+NB.*updateIniString v Writes key and key value to an INI file
+NB. returns updated 5-column boxed table.
+NB. y is 2,3,4 or 5-item boxed list.
+NB.      0{:: y is key value to write
+NB.      1{:: y is key name to write
+NB.      2{:: y is section name of Ini to look for key in
+NB.      3{:: y is optional file name of Ini file.
+NB.      4{:: y is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file, 
+NB.      or 5-column table result of parsing Ini file using parseIni
+NB. keyname lookup is case-insensitive
+updateIniString=: 3 : 0
+  '' updateIniString y
+  :
+  'val knme snme fnme delim'=. 5{. y
+  val=. makeString val
   'i ini'=. 2{.!.a: x getIniIndex }.y
   if. -.*#ini do. ini=.x end. NB. x was parsed Ini
   ini=. 2}."1 ini NB. drop lowercase columns
   if. ''-:i do. NB. append key name
-    ini=. ini,|. 3{.y  
+    ini=. ini, snme;knme;val  
   else. 
-    ini=. ({.y) (<i,2) } ini  NB. amend key value
+    ini=. (<val) (<i,2) } ini  NB. amend key value
   end.
-  NB.! write 5-column table to file and report success.
+)
+
+NB.*writeIniAllSections v Writes Ini string or table as Ini file.
+NB. returns bytes written if success, else _1
+NB. y is literal filename to write to.
+NB. x is ini file in literal or boxed table form.
+writeIniAllSections=: 4 : 0
+  fln=. 0{:: ,boxopen y
+  ini=.x
+  if. (L.=1:) ini do. NB. reformat to string
+    ini=. makeIni ini
+  end.
+  ini fwrites fln
 )
 
 Note 'verbs required for writing inifile'
-writeIniString NB. accepts parsed ini or reads ini, updates value, writes boxed table to ini file
-updateIniString NB. amends parsed Ini or reads ini, returns amended boxed table
-writeAllIniSections NB. writes parsed Ini to file in INI format.
-
 To update multiple keys at once, need a verb to amend
 values of boxed table without writing.
 So to do that, ReadIniAllSections, updateIniString for each key, writeAllIniSections.
@@ -238,8 +266,8 @@ parseIniSection=: 3 : 0
   NB. keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
   msk=. 0< #@> keys NB. lines of non-zero length
   keys=. msk#keys
-  NB. >(<;._1@('='&,)) &.> keys
-  |."1 > |.@(<;._1@('='&,)) &.> keys NB. box on '='
+  NB. |."1 > |.@(<;._1@('='&,)) &.> keys 
+  >(_2{. [: <;._1 '==',]) &.> keys NB. box on '='
 )
 
 patsection=: rxcomp '\[[[:alnum:]]+\]' NB. compile pattern
