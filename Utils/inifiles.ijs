@@ -9,14 +9,12 @@ inistr=. freads 'animinipath' getFnme 2  NB. use for file on disk
 inistr=. toJ zread <"1&dtb"1 'animinipathSTORED' getFnme y NB. use for file in zip
 )
 
-boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
-
 NB.*getIniAllSections v Gets all the keynames and values in an INI file
 NB. returns 5-column boxed table,
-NB.      0{"1 lowercase sectionnames, 1{"1 lowercase keynames,  
+NB.      0{"1 lowercase sectionnames, 1{"1 lowercase keynames,
 NB.      2{"1 sectionnames, 3{"1 keynames, 4{"1 keyvalues and comments
 NB. y is literal filename of Ini file to read. (Empty if x is given)
-NB. x is optional. Either string contents of Ini file, 
+NB. x is optional. Either string contents of Ini file,
 NB.      or 5-column boxed table result of parseIni
 getIniAllSections=: 3 :0
   '' getIniAllSections y
@@ -34,10 +32,10 @@ getIniAllSections=: 3 :0
   end.
 )
 
-NB.*getIniSectionNames v Gets section names from INI file 
+NB.*getIniSectionNames v Gets section names from INI file
 NB. returns list of boxed section names from the INI string
 NB. y is literal filename of Ini file to read. Empty if x given.
-NB. x is optional. String contents of Ini file (LF delimited) 
+NB. x is optional. String contents of Ini file (LF delimited)
 getIniSectionNames=: 3 : 0
   '' getIniSectionNames y
   :
@@ -58,7 +56,7 @@ NB. y is literal, or 1,2 or 3-item boxed list.
 NB.      literal or 0{:: y is key name to look up
 NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
-NB. x is optional. Either string contents of Ini file, 
+NB. x is optional. Either string contents of Ini file,
 NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniIndex=: 3 :0
@@ -72,11 +70,11 @@ getIniIndex=: 3 :0
   NB. look up keyn in 5-column table ini
   if. -.*#secn do. NB. look up keyn ignoring section
     if. (#ini) = i=. (1{"1 ini) i. < tolower keyn do.
-      i=.'' NB. keyn not found
+      i=. '' NB. keyn not found
     end.
   else. NB. look up keyn within section
     if. (#ini) = i=. (2{."1 ini) i. boxtolower secn;keyn do.
-      i=.'' NB. secn;keyn not found
+      i=. '' NB. secn;keyn not found
     end.
   end.
   i;< parsed#ini  NB. return parsed ini if not given in x
@@ -89,7 +87,7 @@ NB.      literal or 0{:: y is key name to look up
 NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
 NB.      3{:: is optional comment delimiter (defaults to '#')
-NB. x is optional. Either string contents of Ini file, 
+NB. x is optional. Either string contents of Ini file,
 NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniString=: 3 : 0
@@ -97,8 +95,8 @@ getIniString=: 3 : 0
   :
   'i ini'=. 2{.!.a: x getIniIndex y
   delim=. 3{:: 4{. boxopen y
-  if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #  
-  if. -.*#ini do. ini=.x end. NB. x was parsed Ini
+  if. -.*#delim do. delim=. '#' end. NB. default column delimiter is #
+  if. -.*#ini do. ini=. x end. NB. x was parsed Ini
   if. ''-:i do. i
   else. dtb@(delim&taketo) (<i,4) {:: ini end.
 )
@@ -110,30 +108,17 @@ NB.      literal or 0{:: y is key name to look up
 NB.      1{:: y is optional section name of Ini to look for key in
 NB.      2{:: is optional file name of Ini file to read.
 NB.      3{:: is optional comment delimiter (defaults to '#')
-NB. x is optional. Either string contents of Ini file, 
+NB. x is optional. Either string contents of Ini file,
 NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 getIniValue=: [: makeVals getIniString
-
-NB.*join v Unbox and delimit a list of boxed items y with x
-NB. from forum post 
-NB. http://www.jsoftware.com/pipermail/programming/2007-June/007077.html
-NB. eg. '","' join 'item1';'item2'
-NB. eg. LF join 'item1';'item2'
-NB. eg. 99 join <&> i.8
-join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  NB. ignore $.
-
-NB.*makeString v Creates space-delimited string from numeric list, list of boxed literals or numbers
-NB. returns space-delimited string or unchanged y, if y is literal
-NB. y is string, numeric list, list of boxed literals and/or numbers
-makeString=:[: ' '&join 8!:0
 
 NB.*makeVals v Interprets a string as numeric or list of boxed literals
 NB. if y can be interpreted as all numeric, returns numeric list
 NB. elseif y contains spaces or commas, returns list of boxed literals
 NB. else returns original string
 NB. y is a string
-NB. x is optional numeric value used to signify non-numeric. 
+NB. x is optional numeric value used to signify non-numeric.
 NB.   Choose value for x that will not be valid numeric in your data.
 makeVals=: 3 : 0
   _999999 makeVals y
@@ -146,20 +131,42 @@ makeVals=: 3 : 0
   val
 )
 
-NB.*writePPString v Writes key and key value to an INI file
-NB. returns Boolean, 1 if wrote OK, otherwise 0.
-NB. y is 4-item list of boxed info on key value to write
-NB.         0{ The full path to the INI file
-NB.         1{ Section Name
-NB.         2{ Key Name
-NB.         3{ The values to write  (string, numeric list or 
-NB.                         list of boxed literals and/or numbers)
-writePPString=: 3 : 0
-  require 'winapi'
-  'fnme snme knme val'=. y
+NB.*updateIniString v Writes key and key value to an INI file
+NB. returns updated 5-column boxed table.
+NB. y is 2,3,4 or 5-item boxed list.
+NB.      0{:: y is key value to write
+NB.      1{:: y is key name to write
+NB.      2{:: y is section name of Ini to look for key in
+NB.      3{:: y is optional file name of Ini file.
+NB.      4{:: y is optional comment delimiter (defaults to '#')
+NB. x is optional. Either string contents of Ini file,
+NB.      or 5-column table result of parsing Ini file using parseIni
+NB. keyname lookup is case-insensitive
+updateIniString=: 3 : 0
+  '' updateIniString y
+  :
+  'val knme snme fnme delim'=. 5{. y
   val=. makeString val
-  res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
-  0{:: res
+  'i ini'=. 2{.!.a: x getIniIndex }.y
+  if. -.*#ini do. ini=. x end. NB. x was parsed Ini
+  if. ''-:i do. NB. append new key name
+    ini=. ini, (boxtolower@(2&{.) , ]) snme;knme;val
+  else.
+    ini=. (<val) (<i,4) } ini  NB. amend key value
+  end.
+)
+
+NB.*writeIniAllSections v Writes Ini string or table as Ini file.
+NB. returns bytes written if success, else _1
+NB. y is literal filename to write to.
+NB. x is ini file in literal or boxed table form.
+writeIniAllSections=: 4 : 0
+  fln=. 0{:: ,boxopen y
+  ini=. x
+  if. (L.=1:) ini do. NB. reformat to string
+    ini=. makeIni ini
+  end.
+  ini fwrites fln
 )
 
 NB.*writeIniString v Writes key and key value to an INI file
@@ -170,7 +177,7 @@ NB.      1{:: y is key name to write
 NB.      2{:: y is section name of Ini to look for key in
 NB.      3{:: y is file name of Ini file to (read and) write.
 NB.      4{:: y is optional comment delimiter (defaults to '#')
-NB. x is optional. Either string contents of Ini file, 
+NB. x is optional. Either string contents of Ini file,
 NB.      or 5-column table result of parsing Ini file using parseIni
 NB. keyname lookup is case-insensitive
 writeIniString=: 3 : 0
@@ -180,74 +187,71 @@ writeIniString=: 3 : 0
   ini writeIniAllSections 3{::y NB. write ini boxed table to file
 )
 
-NB.*updateIniString v Writes key and key value to an INI file
-NB. returns updated 5-column boxed table.
-NB. y is 2,3,4 or 5-item boxed list.
-NB.      0{:: y is key value to write
-NB.      1{:: y is key name to write
-NB.      2{:: y is section name of Ini to look for key in
-NB.      3{:: y is optional file name of Ini file.
-NB.      4{:: y is optional comment delimiter (defaults to '#')
-NB. x is optional. Either string contents of Ini file, 
-NB.      or 5-column table result of parsing Ini file using parseIni
-NB. keyname lookup is case-insensitive
-updateIniString=: 3 : 0
-  '' updateIniString y
-  :
-  'val knme snme fnme delim'=. 5{. y
+NB.*writePPString v Writes key and key value to an INI file
+NB. returns Boolean, 1 if wrote OK, otherwise 0.
+NB. y is 4-item list of boxed info on key value to write
+NB.         0{ The full path to the INI file
+NB.         1{ Section Name
+NB.         2{ Key Name
+NB.         3{ The values to write  (string, numeric list or
+NB.                         list of boxed literals and/or numbers)
+writePPString=: 3 : 0
+  require 'winapi'
+  'fnme snme knme val'=. y
   val=. makeString val
-  'i ini'=. 2{.!.a: x getIniIndex }.y
-  if. -.*#ini do. ini=.x end. NB. x was parsed Ini
-  ini=. 2}."1 ini NB. drop lowercase columns
-  if. ''-:i do. NB. append key name
-    ini=. ini, snme;knme;val  
-  else. 
-    ini=. (<val) (<i,2) } ini  NB. amend key value
-  end.
+  res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
+  0{:: res
 )
 
-NB.*writeIniAllSections v Writes Ini string or table as Ini file.
-NB. returns bytes written if success, else _1
-NB. y is literal filename to write to.
-NB. x is ini file in literal or boxed table form.
-writeIniAllSections=: 4 : 0
-  fln=. 0{:: ,boxopen y
-  ini=.x
-  if. (L.=1:) ini do. NB. reformat to string
-    ini=. makeIni ini
-  end.
-  ini fwrites fln
-)
-
-Note 'verbs required for writing inifile'
+Note 'changin multiple keys at once'
 To update multiple keys at once, need a verb to amend
 values of boxed table without writing.
 So to do that, ReadIniAllSections, updateIniString for each key, writeAllIniSections.
 )
+NB. =========================================================
+NB. Verbs local to rgsini locale
+
+boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
+
+NB.*join v Unbox and delimit a list of boxed items y with x
+NB. from forum post
+NB. http://www.jsoftware.com/pipermail/programming/2007-June/007077.html
+NB. eg. '","' join 'item1';'item2'
+NB. eg. LF join 'item1';'item2'
+NB. eg. 99 join <&> i.8
+join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  NB. ignore $.
 
 NB.*makeIni v Create string with INI format from 5-column boxed table
 NB. returns literal in format of INI file.
 NB. y is 5-column boxed table (result of parseIni)
 makeIni=: 3 : 0
-  ini=. 2}."1 y NB. drop lowercase columns
+  ini=. _3{."1 y NB. drop lowercase columns
   'snmes keys'=. split |: ini
   secs=. snmes </. |: keys
   ini=. (~.snmes) makeIniSection each secs
   (],LF -. {:) LF join ini NB. join with LFs and ensure trailing LF
 )
 
-NB.*makeIniSection v 
+NB.*makeIniSection v creates string with INI format
+NB. returns literal representation of an Ini section
+NB. y is boxed list of boxed table representations of Ini sections
+NB. x is boxed list of section names corresponding to items of y
 makeIniSection=: 4 : 0
   'snme sec'=. x;<y
-  snme =. '[',snme,']'
+  snme=. '[',snme,']'
   msk=. -.*#&>{."1 sec NB. where no keyname
   sec=. <@('='&join)"1 sec
   sec=. msk }.&.> sec  NB. drop first ('=') where no keyname
   LF join snme;sec  NB. join lines with LFs
 )
 
+NB.*makeString v Creates space-delimited string from numeric list, list of boxed literals or numbers
+NB. returns space-delimited string or unchanged y, if y is literal
+NB. y is string, numeric list, list of boxed literals and/or numbers
+makeString=: [: ' '&join 8!:0
+
 NB.*parseIni v Parse string contents of an INI file
-NB. returns 5-column boxed table 
+NB. returns 5-column boxed table
 NB. (lc section name;lc key name;section name;key name;key string & comments)
 NB. y is string contents of an Ini file
 parseIni=: 3 :0
@@ -266,7 +270,7 @@ parseIniSection=: 3 : 0
   NB. keys=. (dtb@(x&taketo)) each keys NB. drop comment & trailing whitespace
   msk=. 0< #@> keys NB. lines of non-zero length
   keys=. msk#keys
-  NB. |."1 > |.@(<;._1@('='&,)) &.> keys 
+  NB. |."1 > |.@(<;._1@('='&,)) &.> keys
   >(_2{. [: <;._1 '==',]) &.> keys NB. box on '='
 )
 
@@ -274,9 +278,16 @@ patsection=: rxcomp '\[[[:alnum:]]+\]' NB. compile pattern
 NB. patsection rxmatches inistr
 NB. rxfree patsection  NB. frees compiled pattern resources
 
+
+NB. =========================================================
+NB. Declarations in z locale
+
 getIniAllSections_z_=: getIniAllSections_rgsini_
 getIniString_z_=: getIniString_rgsini_
 getIniValue_z_=: getIniValue_rgsini_
 getIniIndex_z_=: getIniIndex_rgsini_
+updateIniString_z_=: updateIniString_rgsini_
+writeIniAllSections_z_=: writeIniAllSections_rgsini_
+writeIniString_z_=: writeIniString_rgsini_
 writePPString_z_=: writePPString_rgsini_
 makeVals_z_=: makeVals_rgsini_
