@@ -1,8 +1,10 @@
 NB. Tests for inifiles
+NB. Select whole file and choose Run|Selection
+
    load '~user/projects/utils/inifiles.ijs'
    INIPATH=: jpath '~temp/example.ini'
    NB. copy example.ini to temp folder
-   INIPATH fwrites~ freads jpath '~users/projects/utils/inifiles_example.ini'
+   INIPATH fwrites~ freads jpath '~user/projects/utils/inifiles_example.ini'
    freads INIPATH
 
 NB. Test1: test that parseIni and makeIni are inverse of each other
@@ -67,6 +69,7 @@ NB. Test7: update/writeIniString for new key and get it again
 
 NB. Test8: write change to new INI file
    INIPATH2=: jpath '~temp/example2.ini'
+   ferase INIPATH2
    (INIPATH2,' already exists. Test6c') assert -.fexist INIPATH2
    ini1=: getIniAllSections INIPATH
    newval=: 'Pink Blue Yellow'
@@ -76,20 +79,27 @@ NB. Test8: write change to new INI file
    'results should match. Test8a' assert newval-:res2
    'results should not match. Test8b' assert -.newval-:res3
 
-NB. look up multiple keynames at once
+NB. Work with multiple keynames at once
    ]keys2get=. ('brkatmodule';'control'),('ColoRs';'Formats'),:'Birthdate';'User'
-   ini1 getIniStrings keys2get
-   ini1 <@getIniString"_ 1 keys2get
-   ini1 <@getIniValue"_ 1 keys2get
+   ]keys2upd8=: ('Mod2';('Pink';'Blue');2006 3 3),.keys2get
 
-NB. if keyname is unique across all sections then
-NB. can safely lookup just on keyname
-   ini1 getIniStrings ,.{."1 keys2get
-   ini1 <@getIniString"_ 0 {."1 keys2get
-   ini1 <@getIniValue"_ 0 {."1 keys2get
+   ini2=: updateIniStrings keys2upd8,.<INIPATH
+   ini3=: ini1 updateIniStrings ('Mod2';'Pink Blue';2006 3 3),.keys2get
+   'inis should match. Test9a' assert ini2-:ini3
 
-NB. update multiple keynames at once
-   updateIniStrings ('Mod2';'Pink Blue';2006 3 3),.keys2get,.<INIPATH
-   ini1 updateIniStrings ('Mod2';'Pink Blue';2006 3 3),.keys2get
+   res1=: ini3 getIniStrings keys2get
+   'results should match. Test 9b' assert res1-: makeString_rgsini_ each {."1 keys2upd8
+
+   res2=: ini3 getIniValues keys2get
+   NB.ini1 <@getIniValue"_ 1 keys2get  NB. alternative format
+   NB.ini1 <@getIniValue"_ 0 {."1 keys2get
+   'results should match. Test 9c' assert res2-: {."1 keys2upd8
+
+   res3=: getIniValues keys2get,.<INIPATH
+   'results should not match. Test 9d' assert -.res3-: {."1 keys2upd8
+   res4=: writeIniStrings keys2upd8,.<INIPATH
+   res5=: getIniValues keys2get,.<INIPATH
+   'results should match. Test 9e' assert res5 -: {."1 keys2upd8
+NB.! test writing multiple keys at once
    
-   
+   'All tests passed OK'
