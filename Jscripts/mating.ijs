@@ -86,7 +86,7 @@ breedPopln=: 3 : 0
       if. okansim=. runAnimalSim y do.
         if. stge=1 do.
           inipath=. 'animinipath' getFnme y
-          writePPString inipath;'Control';'Resume';1
+          writeIniStrings 1;'Resume';'Control';inipath
         end.
         stge=. (>:checkCycle y){1 21 99
         updateCaseStage stge;y
@@ -155,11 +155,11 @@ NB. y is caseinstance id
 runAnimalSim=: 3 : 0
   inipath=. 'animinipath' getFnme y
   if. -.fexist inipath do. 0 return. end.
-  crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  crcyc=. getIniValue key=. (1&transName 'currcycle');'GenCycle';inipath
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstpath' getFnme y do. NB.AnimalSim error
     if. crcyc< getIniValue key do.
-      writePPString key,<crcyc  NB. reset CurrYear
+      writeIniStrings crcyc;key  NB. reset CurrYear
     end.
     0
   else.

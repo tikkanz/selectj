@@ -50,7 +50,7 @@ NB.*storeCaseInstance v stores summary info from completed case instance in summ
 storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y NB. get names of Files to store
   zipnm=. 'sumryzippath' getFnme y  NB. get name of zip file to store in
-  dirinf=. 'caseinstpath' getFnme y
+  dirinf=. '' NB. 'caseinstpath' getFnme y
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. NB. update only if all files successfully zipped
     'storecaseinst' updateInfo y  NB. Update ci_stored in caseinstances table

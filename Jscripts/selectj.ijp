@@ -21,9 +21,7 @@ PRIMARYFILES=: 0 : 0
 ~user/projects/utils/passwdhash
 ~user/projects/utils/dir_add
 ~user/projects/utils/dirtrees
-~user/projects/utils/inifiles
 ~user/projects/utils/invtables
-~user/projects/utils/extractzip
 ~user/projects/utils/ziptrees
 )
 
@@ -34,6 +32,7 @@ dates
 dir
 dll
 files
+inifiles
 keyfiles
 md5
 platimg
@@ -61,6 +60,7 @@ OTHERFILES=: 0 : 0
 ~home/documents/web/selectj/public/admin/admin.jhp
 ~home/documents/web/selectj/public/admin/test.jhp
 ~home/documents/web/selectj/public/case.jhp
+~home/documents/web/selectj/public/case_adm.jhp
 ~home/documents/web/selectj/public/course.jhp
 ~home/documents/web/selectj/public/coursesumry.jhp
 ~home/documents/web/selectj/public/coursesumry_plot.jhp

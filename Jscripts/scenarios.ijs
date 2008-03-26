@@ -57,7 +57,7 @@ NB. y is "new" INI key name to get key value for
 NB. x is 5-column parsed Ini file
 NB. lookup is case insensitive
 getIniVals=: 4 : 0
-  x getIniValue ;1 transName y
+  x getIniValue 1 transName y
 )
 
 
@@ -67,7 +67,7 @@ NB. y is "new" INI key name to get key value for
 NB. x is 5-column parsed Ini file
 NB. lookup is case insensitive
 getIniIdx=: 4 : 0
- 'idx ini'=. 2{.!.a: x getIniIndex ;1 transName y
+ 'idx ini'=. 2{.!.a: x getIniIndex 1 transName y
   idx
 )
 
@@ -255,7 +255,7 @@ updateKeyState=: 4 : 0
       else.
         if. (<'trts2select') e. x do. NB. if trts2select set by form then
           kval=. (# qparamList 'trts2select')#1 NB. use 1 for each objectvtrts
-        else. key2upd8=. '' end. NB. don't update key
+        else. key2upd8=. 'NOTAVALIDKEY' end. NB. don't update key
       end.
     case. 'objectvtrts'    do.
       if. (<'trts2select') e. x do. NB. only calculate if trts2select is set in form
@@ -265,7 +265,7 @@ updateKeyState=: 4 : 0
         else. sm=. <'phen' end. NB. default to phenotype if selnmeth not set
         kval=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval NB. use birth rank for pNLB
-      else. key2upd8=. '' end. NB. don't update key
+      else. key2upd8=. 'NOTAVALIDKEY' end. NB. don't update key
     case. 'phens2sim' do.
     NB. unique traits from trtsrecorded (and trts2select if selnmeth is phen) (and trts2summ if summtype includes phen)
       frmtyps=. 'selnmeth';'summtype'
@@ -286,7 +286,7 @@ updateKeyState=: 4 : 0
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. NB. default to phenotype & genotype if summtype not set
         kval=. st makeTrtColLbl trts NB. prefix/suffix trts2summ traits based on summtype
-      else. key2upd8=. '' end.
+      else. key2upd8=. 'NOTAVALIDKEY' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. NB. only calculate if trts2select is set in form
         trts=. qparamList 'trts2select'
@@ -296,7 +296,7 @@ updateKeyState=: 4 : 0
         trtflds=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         nttrt=. getTrtsNot ANIMINI getIniVals key2upd8 NB.non-trait fields already in SelectListCols
         kval=. nttrt,trtflds
-      else. key2upd8=. '' end.
+      else. key2upd8=. 'NOTAVALIDKEY' end.
     case. 'trts2sim' do.
     NB. unique traits from trtsrecorded,trts2select,trts2summ
       frmtrts=. ;:'trtsrecorded trts2select trts2summ'
@@ -309,9 +309,12 @@ updateKeyState=: 4 : 0
     case. do. NB. default case
       kval=. qparamList key2upd8
   end.
-  kidx=. ANIMINI getIniIdx key2upd8
-  if. -.''-:kidx do.
-    ANIMINI=: (<kval) (<kidx,4) } ANIMINI
+  if. -. key2upd8-:'NOTAVALIDKEY' do.
+    ANIMINI=: ANIMINI updateIniStrings kval;key2upd8
   end.
+NB.   kidx=. ANIMINI getIniIdx key2upd8
+NB.   if. kidx<#ANIMINI do.
+NB.     ANIMINI=: (<kval) (<kidx,4) } ANIMINI
+NB.   end.
   ''
 )

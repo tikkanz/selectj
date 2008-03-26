@@ -11,24 +11,24 @@ NB.  * updateInfo
 
 NB. =========================================================
 NB. Available Database SELECT query names in their classes
-NB. y is mostly case instance id
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
+NB. y is mostly case instance id 
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
-NB. y is mostly user id
+NB. y is mostly user id 
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
 QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson'
 
-NB. y is mostly offering id
+NB. y is mostly offering id 
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys'
 UPDof=: ;:''
 INSof=: ;:''
 
-NB. y is mostly session id
+NB. y is mostly session id 
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
@@ -46,7 +46,7 @@ NB. (table, tablestr, row, column, item etc)
   DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
-DBtable   =: DBtable, ;:'sessioninfo'
+DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus'
 DBcol     =: ;:'caseinst2expire username'
@@ -187,7 +187,7 @@ updateScenarioInfo=: 3 : 0
   select. infotyp
     case. <'animini' do.
       fnme=. <'animinipath' getFnme y
-      res=. writePPString"1 fnme,. 2}."1 ANIMINI
+      res=. ANIMINI writeIniAllSections fnme 
   end.
 )
 
@@ -199,7 +199,7 @@ NB. y is ciid
 NB. x is string describing file to get
 getFnme=: 4 : 0
   is2ndlevel=. (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/';'~..CGI/'
-  basefldr=. jpath IFCONSOLE{:: 'c:/d/web/selectj/';is2ndlevel
+  basefldr=. jpath IFCONSOLE{:: '~home/documents/web/selectj/';is2ndlevel
   NB. basefldr=. IFCONSOLE{:: 'c:/d/web/selectj/';'~.CGI/'
   NB. basefldr=. '~.CGI/' NB. 'd:\web\selectj\'
   select. x
