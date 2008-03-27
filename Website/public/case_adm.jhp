@@ -1,0 +1,81 @@
+<%
+load '~.CGI/code/selectj.ijs'
+try.
+  action=: ' ' taketo tolower qparam 'action'
+  if. -.''-:action do.  NB. if action specified check user/case/offering is valid
+  	 if. 0-: uofcsid=. validCase'' do.
+	   DeleteCookie 'CaseID' 
+	   ('action';'home') redirect 'course.jhp'
+	   return.
+     end.
+     ciid=. getCaseInstance uofcsid     
+  end.
+  select. action
+	case. 'home';'chgdtxt';'chgdusrdescr' do.
+      page=. '~CGI/case_home.asp'  NB. destination page
+	  'cistage cistored'=: 'casestage' getInfo ciid
+	  'uid ofid csid'=. uofcsid
+	  setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      setcolnames 'casedetails' getInfo csid;cistage
+      setcolnames 'caseinstname' getInfo ciid
+	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      cinstid=: ciid
+      errormsg=: qparam 'err'
+	  transfer page
+	case. 'chgparams' do.
+	  updateSelnDetails ciid NB. update caseinstance directory info from submitted form
+      NB. transfer 'page' NB. causes error so can see problem
+	  ('action';'chgdparams') redirect 'case.jhp'
+    case. 'chgusrdescr' do.
+      ciun=. qparam 'ciusrname'
+      ciud=. qparam 'ciusrdescr'
+      'caseinstusrdescr' updateInfo ciun;ciud;ciid
+	  ('action';'chgdusrdescr') redirect 'case.jhp'
+    case. 'edtxt' do.
+      NB. need to validate user rights at some stage
+	  page=. '~CGI/case_adm_',action,'.asp'
+	  'cistage cistored'=: 'casestage' getInfo ciid
+	  'uid ofid csid'=. uofcsid
+	  setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      NB. setcolnames 'casedetails' getInfo csid;cistage
+	  caseform=: ('case',action) buildForm csid;cistage
+	  transfer page
+	case. 'params';'usrdescr' do.
+	  page=. '~CGI/case_',action,'.asp'
+	  'cistage cistored'=: 'casestage' getInfo ciid
+	  'uid ofid csid'=. uofcsid
+	  setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      setcolnames 'casedetails' getInfo csid;11
+      setcolnames 'caseinstname' getInfo ciid
+	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      cinstid=: ciid
+	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
+	  transfer page
+	case. do.  NB. default action
+	  csid=. 0 qparam 'cs_id'
+	  if. 0-: validCase csid do.
+    	DeleteCookie 'CaseID'
+        ('action';'home') redirect 'course.jhp'
+	  else.
+    	csid SetCookie 'CaseID'
+	    ('action';'home') redirect 'case_adm.jhp'
+	  end.
+  end.
+catch.
+  ContentType'text/html'[ Expires 0
+  Error=: 13!:12''
+  println '<html><body><p>'
+  println 'There was an error: <pre>',Error
+  println $ANIMINI_z_
+  println CGIKEYS
+  println CGIVALS
+  println CGIFILES
+  println CGIMIMES
+  println COOKIEKEYS
+  println COOKIEVALS
+  println '</pre></p></body></html>'
+end.
+%>

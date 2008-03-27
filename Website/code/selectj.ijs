@@ -7,6 +7,7 @@ script_z_ '~system/main/dates.ijs'
 script_z_ '~system/main/dir.ijs'
 script_z_ '~system/main/dll.ijs'
 script_z_ '~system/main/files.ijs'
+script_z_ '~addons/general/inifiles/inifiles.ijs'
 script_z_ '~system/packages/files/keyfiles.ijs'
 script_z_ '~addons/convert/misc/md5.ijs'
 script_z_ '~addons/media/platimg/platimg.ijs'
@@ -500,7 +501,7 @@ updateCaseStage=: 3 : 0
 storeCaseInstance=: 3 :0
   nms=. <"1&dtb"1 'sumryfiles' getFnme y 
   zipnm=. 'sumryzippath' getFnme y  
-  dirinf=. 'caseinstpath' getFnme y
+  dirinf=. '' 
   z=. (zipnm;dirinf) zipfiles nms
   if. (#nms)={:z do. 
     'storecaseinst' updateInfo y  
@@ -575,11 +576,11 @@ transType=: TransNames |."1~]
 transName=: (]keyval [:transType [)^:( (TransNames{"1~[) e.~ [: boxopen ])
 
 getIniVals=: 4 : 0
-  x getIniValue ;1 transName y
+  x getIniValue 1 transName y
 )
 
 getIniIdx=: 4 : 0
- 'idx ini'=. 2{.!.a: x getIniIndex ;1 transName y
+ 'idx ini'=. 2{.!.a: x getIniIndex 1 transName y
   idx
 )
 prefsuf=: [:,<@;@(1&C.)@,"1 0/
@@ -704,7 +705,7 @@ updateKeyState=: 4 : 0
       else.
         if. (<'trts2select') e. x do. 
           kval=. (# qparamList 'trts2select')#1 
-        else. key2upd8=. '' end. 
+        else. key2upd8=. 'NOTAVALIDKEY' end. 
       end.
     case. 'objectvtrts'    do.
       if. (<'trts2select') e. x do. 
@@ -714,7 +715,7 @@ updateKeyState=: 4 : 0
         else. sm=. <'phen' end. 
         kval=. sm makeTrtColLbl trts 
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
-      else. key2upd8=. '' end. 
+      else. key2upd8=. 'NOTAVALIDKEY' end. 
     case. 'phens2sim' do.
     
       frmtyps=. 'selnmeth';'summtype'
@@ -735,7 +736,7 @@ updateKeyState=: 4 : 0
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. 
         kval=. st makeTrtColLbl trts 
-      else. key2upd8=. '' end.
+      else. key2upd8=. 'NOTAVALIDKEY' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. 
         trts=. qparamList 'trts2select'
@@ -745,7 +746,7 @@ updateKeyState=: 4 : 0
         trtflds=. sm makeTrtColLbl trts 
         nttrt=. getTrtsNot ANIMINI getIniVals key2upd8 
         kval=. nttrt,trtflds
-      else. key2upd8=. '' end.
+      else. key2upd8=. 'NOTAVALIDKEY' end.
     case. 'trts2sim' do.
     
       frmtrts=. ;:'trtsrecorded trts2select trts2summ'
@@ -758,9 +759,8 @@ updateKeyState=: 4 : 0
     case. do. 
       kval=. qparamList key2upd8
   end.
-  kidx=. ANIMINI getIniIdx key2upd8
-  if. -.''-:kidx do.
-    ANIMINI=: (<kval) (<kidx,4) } ANIMINI
+  if. -. key2upd8-:'NOTAVALIDKEY' do.
+    ANIMINI=: ANIMINI updateIniStrings kval;key2upd8
   end.
   ''
 )
@@ -830,7 +830,7 @@ breedPopln=: 3 : 0
       if. okansim=. runAnimalSim y do.
         if. stge=1 do.
           inipath=. 'animinipath' getFnme y
-          writePPString inipath;'Control';'Resume';1
+          writeIniStrings 1;'Resume';'Control';inipath
         end.
         stge=. (>:checkCycle y){1 21 99
         updateCaseStage stge;y
@@ -886,11 +886,11 @@ checkCycle=: 3 : 0
 runAnimalSim=: 3 : 0
   inipath=. 'animinipath' getFnme y
   if. -.fexist inipath do. 0 return. end.
-  crcyc=. getIniValue key=. inipath;'GenCycle'; 1&transName 'currcycle'
+  crcyc=. getIniValue key=. (1&transName 'currcycle');'GenCycle';inipath
   _1 fork '"c:\program files\animalsim\animalsim" ',inipath
   if. fexist  'errorlog.txt',~ cifldr=. 'caseinstpath' getFnme y do. 
     if. crcyc< getIniValue key do.
-      writePPString key,<crcyc  
+      writeIniStrings crcyc;key  
     end.
     0
   else.
@@ -1165,7 +1165,7 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1185,7 +1185,7 @@ DBINS=: INSci,INSur,INSof,INSss
   DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
-DBtable   =: DBtable, ;:'sessioninfo'
+DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus'
 DBcol     =: ;:'caseinst2expire username'
@@ -1300,14 +1300,14 @@ updateScenarioInfo=: 3 : 0
   select. infotyp
     case. <'animini' do.
       fnme=. <'animinipath' getFnme y
-      res=. writePPString"1 fnme,. 2}."1 ANIMINI
+      res=. ANIMINI writeIniAllSections fnme 
   end.
 )
 
 pathdelim=: 4 : '}.;([:x&,,)each y'  
 getFnme=: 4 : 0
   is2ndlevel=. (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/';'~..CGI/'
-  basefldr=. jpath IFCONSOLE{:: 'c:/d/web/selectj/';is2ndlevel
+  basefldr=. jpath IFCONSOLE{:: '~home/documents/web/selectj/';is2ndlevel
   
   
   select. x
@@ -1571,6 +1571,14 @@ sqlupd_delstoredcaseinst=: 0 : 0
   UPDATE caseinstances
   SET ci_stored=0
   WHERE ci_id=?;
+)
+
+sqlsel_txtblks=: 0 : 0
+  SELECT 
+      xn_id,
+      xn_name
+  FROM 
+      textblocks;
 )
 sqlsel_animinipath=: 0 : 0
   SELECT sd.sd_filen sd_filen 
@@ -1918,7 +1926,13 @@ buildForm=: 3 : 0
       buildParamsForm y
     case. 'caseusrdescr' do.
       ciid=. y
-      
+    case. 'caseedtxt' do.
+      'csid cistage'=. y
+      'vals cnts'=. |:}.'txtblks' getInfo ''
+      idx=. vals i. cistage
+      optatts=.((<'selected') (<idx,0)} ((#cnts),2)$<''),:"1 (('value');"1 0 vals) 
+      selatts=. ('name';'cx_xnid'),('id';'cx_xnid'),:('onchange';'do this function')
+      frm=. selatts atr'select'elm~ optatts atr"2 1 cnts txt"1 elm"1 'option'
     case. 'sumryplotsrc' do.
       ciids=. y
       page=. 'coursesumry_plot.jhp'
@@ -2296,7 +2310,7 @@ coclass 'rgssqliteq'
     ConStr=:  CONNECTSTR_base_  
   else.
   is2ndlevel=: (+./('public',PATHSEP_j_) E. jpath '~CGI'){:: '~.CGI/code/';'~..CGI/code/'
-  ConStr=: IFCONSOLE{:: 'c:/d/web/selectj/code/';is2ndlevel
+  ConStr=: IFCONSOLE{:: '~home/documents/web/selectj/code/';is2ndlevel
   ConStr=: jpath ConStr,'select_cmplx.sqlite'
 end.
 )
@@ -2392,9 +2406,8 @@ randPassword_z_=: randPassword_rgspasswd_
 require 'files'
 
 coclass 'rgsdiradd'
-
-addPS=: , PATHSEP_j_ -. {:          
-dropPS=: }:^:(PATHSEP_j_={:)  
+addPS=: , PATHSEP_j_ -. {:
+dropPS=: }:^:(PATHSEP_j_={:)
 dircreate=: 3 : 0
   y=. boxxopen y
   msk=. -.direxist y
@@ -2403,13 +2416,20 @@ dircreate=: 3 : 0
   msk expand ,res
 )
 direxist=: 2 = ftype&>@: boxopen
- 
- 
- 
-
-
+pathcreate=: 3 : 0
+  todir=. addPS jhostpath y
+  todirs=. }. ,each /\ <;.2 todir 
+  msk=. -.direxist todirs 
+  
+  
+  
+  msk=. 0 (i. msk i: 0)}msk
+  dircreate msk#todirs 
+)
 
 dircreate_z_=: dircreate_rgsdiradd_
+direxist_z_=: direxist_rgsdiradd_
+pathcreate_z_=: pathcreate_rgsdiradd_
 addPS_z_=: addPS_rgsdiradd_
 dropPS_z_=: dropPS_rgsdiradd_
 require 'dir files'
@@ -2419,21 +2439,18 @@ if. -.IFCONSOLE do.
 end.
 )
 coclass 'rgstrees'
-
-addPS=: , PATHSEP_j_ -. {:          
-dropPS=: }:^:(PATHSEP_j_={:)  
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
   if. -.direxist fromdir do. 0 0 return. end. 
   dprf=. ] }.&.>~ [: # [  
-  aprf=. ] ,&.>~ [: < [    
-  fromdirs=. dirpath fromdir
+  aprf=. ]  ,&.>~ [: < [    
+  fromdirs=. }. dirpath fromdir
   todirs=. todir aprf fromdir dprf fromdirs
-  todirs=. (}:}.,each/\ <;.2 todir), todirs
   fromfiles=. {."1 dirtree fromdir
   tofiles=. todir aprf fromdir dprf fromfiles
-  resdir=. dircreate todirs
-  resfile=. 0&< @>tofiles fcopy fromfiles
+  resdir=. pathcreate todir
+  resdir=. resdir, dircreate todirs
+  resfile=. 0&< @>tofiles fcopy"0 fromfiles
   (+/resdir),+/resfile
 )
 deltree=: 3 : 0
@@ -2442,132 +2459,10 @@ deltree=: 3 : 0
     *./ res,0<ferase |.dirpath y
   catch. 0 end.
 )
-
-direxist=: 2 = ftype&>@: boxopen
-
-fcopy=: 4 : 0
-  dat=. fread each boxopen y
-  dat fwrite each boxopen x
-)
+fcopy=: fwrite~ fread
 
 copytree_z_=: copytree_rgstrees_
 deltree_z_=: deltree_rgstrees_
-require 'files regex strings'
-coclass 'rgsini'
-
-Note 'get Ini string'
-inistr=. freads 'animinipath' getFnme 2  
-inistr=. toJ zread <"1&dtb"1 'animinipathSTORED' getFnme y 
-)
-
-boxtolower=: 13 : '($y) $ <;._2 tolower ; y ,each {:a.'
-getIniAllSections=: 3 :0
-  '' getIniAllSections y
-  :
-  'fln delim'=. 2{. boxopen y
-  ini=. x
-  if. -.*#ini do. 
-    if. -.fexist fln do. '' return. end. 
-    ini=. freads fln
-  end.
-  if. *(L.=0:) ini do. 
-    if. -.*#delim do. delim=. '#' end. 
-    ini=. delim parseIni ini
-  else. 
-    ini
-  end.
-)
-getIniSectionNames=: 3 : 0
-  '' getIniSectionNames y
-  :
-  'fln delim'=. 2{. boxopen y
-  if. -.*#delim do. delim=. '#' end. 
-  ini=. x
-  if. -.*#ini do. 
-    if. -.fexist fln do. '' return. end. 
-    ini=. freads fln
-  end.
-  (<'[]')-.~each patsection rxall ini
-)
-getIniIndex=: 3 :0
-  '' getIniIndex y
-  :
-  'keyn secn fln delim'=. 4{. boxopen y
-  if. -.*#delim do. delim=. '#' end. 
-  ini=. x
-  ini=. ini getIniAllSections fln;delim
-  if. -.*#ini do. '' return. end. 
-  parsed=. (L.=0:) x
-  
-  if. -.*#secn do. 
-    if. (#ini) = i=. (1{"1 ini) i. < tolower keyn do.
-      i=.'' 
-    end.
-  else. 
-    if. (#ini) = i=. (2{."1 ini) i. boxtolower secn;keyn do.
-      i=.'' 
-    end.
-  end.
-  i;< parsed#ini  
-)
-getIniString=: 3 : 0
-  '' getIniString y
-  :
-  'i ini'=. 2{.!.a: x getIniIndex y
-  if. -.*#ini do. ini=.x end. 
-  if. ''-:i do. i
-  else. (<i,4) {:: ini end.
-)
-getIniValue=: [: makeVals getIniString
-join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
-makeString=:[: ' '&join 8!:0
-makeVals=: 3 : 0
-  _999999 makeVals y
-  :
-  err=. x
-  if. L.y do. y return. end. 
-  val=. ', ' charsub y  
-  if. -.+./err= nums=. err&". val do. val=. nums end.
-  if. ' ' e. val do. val=. <;._1 ' ',deb val end.
-  val
-)
-writePPString=: 3 : 0
-  require 'winapi'
-  'fnme snme knme val'=. y
-  val=. makeString val
-  res=. 'WritePrivateProfileStringA'win32api snme;knme;val;fnme
-  0{:: res
-)
-parseIni=: 3 :0
-  '#' parseIni y
-  :
-  ini=. }.(patsection&rxmatches rxcut ]) y 
-  'snmes secs'=. <"1 |: (] $~ 2 ,~ -:@#) ini 
-  snmes=. (<'[]')-.~each snmes
-  secs=. x parseIniSection each secs
-  nkys=. #&> secs
-  secs=. ;(nkys>0)#secs
-  ini=. (nkys#snmes),.secs
-  (([: boxtolower 2&{."1) ,. ]) ini
-)
-parseIniSection=: 3 : 0
-  '#' parseIniSection y
-  :
-  keys=. }.<;._2 y 
-  keys=. (dtb@(x&taketo)) each keys 
-  msk=. 0< #@> keys 
-  keys=. msk#keys
-  >(<;._1@('='&,)each) keys 
-)
-
-patsection=: rxcomp '\[[[:alnum:]]+\]' 
-getIniAllSections_z_=: getIniAllSections_rgsini_
-getIniString_z_=: getIniString_rgsini_
-getIniValue_z_=: getIniValue_rgsini_
-getIniIndex_z_=: getIniIndex_rgsini_
-writePPString_z_=: writePPString_rgsini_
-makeVals_z_=: makeVals_rgsini_
-
 coclass 'z'
 
 ifa =: <@(>"1)@|:              
@@ -2646,36 +2541,6 @@ key=: 1 3 2{invtble
 dat=: 4 5 6{invtble
 ,.each key tkeytble (<tfreq key),key tkeyavg dat
 )
-coclass 'rgsunzip'
-
-3 : 0 ''
-  if. -.IFUNIX do. require 'task' end.
-)
-
-UNZIP=: '"',(jpath '~tools/zip/unzip.exe'),'" -o -C '
-dquote=: '"'&, @ (,&'"')
-hostcmd=: [: 2!:0 '(' , ] , ' || true)'"_
-shellcmd=: 3 : 0
-  if. IFUNIX do.
-    hostcmd y
-  else.
-    spawn y
-  end.
-)
-unzip=: 3 : 0
-  'file dir'=.dquote each y
-  e=. 'Unexpected error'
-  if. IFUNIX do.
-    e=. shellcmd 'tar -xzf ',file,' -C ',dir
-  else.
-    dir=. (_2&}. , PATHSEP_j_ -.~ _2&{.) dir
-    e=. shellcmd UNZIP,' ',file,' -d ',dir
-    
-  end.
-  e
-)
-
-unzip_z_=: unzip_rgsunzip_
 require 'dir arc/zip/zfiles'
 require 'strings files'  
 3 : 0 ''
@@ -2687,24 +2552,21 @@ require 'strings files'
 coclass 'rgsztrees'
 unziptree=: 4 : 0
   'todir fromzip'=. x;y
-  if. -.fexist fromzip do. 0 0 return. end. 
   todir=. addPS todir
+  if. -.fexist fromzip do. 0 0 return. end. 
   fromall=. /:~{."1 zdir fromzip
   dirmsk=. '/'={:@> fromall
   fromfiles=. (-.dirmsk)#fromall
   repps=. (<'/',PATHSEP_j_) charsub&.> ] 
   aprf=. ] ,&.>~ [: < [   
   tofiles=. repps fromfiles
-  todirs=. }. ,each /\ <;.2 todir 
-  msk=. -.direxist todirs
-  
-  msk=. 0 (i. msk i. 0)}msk
-  resdir=. dircreate msk#todirs 
   tofiles=. todir aprf tofiles
   fromfiles=. fromfiles,.<fromzip
   todirs=. repps dirmsk#fromall
+  todirs=. ~.;(,each /\)@(<;.2) each todirs 
   todirs=. todir aprf todirs
-  resdir=.resdir, dircreate todirs  
+  resdir=. pathcreate todir 
+  resdir=. resdir, dircreate todirs  
   resfile=. 0&<@>tofiles zextract"0 1 fromfiles 
   (+/resdir),+/resfile
 )
@@ -2720,60 +2582,47 @@ ziptree=: 4 : 0
   fromfiles=. {."1 dirtree fromdir
   tofiles=. repps fromdir dprf fromfiles
   tofiles=. tofiles,.<tozip
-  zipdir=. PATHSEP_j_ dropafterlast tozip
-  resdir=. dircreate }.,each/\ <;.2  zipdir 
+  zipdir=. PATHSEP_j_ dropto&.|. tozip
+  resdir=. pathcreate zipdir 
   resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
   resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
   (+/resdir),+/resfile
 )
 zipfiles=: 4 : 0
   fromfiles=. boxopen y
-  'tozip dirinf'=. 2{.!.(<1) boxopen x
+  'tozip dirinf'=. 2{. boxopen x
   if. *./-.fexist @> fromfiles do. 0 return. end. 
   repps=. (<PATHSEP_j_,'/') charsub&.> ] 
   dprf=. ] }.&.>~ [: # [  
-  if. (0-:dirinf) +. (1-:dirinf) *. 1=#fromfiles do.
-    tofiles=. '/' takeafterlast each repps fromfiles
+  aprf=. ]  ,&.>~ [: < [   
+  if. (0-:dirinf) +. (''-:dirinf) *. 1=#fromfiles do. 
+    tofiles=. '/' taketo&.|. each repps fromfiles
     tofiles=. tofiles,.<tozip
     todirs=. ''
   else.
+    basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles 
+    basedir=. PATHSEP_j_ dropto&.|. basedir
     if. 1-:dirinf do.
-      basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles 
-      basedir=. PATHSEP_j_ dropafterlast basedir
+      dirinf=. basedir 
     else.
-      basedir=. (, ('/' -. {:))^:(*@#) > repps <dirinf 
+      dirinf=. (, ('/' -. {:))^:(*@#) > repps <dirinf 
     end.
-    tofiles=. repps basedir dprf fromfiles 
-    todirs=. '/' dropafterlast each tofiles 
+    tofiles=. repps dirinf aprf basedir dprf fromfiles 
+    todirs=. '/' dropto&.|. each tofiles 
     todirs=. todirs #~ (a:~:todirs) *. ~: tolower each todirs 
     todirs=. todirs,.<tozip
     tofiles=. tofiles,.<tozip
   end.
-  zipdir=. PATHSEP_j_ dropafterlast tozip
-  zipdir=. }.,each/\ <;.2  zipdir
-  msk=. -.direxist zipdir
-  
-  msk=. 0 (i. msk i. 0)}msk     
-  resdir=. dircreate msk#zipdir 
+  zipdir=. PATHSEP_j_ dropto&.|. tozip
+  resdir=. pathcreate zipdir 
   resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
   resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
   (+/resdir),+/resfile
 )
 ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
 
-direxist=: 2 = ftype&>@: boxopen
-
-zextract=: 4 : 0
-  dat=. zread y
-  dat fwrite x
-)
-
-zcompress=: 4 : 0
-  dat=. fread y
-  dat zwrite x
-)
-dropafterlast=: [: |. [ dropto [: |. ]
-takeafterlast=: ] }.~ [: >: i:~
+zextract=: fwrite~ zread
+zcompress=: zwrite~ fread
 
 unziptree_z_=: unziptree_rgsztrees_
 zipfiles_z_=: zipfiles_rgsztrees_

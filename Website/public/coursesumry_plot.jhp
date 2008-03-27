@@ -11,7 +11,7 @@ load '~.CGI/code/selectj.ijs'
   fpdf=. fpth,'sumryplot.pdf'
   fpng=. fpth,'sumryplot.png'
   NB. convert to png using ghostscript
-  _1 fork '"c:\Program Files\gs\gs8.60\bin\gswin32c.exe" -dSAFER -dBATCH -dNOPAUSE -r96 -q -sDEVICE=png16m -sOutputFile=',fpng,' ',fpdf
+  _1 fork '"c:\Program Files\gs\gs8.61\bin\gswin32c.exe" -dSAFER -dBATCH -dNOPAUSE -r96 -q -sDEVICE=png16m -sOutputFile=',fpng,' ',fpdf
   transfer fpng
 NB.   image=. readimg fpng   NB. read png file
 NB. ContentType'image/png' [ Expires 0
