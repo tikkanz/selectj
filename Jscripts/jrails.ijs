@@ -197,7 +197,13 @@ buildForm=: 3 : 0
       buildParamsForm y
     case. 'caseusrdescr' do.
       ciid=. y
-      
+    case. 'caseedtxt' do.
+      'csid cistage'=. y
+      'vals cnts'=. |:}.'txtblks' getInfo ''
+      idx=. vals i. cistage
+      optatts=.((<'selected') (<idx,0)} ((#cnts),2)$<''),:"1 (('value');"1 0 vals) 
+      selatts=. ('name';'cx_xnid'),('id';'cx_xnid'),:('onchange';'do this function')
+      frm=. selatts atr'select'elm~ optatts atr"2 1 cnts txt"1 elm"1 'option'
     case. 'sumryplotsrc' do.
       ciids=. y
       page=. 'coursesumry_plot.jhp'

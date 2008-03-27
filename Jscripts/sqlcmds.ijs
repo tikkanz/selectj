@@ -178,6 +178,15 @@ sqlupd_delstoredcaseinst=: 0 : 0
   SET ci_stored=0
   WHERE ci_id=?;
 )
+
+sqlsel_txtblks=: 0 : 0
+  SELECT 
+      xn_id,
+      xn_name
+  FROM 
+      textblocks;
+)
+
 NB. =========================================================
 NB. Case SQL
 
