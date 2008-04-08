@@ -312,9 +312,5 @@ updateKeyState=: 4 : 0
   if. -. key2upd8-:'NOTAVALIDKEY' do.
     ANIMINI=: ANIMINI updateIniStrings kval;key2upd8
   end.
-NB.   kidx=. ANIMINI getIniIdx key2upd8
-NB.   if. kidx<#ANIMINI do.
-NB.     ANIMINI=: (<kval) (<kidx,4) } ANIMINI
-NB.   end.
   ''
 )
