@@ -130,6 +130,14 @@ sqlsel_caseinstpath=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
+sqlsel_caseinstbasics=: 0 : 0
+  SELECT ci.ci_urid urid ,
+         ci.ci_ofid ofid ,
+         ci.ci_csid csid
+  FROM  `caseinstances` ci 
+  WHERE (ci.ci_id =?);
+)
+
 sqlsel_scendefpath=: 0 : 0
   SELECT sd.sd_code sd_code 
   FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 

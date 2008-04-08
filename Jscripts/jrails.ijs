@@ -210,7 +210,7 @@ buildForm=: 3 : 0
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
       imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
       qry=. '?',args (<'ciids'),.{.ciids
-      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),: 'title';'Click to see PDF version of plot'
+      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),('target';'_blank'),: 'title';'Click to see PDF version of plot'
       frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y
