@@ -1682,20 +1682,20 @@ sqlsel_effrole=: 0 : 0
   GROUP BY of_id
 )
 
-
 sqlsel_coursedetails=: 0 : 0
-  SELECT off_info.of_id of_id ,
-        off_info.cr_name cr_name ,
-        off_info.cr_code cr_code ,
-        off_info.of_year of_year ,
-        off_info.sm_code sm_code ,
-        off_info.dm_code dm_code ,
-        off_info.pp_adminfname pp_adminfname ,
-        off_info.pp_adminlname pp_adminlname ,
-        ox.ox_intro ox_intro 
-  FROM `offering_info` off_info INNER JOIN `offeringstext` ox 
-        ON ( `off_info`.`of_id` = `ox`.`ox_id` ) 
-  WHERE (off_info.of_id =?);
+SELECT off_info.of_id of_id,
+      off_info.cr_name cr_name,
+      off_info.cr_code cr_code,
+      off_info.of_year of_year,
+      off_info.sm_code sm_code,
+      off_info.dm_code dm_code,
+      off_info.pp_adminfname pp_adminfname,
+      off_info.pp_adminlname pp_adminlname,
+      ox.ox_intro ox_intro
+FROM  `offeringstext`  ox
+      INNER JOIN `offerings` off ON (ox.ox_id = off.of_oxid) 
+      INNER JOIN `offering_info` off_info ON (off.of_id = off_info.of_id) 
+WHERE (off_info.of_id=?)
 )
 
 sqlsel_coursename=: 0 : 0

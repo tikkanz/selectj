@@ -84,38 +84,24 @@ insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (2,2
 insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (3,2007,4,2,3);
 insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (7,2007,2,3,3);
 insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (5,'',4,2,1);
+--insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (1,2008,1,1,1);
+--insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (2,2008,1,1,1);
 
-update offeringstext set ox_intro='
+insert into offeringstext (ox_intro) values('This is dummy introductory text for this offering of your course. Please edit to replace with desired text');
+insert into offeringstext (ox_intro) values('
+All new users are automatically enrolled in to this course. It consists of a few basic
+Cases to give you a taste of what SelectJ and AnimalSim are capable of.</p>
+<p>Please feel free to explore the cases listed below.</p>
+<p>If you wish to enrol in other courses that use AnimalSim please contact your
+paper administrator.
+');
+insert into offeringstext (ox_intro) values('
 Lorem ipsum dolor sit amet consectetuer tempus lobortis Nunc Nulla et. Et wisi Aliquam Morbi et Maecenas at mi lorem ut justo. Mi neque justo mi elit ac egestas malesuada id pharetra tempus. Magna vitae convallis condimentum condimentum congue tellus et nibh Ut ultrices. Justo et.</p>
 <p>Feugiat nibh adipiscing malesuada nascetur mi ut dictum In elit congue. Elit amet mauris Vestibulum Phasellus justo adipiscing semper semper penatibus lorem. Vel pretium dolor convallis at gravida enim nibh mi ac consectetuer. Volutpat semper pretium accumsan In nulla Aliquam nunc condimentum condimentum.</p>
 <p>Est Quisque risus nibh Curabitur tellus Quisque auctor tincidunt nulla parturient. Ipsum senectus ipsum elit tortor nec urna ligula lacus ac ipsum. Congue suscipit nisl euismod Vestibulum semper id ut convallis pharetra tincidunt. Proin Phasellus Vestibulum pretium eget penatibus tellus egestas dolor ac vestibulum. Libero amet Nam.
-' where ox_id=1;
-
-update offeringstext set ox_intro='
-This is the intro text for the extramural version of 117.352.</br><p>Lorem ipsum dolor sit amet consectetuer eu sed natoque elit dui. Accumsan Cras nec montes id at orci eleifend pretium morbi dis. Et nunc mauris ornare sed porttitor Vestibulum tellus Sed felis ultrices. In Vestibulum faucibus In augue interdum sit Vestibulum Suspendisse eros est. Tempus wisi eros enim mauris Nam at.</p>
-<p>Enim orci quis cursus Mauris tellus Duis felis odio congue fringilla. Hac quis turpis adipiscing eget odio id Sed consectetuer eget nunc. Phasellus Pellentesque laoreet Maecenas Nulla semper egestas massa feugiat lacinia Nulla. Adipiscing cursus natoque id dictum Vestibulum ligula egestas velit Curabitur enim. At id Curabitur at eu et in Vestibulum Sed consectetuer in. Nec vel Curabitur velit sociis dapibus tellus orci Vestibulum Sed Vivamus. Justo sed.
-' where ox_id=2;
-
-update offeringstext set ox_intro='
-Lorem ipsum dolor sit amet consectetuer nibh wisi Maecenas elit eros. Nulla sodales Nulla mauris Sed sem Phasellus nulla natoque vitae neque. Et leo scelerisque malesuada accumsan odio consequat tincidunt Ut Phasellus Morbi. Quis Sed tincidunt consectetuer interdum leo quis Mauris aliquam eros Maecenas. Metus iaculis laoreet lorem in nibh tristique est.</p>
-<p>Eget velit velit sed ipsum laoreet nibh sociis quis Pellentesque Morbi. Nunc est in parturient congue elit cursus nec et lacinia non. Laoreet pede lorem malesuada adipiscing venenatis magnis enim auctor a egestas. Nam justo vitae habitant est fermentum fames vitae Integer volutpat Curabitur. Commodo mus fringilla consectetuer habitasse est dictumst.
-' where ox_id=3;
-update offeringstext set ox_intro='
-Lorem ipsum dolor sit amet consectetuer eu platea tempor orci id. Sed justo Nullam lacus hendrerit elit gravida.</p>
-<p>Semper Nunc dui lorem id elit eros ligula nibh quis ornare. Justo ultrices pretium adipiscing ac volutpat volutpat scelerisque magna facilisis Vivamus. Lorem sit consectetuer nibh.</p>
-<p>Odio et sapien nibh turpis a augue Nullam rutrum ut ligula. Eget dui ac Nam est pharetra velit Phasellus Pellentesque amet.</p>
-<p>Congue non metus pede Morbi pretium nibh lorem mollis Ut nisl. Nulla pretium facilisis convallis cursus habitasse odio leo gravida.
-' where ox_id=4;
-update offeringstext set ox_intro='
-Lorem ipsum dolor sit amet consectetuer mollis auctor wisi interdum Vestibulum. Dis netus facilisis Aenean tincidunt Vivamus consectetuer malesuada quis.</p>
-<p>Nec eu id ipsum interdum velit leo pede tellus dui sit. Mauris nibh tincidunt est netus et venenatis consectetuer faucibus vestibulum Vivamus. Nunc.</p>
-<p>Sapien urna orci urna et Pellentesque molestie vitae metus mollis semper. Libero et faucibus vel a semper tristique elit eu tincidunt orci. Risus aliquam lobortis ut lacus ultrices.</p>
-<p>Vestibulum nibh Aliquam risus velit ut consectetuer sapien accumsan Aenean tempus. Neque arcu Donec rhoncus ut ut convallis lobortis consectetuer orci eu. Tempus ante quis et enim felis justo vel.
-' where ox_id=5;
-update offeringstext set ox_intro='
-Lorem ipsum dolor sit amet consectetuer pellentesque mauris leo vel id. Interdum ac elit ante nunc sit id pede Quisque orci magna. Sit eget pellentesque id venenatis at quis egestas augue pellentesque vitae. Wisi id quis sodales sem pellentesque magna condimentum congue neque Donec. In vitae quis leo dui elit Curabitur risus Aenean nisl sapien. Eleifend Vestibulum et nisl semper tempus tincidunt pede Maecenas.</p>
-<p>Volutpat Nam facilisis montes Integer elit Praesent pede pretium consequat Vestibulum. Nec et pede Morbi orci adipiscing Sed ligula facilisi Maecenas urna. Enim turpis pharetra Ut elit malesuada pretium tellus et elit Nullam. Cursus In Aenean nunc wisi dui lacinia iaculis quis semper mauris. Mattis at lorem In id Phasellus Suspendisse eget ac tempor quis. In feugiat et enim In Lorem wisi sociis elit.
-' where ox_id=6;
+');
+update offerings set of_oxid=2 where of_id = 6; -- update intro text for default course
+update offerings set of_oxid=3 where of_id = 3; 
 
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,10);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,5,1);

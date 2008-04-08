@@ -105,10 +105,11 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
   of_smid   INTEGER NOT NULL REFERENCES semesters(sm_id),
   of_dmid   INTEGER NOT NULL REFERENCES delivmodes(dm_id),
   of_admin  INTEGER DEFAULT NULL REFERENCES users(ur_id), -- Paper coordinator
+  of_oxid   INTEGER DEFAULT 1 REFERENCES offeringstext(ox_id),
   of_status INTEGER DEFAULT 1 );  
 
 CREATE TABLE offeringstext (  -- text used in interface with offering
-  ox_id     INTEGER NOT NULL PRIMARY KEY REFERENCES offerings(of_id),
+  ox_id     INTEGER NOT NULL PRIMARY KEY,
   ox_intro  TEXT DEFAULT NULL );  -- text for start of course_home.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
@@ -184,11 +185,17 @@ CREATE TABLE errors (
   er_sdid   INTEGER NOT NULL REFERENCES scendefs(sd_id),
   er_errmsg CHAR(100) );  -- text of last error message   
 
-CREATE TRIGGER create_offtext
+CREATE TRIGGER link_offtext
 AFTER INSERT ON offerings
+WHEN EXISTS(SELECT of_oxid FROM offerings WHERE of_crid=new.of_crid AND of_id != new.of_id)
+--when exists another offering with same course as new offering
 BEGIN
-       INSERT INTO offeringstext (ox_id)
-       VALUES (new.of_id);
+  UPDATE offerings 
+  SET of_oxid= 
+      (SELECT of_oxid FROM offerings 
+       WHERE of_crid=new.of_crid AND of_id != new.of_id
+       ORDER BY of_smid,of_year DESC) 
+    WHERE of_id=new.of_id;
 END;
 
 CREATE TRIGGER create_offadminrole
