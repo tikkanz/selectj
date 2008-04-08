@@ -52,6 +52,17 @@ function AddtoOne()
 	   or value of last of other objects to be 1-(sum of all except last of other objects)
 	*/
 	}
+	
+function disableForm(frm) {
+// disable all fields in form with Id frm.
+  f= document.getElementById(frm)
+  sels=  f.getElementsByTagName("select")
+  inpts= f.getElementsByTagName("input")
+  txts=  f.getElementsByTagName("textarea")
+  for (i=0;i<sels.length;++ i)  {sels[i].disabled=true}
+  for (i=0;i<inpts.length;++ i) {inpts[i].disabled=true}
+  for (i=0;i<txts.length;++ i) {txts[i].disabled=true}
+}
 function REVStatus() {
 	var x=document.getElementsByName("objectvrevs")
 	var y=document.getElementById("trts2select")

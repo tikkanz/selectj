@@ -9,10 +9,14 @@
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
 <link rel="stylesheet" href="animalsim.css" type="text/css" />
-<!-- InstanceBeginEditable name="stylesheets" --><link rel="stylesheet" href="forms.css" type="text/css" /><!-- InstanceEndEditable -->
-<!-- InstanceParam name="bodyOnload" type="text" value="REVStatus()" -->
+<!-- InstanceBeginEditable name="stylesheets" --><link rel="stylesheet" href="forms.css" type="text/css" /><style type="text/css">
+#navBar {display: none;
+}
+</style>
+<!-- InstanceEndEditable -->
+<!-- InstanceParam name="bodyOnload" type="text" value="" -->
 </head>
-<body onload="REVStatus()">
+<body onload="">
 <div id="masthead">
   <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
   <h1 id="siteName">AnimalSim  - <span class="small"><%=pp_fname%> <%=pp_lname%> logged in</span></h1> 
@@ -20,7 +24,7 @@
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <a href="user.jhp?action=home">myCourses</a> &gt; <a href="course.jhp?action=home">CourseHome</a> &gt; <a href="case.jhp?action=home">CaseHome</a> &gt; <span class="current">User Description</span><!-- InstanceEndEditable --></div>
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <a href="user.jhp?action=home">myCourses</a> &gt; <a href="course.jhp?action=home">CourseHome</a> &gt; <a href="coursesumry.jhp?action=home">Stored Cases</a> &gt; <span class="current">User Description</span><!-- InstanceEndEditable --></div>
 <div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- InstanceEndEditable --></div>
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
@@ -33,7 +37,7 @@
      <h3>Describe Case </h3>
       <p>Create or edit this case's name and description. </p>
       <p>It is a good idea to give each case its own name and description to remind you how it was special or different from other cases that you may wish to compare it to. </p>
-      <div class="form-container"><form id="usrdescr" name="usrdescr" method="post" action="case.jhp"><input class="input" type="hidden" name="action" id="action" value="chgusrdescr" />
+      <div class="form-container"><form id="usrdescr" name="usrdescr" method="post" action="coursesumry.jhp"><input class="input" type="hidden" name="action" id="action" value="chgusrdescr" /><input class="input" type="hidden" name="ciid" id="ciid" value="<%=cinstid%>" />
 <fieldset><legend>Case Description</legend>
 <div>
   <label for="ciusrname">Name this case</label>

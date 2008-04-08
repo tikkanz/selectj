@@ -49,8 +49,9 @@
              <%=idx{sd_descr%><br/>
              &nbsp;
            </td>
-           <td> <a href="download.jhp?filetype=ansumrycsv&filename=Summary.csv&ciid=<%= idx{ci_id %>">download&nbsp;Summary&nbsp;Info</a><br/>
-             <a href="coursesumry.jhp?action=params&ciid=<%= idx{ci_id %>">view&nbsp;Selection&nbsp;details</a>
+           <td> <a target="_blank" href="coursesumry.jhp?action=params&ciid=<%= idx{ci_id %>">view&nbsp;Selection&nbsp;details</a><br/>
+                <a href="coursesumry.jhp?action=usrdescr&ciid=<%= idx{ci_id %>">edit&nbsp;Case&nbsp;Description</a><br/>     
+                <a href="download.jhp?filetype=ansumrycsv&filename=Summary.csv&ciid=<%= idx{ci_id %>">download&nbsp;Summary&nbsp;Info</a>
            </td>
          </tr>
        <% end. %>

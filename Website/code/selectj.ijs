@@ -1165,7 +1165,7 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus casestage paramform scendefpath txtblks'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1187,7 +1187,7 @@ DBINS=: INSci,INSur,INSof,INSss
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
-DBrow     =: ;:'casestage userlogin caseinststatus'
+DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 FLQRY=: ;:'animini trtinfoall caseprogress'
@@ -1521,6 +1521,14 @@ sqlsel_caseinstpath=: 0 : 0
         INNER JOIN `cases` cases ON ( `cases`.`cs_id` = `ci`.`ci_csid` ) 
         INNER JOIN `offering_info` off_info ON ( `off_info`.`of_id` = `ci`.`ci_ofid` ) 
         INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cases`.`cs_sdid` ) 
+  WHERE (ci.ci_id =?);
+)
+
+sqlsel_caseinstbasics=: 0 : 0
+  SELECT ci.ci_urid urid ,
+         ci.ci_ofid ofid ,
+         ci.ci_csid csid
+  FROM  `caseinstances` ci 
   WHERE (ci.ci_id =?);
 )
 
@@ -1939,7 +1947,7 @@ buildForm=: 3 : 0
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
       imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
       qry=. '?',args (<'ciids'),.{.ciids
-      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),: 'title';'Click to see PDF version of plot'
+      aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),('target';'_blank'),: 'title';'Click to see PDF version of plot'
       frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.
       ciids=. y

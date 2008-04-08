@@ -43,9 +43,23 @@ try.
 	  setcolnames 'coursesumrys' getInfo uofid
       NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	  transfer page
-	case. 'params' do.
-      NB.! view selection details but no changing
-      ('action';'home') redirect 'coursesumry.jhp'
+    case. 'chgusrdescr' do.
+      ciid=. 4 qparam 'ciid'
+      ciun=. qparam 'ciusrname'
+      ciud=. qparam 'ciusrdescr'
+      'caseinstusrdescr' updateInfo ciun;ciud;ciid
+	  ('action';'home') redirect 'coursesumry.jhp'
+	case. 'params';'usrdescr' do.
+      ciid=.4 qparam 'ciid'
+	  page=. '~CGI/coursesumry_',action,'.asp'
+	  'uid ofid csid'=. 'caseinstbasics' getInfo ciid
+      setcolnames 'usergreeting' getInfo uid
+	  setcolnames 'coursename' getInfo ofid
+      setcolnames 'casedetails' getInfo csid;11
+      setcolnames 'caseinstname' getInfo ciid
+      cinstid=: ciid
+	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
+	  transfer page
 	case. do.  NB. default action
       ('action';'home') redirect 'coursesumry.jhp'
   end.
