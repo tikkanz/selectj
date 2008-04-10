@@ -103,6 +103,9 @@ Lorem ipsum dolor sit amet consectetuer tempus lobortis Nunc Nulla et. Et wisi A
 update offerings set of_oxid=2 where of_id = 6; -- update intro text for default course
 update offerings set of_oxid=3 where of_id = 3; 
 
+insert into enrolments (en_urid, en_ofid, en_rlid) values (1,6,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (2,6,1);
+insert into enrolments (en_urid, en_ofid, en_rlid) values (4,6,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,4,10);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (1,5,1);
 insert into enrolments (en_urid, en_ofid, en_rlid) values (4,5,1);

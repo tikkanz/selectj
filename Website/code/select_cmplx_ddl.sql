@@ -113,9 +113,9 @@ CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_intro  TEXT DEFAULT NULL );  -- text for start of course_home.asp
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
-  en_urid   INTEGER REFERENCES users(ur_id),
-  en_ofid   INTEGER REFERENCES offerings(of_id),
-  en_rlid   INTEGER REFERENCES roles(rl_id),
+  en_urid   INTEGER NOT NULL REFERENCES users(ur_id),
+  en_ofid   INTEGER NOT NULL REFERENCES offerings(of_id),
+  en_rlid   INTEGER NOT NULL REFERENCES roles(rl_id),
   PRIMARY KEY(en_urid,en_ofid,en_rlid) );
 
 CREATE TABLE sessions (   -- user sessions
@@ -221,14 +221,14 @@ BEGIN
        VALUES (new.cs_id,new.cs_admin,50);
 END;
 
-CREATE TRIGGER enrol_new_user -- enrol new users in Experiment with AnSim course 
-AFTER INSERT ON users
-BEGIN
-     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
-     VALUES(new.ur_id,6,1);
+--CREATE TRIGGER enrol_new_user -- enrol new users in Experiment with AnSim course 
+--AFTER INSERT ON users
+--BEGIN
+--     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+--     VALUES(new.ur_id,6,1);
 --     INSERT INTO enrolmentroles (el_enid,el_rlid)
 --     VALUES (last_insert_rowid(),1);
-END;
+--END;
 
 CREATE TRIGGER delete_enrols
 BEFORE DELETE ON users

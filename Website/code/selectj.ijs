@@ -366,16 +366,57 @@ readTicket=: 3 : 0
   shash=. 'hash' keyval kVTable
   sid;shash
 )
-
 registerUser=: 3 : 0
   'action uname fname lname refnum email passwd'=.y
   if. action-:'guest' do. uname=. randPassword 16  end.
-  if. *#'userlogin' getInfo uname  do. _2 return. end. 
+  if. *#u=.'userlogin' getInfo uname  do. 
+    if. 
+      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=.0{::u 
+      m2=. action-:'importuser'
+     do. 
+      uid return. 
+     else.
+      _2  return.
+    end.
+  end. 
   if. 0=# pid=. 'idfromemail' getInfo email  do. 
     pid=. 'newperson' insertInfo fname;lname;email 
   end.
   sph=. salthash passwd 
   uid=.'newuser' insertInfo pid;uname;refnum;|.sph 
+)
+enrolUsers=: 3 : 0
+  1 enrolUsers y
+:
+  'uids ofids'=. 2{.!.(<6) boxopen y
+  rlids=. (#uids)$x
+  enrl=.(>,{uids;ofids),.(#ofids)#rlids
+  if. 0=#enrl do. '' return. end.
+  'newenrolment' insertInfo <"0 enrl
+)
+createUsers=: 3 : 0
+  6 createUsers y 
+:
+ uids=. ,registerUser"1 y
+ rowids=. 1 enrolUsers ((0&< # ])uids);x 
+ uids
+)
+importUsers=: 3 : 0
+  'MasseyRPScsv' importUsers y
+:
+  select. x
+   case. 'MasseyRPScsv' do.
+     
+     'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
+     
+     'hdr dat'=. split 13}. readcsv y
+     idx=. hdr i. uname;fname;lname;refnum;email
+     usrs=. idx{"1 dat
+     usrs=. usrs,. (hdr i.<lname){"1 dat 
+     usrs=. (<'importuser'),.usrs      
+   case. do.
+     'unknown data source' assert 0
+  end. 
 )
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
@@ -1172,7 +1213,7 @@ QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus use
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
 QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
-INSur=: ;:'newuser newperson'
+INSur=: ;:'newuser newperson newenrolment'
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys'
 UPDof=: ;:''
 INSof=: ;:''
@@ -1441,6 +1482,12 @@ sqlins_newuser=: 0 : 0
   INSERT INTO users (ur_ppid,ur_uname,ur_refnum,ur_passhash,ur_salt)
   VALUES(?,?,?,?,?);
 )
+
+sqlins_newenrolment=: 0 : 0
+  INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+  VALUES (?,?,?);
+)
+
 
 sqlins_newsession=: 0 : 0
   INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)

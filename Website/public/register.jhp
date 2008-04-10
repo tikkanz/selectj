@@ -8,10 +8,11 @@ try.
       CGIKEYS=:CGIKEYS,;:'uname fname lname refnum email passwd'
       CGIVALS=:CGIVALS,'';'';'';'';'guest@nodomain.com';'home'
     case. 'newuser' do.
-      uid=. registerUser qparam each qparamKeys''
+      uid=. createUsers qparam each qparamKeys''
       if. 0>uid do. NB. invalid login
         usernameErr=: 'The user name "',(qparam 'uname'),'" is already in use.'
-        usernameErr=: usernameErr,' Please choose another one.'
+        usernameErr=: usernameErr,' Please choose another one.<br/>'
+        usernameErr=: usernameErr,' If you think this might be you, then you could try to login.'
         'fname lname refnum email'=: qparam each ;:'fname lname refnum email'
         page=. '~CGI/regform.asp'
 	    transfer page
