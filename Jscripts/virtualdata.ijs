@@ -21,7 +21,7 @@ QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus use
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
 QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
-INSur=: ;:'newuser newperson'
+INSur=: ;:'newuser newperson newenrolment'
 
 NB. y is mostly offering id 
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys'

@@ -48,6 +48,11 @@ sqlins_newuser=: 0 : 0
   VALUES(?,?,?,?,?);
 )
 
+sqlins_newenrolment=: 0 : 0
+  INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
+  VALUES (?,?,?);
+)
+
 sqlins_newsession=: 0 : 0
   INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
   VALUES(?,?,?,?,julianday('now','20 minutes'));

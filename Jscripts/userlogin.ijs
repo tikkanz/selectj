@@ -33,19 +33,82 @@ readTicket=: 3 : 0
   sid;shash
 )
 
-
 NB.*registerUser v creates a new user, if successful returns userid
 NB. y is boxed list of strings from registration form
 NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0
   'action uname fname lname refnum email passwd'=.y
   if. action-:'guest' do. uname=. randPassword 16  end.
-  if. *#'userlogin' getInfo uname  do. _2 return. end. NB. check usrname not already in use
+  if. *#u=.'userlogin' getInfo uname  do. NB. check usrname not already in use
+    if. NB. check if same person
+      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=.0{::u 
+      m2=. action-:'importuser'
+     do. 
+      uid return. NB. return existing user id 
+     else.
+      _2  return.
+    end.
+  end. 
   if. 0=# pid=. 'idfromemail' getInfo email  do. NB. if email address not already used in people table
     pid=. 'newperson' insertInfo fname;lname;email NB. insert person in people table
   end.
   sph=. salthash passwd NB. create salt and passhash
   uid=.'newuser' insertInfo pid;uname;refnum;|.sph NB. insert user into database
+)
+
+NB.*enrolUsers v enrols user(s) in offering(s)
+NB. result is numeric list of new row numbers in enrolments table if successful
+NB. y is 1 or 2-element boxed list
+NB.     0{::y is numeric list of user ids to enrol
+NB.     1{::y is optional numeric offering id(s) to enrol every user id in (default 6)
+NB. x is optional role id for enrolment [default is 1 (student)]
+enrolUsers=: 3 : 0
+  1 enrolUsers y
+:
+  'uids ofids'=. 2{.!.(<6) boxopen y
+  rlids=. (#uids)$x
+  enrl=.(>,{uids;ofids),.(#ofids)#rlids
+  if. 0=#enrl do. '' return. end.
+  'newenrolment' insertInfo <"0 enrl
+)
+
+NB.*createUsers v registers user(s) and enrols them as students in offering(s)
+NB. result is user ids if successful
+NB. y is table of boxed lists. Row for each user
+NB.     column for each parameter required by registerUser
+NB.        ('action uname fname lname refnum email passwd')
+NB. x is optional numeric list of offering id(s) to enrol every user in
+createUsers=: 3 : 0
+  6 createUsers y NB. enrol in Expt with AnSim course by default
+:
+ uids=. ,registerUser"1 y
+ rowids=. 1 enrolUsers ((0&< # ])uids);x NB. enrol non-negative uids
+ uids
+)
+
+NB.*importUsers v extract info required for user registration from external source
+NB. result is table of boxed lists. Row for each user
+NB.     column for each parameter required by registerUser
+NB.        ('action uname fname lname refnum email passwd')
+NB. y is literal filename of file containing user info
+NB. x is optional literal label describing type of external source
+NB. EG. 'MasseyRPS' importUsers 'c:\temp\classlist200801.csv'
+importUsers=: 3 : 0
+  'MasseyRPScsv' importUsers y
+:
+  select. x
+   case. 'MasseyRPScsv' do.
+     NB. map  user info to csv column headers
+     'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
+     NB. require 'csv'
+     'hdr dat'=. split 13}. readcsv y
+     idx=. hdr i. uname;fname;lname;refnum;email
+     usrs=. idx{"1 dat
+     usrs=. usrs,. (hdr i.<lname){"1 dat NB. passwd=. lname
+     usrs=. (<'importuser'),.usrs      NB. action=.<'importuser'
+   case. do.
+     'unknown data source' assert 0
+  end. 
 )
 
 NB.*updateSession v updates expiry of session
