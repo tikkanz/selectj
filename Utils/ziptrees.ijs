@@ -5,7 +5,7 @@ require 'strings files'  NB. would get loaded by other scripts anyway
 NB. needs addPS, dircreate verbs from dir_add.ijs script
 NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
 3 : 0 ''
-  if. -.IFCONSOLE do. NB. need to make sure it is included in project for console
+  if.  (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. NB. need to make sure it is included in project for console
     require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
   end.
 )
