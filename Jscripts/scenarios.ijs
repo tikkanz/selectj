@@ -7,15 +7,16 @@ updateSelnDetails=: 3 : 0
   CGIKEYS=: 1&transName each CGIKEYS NB. required until SelectJ and AnimalSim parameter names match
   ANIMINI_z_=: 'animini' getInfo y
   TRTINFO_z_=: 'trtinfoall' getInfo y
-  NB. Names of ini keys that need to be updated by processing form info
+  NB. keyscalc is Names of ini keys that need to be updated by processing form info
   keyscalc=. ;:'Trts2Sim Phens2Sim EBVs2Sim GetEBVs SelectListCols Respons2Outpt'
   keyscalc=. keyscalc,;:'ObjectvTrts ObjectvREVs'
   keysform=. ~. qparamKeys'' NB. keys submitted from form
   keysini=. 1{"1 ANIMINI  NB. keys that occur in INI file
   keys2upd8=. ~.(tolower each keyscalc),(keysform e. keysini)#keysform NB. unique list of keys from union of keyscalc and (keysform that also occur in keysini)
-  keysform updateKeyState"1 0 keys2upd8
-  ANIMINI_z_=: (; (<ANIMINI) getIniIdx each keys2upd8){ANIMINI NB. keep only keys2upd8
+  upd8kys=. keysform updateKeyState"1 0 keys2upd8 NB. get keys & updated values
+  ANIMINI_z_=: ANIMINI updateIniStrings upd8kys NB. updates keys in global ANIMINI
   'animini' updateScenarioInfo y NB. write ANIMINI to caseinstance directory
+  erase 'ANIMINI_z_ TRTINFO_z_'
 )
 
 NB.*TransNames n Tab-delimited mapping of old to new names.
@@ -159,63 +160,71 @@ getTrtsPhn=: 3 : 0
 NB.*getParamState v retrieves parameter state from caseinstance
 NB. returns 3- item boxed list of selectedvalues;values;valuenames
 NB. y is pr_code (code for parameter eg. 'ncycles')
-NB.! x is caseinstance id  or maybe just get cookie for params where ciid reqd.
+NB.! x is caseinstance id 
 NB. if selected not relevant result is: '';value
 getParamState=: 3 : 0
   '' getParamState y
   :
+  if. 0>4!:0 <'ANIMINI' do.
+    'caseinstance id not specified' assert -. ''-: x
+    anini=. 'animini' getInfo x
+  else.
+    anini=. ANIMINI
+  end.
   seld=. vals=. nmes=. a:  NB. initialize outputs
   select. y
     case. 'coltypes' do.
       seld=. <'phen'
       vals=. {."1 INFOTYPES
       nmes=. {:"1 INFOTYPES
+      NB. if. user is guest drop ebv type end.
+      NB. if x is not '' then 
     case. 'cullage' do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       nmes=. 'Female';'Male'
     case. 'hrdsizes'    do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       if. 1 do. NB.! 'select'-:pr_ctype NB. if select control
         seld=. boxopen vals
         vals=. <"0 (100,200*>:i.5), 1500 2000 4000
       end.
     case. 'mateage' do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       nmes=. 'Female';'Male'
     case. 'objectvrevs' do.
-      nmes=. ANIMINI getIniVals 'trtsavail' 
+      nmes=. anini getIniVals 'trtsavail' 
       vals=. (#nmes)#a:
-      tmpv=. <"0 ANIMINI getIniVals y
+      tmpv=. <"0 anini getIniVals y
       tmpn=. 0{:: getParamState 'trts2select'
       vals=. tmpv (nmes i. tmpn)}vals
     case. 'selnmeth'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. ANIMINI getIniVals 'selectlistcols'
+      tmp=. anini getIniVals 'selectlistcols'
       tmp=. getTrtsOnly tmp NB. only Traits
       tmp=. {:>{:tmp  NB. just need to check one (all same type)
       seld=. ('ed' i. tmp){ |.vals NB. dependent on order of vals
     case. 'summtype'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. ANIMINI getIniVals'respons2outpt'
+      tmp=. anini getIniVals'respons2outpt'
       tmp=. getTrtsOnly tmp NB. only Traits
       seld=. getTrtInfoTyps tmp  
     case. 'trtsrecorded' do.
-      vals=. ANIMINI getIniVals 'trtsavail'
+      vals=. anini getIniVals 'trtsavail'
       vals=. getTrtsPhn vals
       nmes=. 'TrtCaption' getTrtInfo vals
-      seld=. ANIMINI getIniVals y
+      seld=. anini getIniVals y
     case. 'trts2select';'trts2summ' do.
-      vals=. ANIMINI getIniVals 'trtsavail'
+      vals=. anini getIniVals 'trtsavail'
       nmes=. 'TrtCaption' getTrtInfo vals
       nmes=. ('(',each vals ,each <') '),each nmes
       tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
-      tmp=. ANIMINI getIniVals tmp
+      tmp=. anini getIniVals tmp
       tmp=. getTrtsOnly tmp  NB. only Traits
       tmp=. tmp -. each <'pdge' NB. dropout all of 'pdge'
       seld=. ~. tmp NB. unique traits
     case. do. NB. no special handling required - just look up ANIMINI
     NB. 'currcycle';'ncycles';'dams2hrdsire';'allelefreq';'trtsavail'
-      vals=. ANIMINI getIniVals y
+      vals=. anini getIniVals y
       if. isnum vals do. vals=. <"0 vals end.
       vals=. boxopen vals  NB. box any open string
   end.
@@ -223,6 +232,7 @@ getParamState=: 3 : 0
 )
 
 NB.*updateKeyState v updates INI file configuration based on submitted Selection Details form
+NB. result is 2-column boxed table 0{"1 is new key values, 1{"1 is key names
 NB. y is boxed key to update
 NB. x is list of boxed keys set by form
 updateKeyState=: 4 : 0
@@ -255,7 +265,7 @@ updateKeyState=: 4 : 0
       else.
         if. (<'trts2select') e. x do. NB. if trts2select set by form then
           kval=. (# qparamList 'trts2select')#1 NB. use 1 for each objectvtrts
-        else. key2upd8=. 'NOTAVALIDKEY' end. NB. don't update key
+        else. key2upd8=. '' end. NB. don't update key
       end.
     case. 'objectvtrts'    do.
       if. (<'trts2select') e. x do. NB. only calculate if trts2select is set in form
@@ -265,7 +275,7 @@ updateKeyState=: 4 : 0
         else. sm=. <'phen' end. NB. default to phenotype if selnmeth not set
         kval=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval NB. use birth rank for pNLB
-      else. key2upd8=. 'NOTAVALIDKEY' end. NB. don't update key
+      else. key2upd8=. '' end. NB. don't update key
     case. 'phens2sim' do.
     NB. unique traits from trtsrecorded (and trts2select if selnmeth is phen) (and trts2summ if summtype includes phen)
       frmtyps=. 'selnmeth';'summtype'
@@ -286,7 +296,7 @@ updateKeyState=: 4 : 0
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. NB. default to phenotype & genotype if summtype not set
         kval=. st makeTrtColLbl trts NB. prefix/suffix trts2summ traits based on summtype
-      else. key2upd8=. 'NOTAVALIDKEY' end.
+      else. key2upd8=. '' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. NB. only calculate if trts2select is set in form
         trts=. qparamList 'trts2select'
@@ -296,7 +306,7 @@ updateKeyState=: 4 : 0
         trtflds=. sm makeTrtColLbl trts NB. prefix/suffix trts2select traits based on selnmeth
         nttrt=. getTrtsNot ANIMINI getIniVals key2upd8 NB.non-trait fields already in SelectListCols
         kval=. nttrt,trtflds
-      else. key2upd8=. 'NOTAVALIDKEY' end.
+      else. key2upd8=. '' end.
     case. 'trts2sim' do.
     NB. unique traits from trtsrecorded,trts2select,trts2summ
       frmtrts=. ;:'trtsrecorded trts2select trts2summ'
@@ -309,8 +319,6 @@ updateKeyState=: 4 : 0
     case. do. NB. default case
       kval=. qparamList key2upd8
   end.
-  if. -. key2upd8-:'NOTAVALIDKEY' do.
-    ANIMINI=: ANIMINI updateIniStrings kval;key2upd8
-  end.
-  ''
+  if. key2upd8-:'' do. kval=.'' end.
+  kval;key2upd8
 )

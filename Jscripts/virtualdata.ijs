@@ -24,9 +24,9 @@ UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 
 NB. y is mostly offering id 
-QRYof=: ;:'coursecases coursedetails coursename coursesumrys'
-UPDof=: ;:''
-INSof=: ;:''
+QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
+UPDof=: ;:'deleteofferingcases updateofferingstext'
+INSof=: ;:'createoffering addofferingcases'
 
 NB. y is mostly session id 
 QRYss=: ;:'sessioninfo'
@@ -50,7 +50,7 @@ DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
 DBcol     =: ;:'caseinst2expire username'
-DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
+DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail existoffering existofferingcases'
 
 NB. =========================================================
 NB. Valid query names where info not sourced from database (probably file)

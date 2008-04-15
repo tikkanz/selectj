@@ -30,6 +30,7 @@ buildParamsForm=: 3 : 0
   fsts=. cf_value buildFieldset each fs_id
   frm=. LF join lgd;fsts, boxopen buildButtons ''
   frm=. FORM id 'params' name 'params' method 'post' action 'case.jhp' frm
+  erase 'ANIMINI_z_ TRTINFO_z_'
   DIV class 'form-container' frm
 )
 
@@ -209,7 +210,7 @@ buildForm=: 3 : 0
       page=. 'coursesumry_plot.jhp'
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
       imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
-      qry=. '?',args (<'ciids'),.{.ciids
+      qry=. '?',args ((<'ciids'),.{.ciids),:(<'rand'),.<randPassword 7
       aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),('target';'_blank'),: 'title';'Click to see PDF version of plot'
       frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.

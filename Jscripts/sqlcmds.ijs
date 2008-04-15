@@ -251,5 +251,42 @@ sqlupd_setusers=: 0 : 0
 
 sqlupd_deleteusers=: 0 : 0
   DELETE FROM users
-  WHERE ur_id=?
+  WHERE ur_id=?;
+)
+
+sqlins_createoffering=: 0 : 0
+  INSERT INTO offerings (of_crid,of_year,of_smid,of_dmid,of_admin)
+  VALUES (?,?,?,?,?);
+)
+
+sqlsel_existoffering=: 0 : 0
+  SELECT of.of_id of_id 
+  FROM `offerings` of
+  WHERE (of.of_crid =?) 
+    AND (of.of_year =?)
+    AND (of.of_smid =?)
+    AND (of.of_dmid =?);
+)
+
+sqlsel_existofferingcases=: 0 : 0
+  SELECT oc.rowid rowid 
+  FROM `offeringcases` oc
+  WHERE (oc.oc_ofid IN (?)) 
+    AND (oc.oc_csid IN (?));
+)
+
+sqlins_addofferingcases=: 0 : 0
+  INSERT INTO offeringcases (oc_ofid,oc_csid)
+  VALUES(?,?);
+)
+
+sqlupd_deleteofferingcases=: 0 : 0
+  DELETE FROM offeringcases
+  WHERE rowid=?;
+)
+
+sqlupd_updateofferingstext=: 0 : 0
+  UPDATE offeringstext
+  SET ox_intro=?
+  WHERE ox_id=?;
 )

@@ -20,8 +20,8 @@ makeMateAlloc=: 4 : 0
     ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. NB. continue checks
-      ANIMINI_z_=. 'animini' getInfo x
-      'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
+      anini=. 'animini' getInfo x
+      'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
       NB.! add handling for across-herd as well as within-herd mating of sires
       idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of Flock/Flk columns in selection lists column labels
@@ -112,8 +112,8 @@ validMateAlloc=: 4 : 0
       ma=. readcsv fnme
       oklen=. *# ma NB. not zero length
       'hdr ma'=. split ma
-      ANIMINI_z_=. 'animini' getInfo x
-      'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
+      anini=. 'animini' getInfo x
+      'popsz cage mage'=. (<anini) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       NB. Arguable as to whether additional checks should be made here or
       NB.  within AnimalSim. Do here for now.

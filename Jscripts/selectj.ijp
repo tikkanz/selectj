@@ -7,6 +7,7 @@ PRIMARYFILES=: 0 : 0
 ~user/projects/selectj/utils
 ~user/projects/selectj/userlogin
 ~user/projects/selectj/adminusers
+~user/projects/selectj/admincourse
 ~user/projects/selectj/popfolders
 ~user/projects/selectj/scenarios
 ~user/projects/selectj/mating
@@ -71,6 +72,7 @@ OTHERFILES=: 0 : 0
 ~home/documents/web/selectj/public/register.jhp
 ~home/documents/web/selectj/public/user.jhp
 ~user/projects/selectj/test0.ijs
+~user/projects/selectj/test1.ijs
 )
 
 TARGETFILE=: '~home/documents/web/selectj/code/selectj.ijs'
