@@ -512,6 +512,34 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+createOfferings=: 3 : 0
+  msk=. 0=existOfferings }:"1 y
+  if. 0= +/msk do. '' return. end. 
+  'createoffering' insertInfo boxopen"0 msk#y
+)
+updateOfferingsText=: 4 : 0
+  'updateofferingstext' updateInfo x;y
+)
+addOfferingCases=: 4 : 0
+  ofcs=. >,{x;y 
+  msk=. 0=existOfferingCases ofcs 
+  if. 0= +/msk do. '' return. end.
+  'addofferingcases' insertInfo boxopen"0 msk#ofcs 
+)
+deleteOfferingCases=: 4 : 0
+  ofcs=. >,{x;y 
+  msk=. 0<rowids=. existOfferingCases ofcs 
+  if. 0= +/msk do. '' return. end.
+  +/ 0='deleteofferingcases' updateInfo boxopen"0 msk#rowids 
+)
+existOfferingCases=: 3 : 0"1
+  rowid=. 'existofferingcases' getInfo boxopen"0 y
+  if. rowid-:empty'' do. 0 else. rowid end.
+)
+existOfferings=: 3 : 0"1
+  ofid=. 'existoffering' getInfo boxopen"0 y
+  if. ofid-:empty'' do. 0 else. ofid end.
+)
 createCaseInstance=: 3 : 0
   ciid=. 'newcaseinstance' insertInfo y
   uz=. createCaseInstFolder ciid
@@ -593,9 +621,10 @@ updateSelnDetails=: 3 : 0
   keysform=. ~. qparamKeys'' 
   keysini=. 1{"1 ANIMINI  
   keys2upd8=. ~.(tolower each keyscalc),(keysform e. keysini)#keysform 
-  keysform updateKeyState"1 0 keys2upd8
-  ANIMINI_z_=: (; (<ANIMINI) getIniIdx each keys2upd8){ANIMINI 
+  upd8kys=. keysform updateKeyState"1 0 keys2upd8 
+  ANIMINI_z_=: ANIMINI updateIniStrings upd8kys 
   'animini' updateScenarioInfo y 
+  erase 'ANIMINI_z_ TRTINFO_z_'
 )
 TransNames=: makeTable 0 : 0
 animsummaryfnme  animsumrypath
@@ -659,58 +688,66 @@ getTrtsPhn=: 3 : 0
 getParamState=: 3 : 0
   '' getParamState y
   :
+  if. 0>4!:0 <'ANIMINI' do.
+    'caseinstance id not specified' assert -. ''-: x
+    anini=. 'animini' getInfo x
+  else.
+    anini=. ANIMINI
+  end.
   seld=. vals=. nmes=. a:  
   select. y
     case. 'coltypes' do.
       seld=. <'phen'
       vals=. {."1 INFOTYPES
       nmes=. {:"1 INFOTYPES
+      
+      
     case. 'cullage' do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       nmes=. 'Female';'Male'
     case. 'hrdsizes'    do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       if. 1 do. 
         seld=. boxopen vals
         vals=. <"0 (100,200*>:i.5), 1500 2000 4000
       end.
     case. 'mateage' do.
-      vals=. <"0 ANIMINI getIniVals y
+      vals=. <"0 anini getIniVals y
       nmes=. 'Female';'Male'
     case. 'objectvrevs' do.
-      nmes=. ANIMINI getIniVals 'trtsavail' 
+      nmes=. anini getIniVals 'trtsavail' 
       vals=. (#nmes)#a:
-      tmpv=. <"0 ANIMINI getIniVals y
+      tmpv=. <"0 anini getIniVals y
       tmpn=. 0{:: getParamState 'trts2select'
       vals=. tmpv (nmes i. tmpn)}vals
     case. 'selnmeth'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. ANIMINI getIniVals 'selectlistcols'
+      tmp=. anini getIniVals 'selectlistcols'
       tmp=. getTrtsOnly tmp 
       tmp=. {:>{:tmp  
       seld=. ('ed' i. tmp){ |.vals 
     case. 'summtype'    do.
       'seld vals nmes'=. getParamState 'coltypes'
-      tmp=. ANIMINI getIniVals'respons2outpt'
+      tmp=. anini getIniVals'respons2outpt'
       tmp=. getTrtsOnly tmp 
       seld=. getTrtInfoTyps tmp  
     case. 'trtsrecorded' do.
-      vals=. ANIMINI getIniVals 'trtsavail'
+      vals=. anini getIniVals 'trtsavail'
       vals=. getTrtsPhn vals
       nmes=. 'TrtCaption' getTrtInfo vals
-      seld=. ANIMINI getIniVals y
+      seld=. anini getIniVals y
     case. 'trts2select';'trts2summ' do.
-      vals=. ANIMINI getIniVals 'trtsavail'
+      vals=. anini getIniVals 'trtsavail'
       nmes=. 'TrtCaption' getTrtInfo vals
       nmes=. ('(',each vals ,each <') '),each nmes
       tmp=. (('trts2select';'trts2summ')i. boxopen y) { 'selectlistcols';'respons2outpt'
-      tmp=. ANIMINI getIniVals tmp
+      tmp=. anini getIniVals tmp
       tmp=. getTrtsOnly tmp  
       tmp=. tmp -. each <'pdge' 
       seld=. ~. tmp 
     case. do. 
     
-      vals=. ANIMINI getIniVals y
+      vals=. anini getIniVals y
       if. isnum vals do. vals=. <"0 vals end.
       vals=. boxopen vals  
   end.
@@ -746,7 +783,7 @@ updateKeyState=: 4 : 0
       else.
         if. (<'trts2select') e. x do. 
           kval=. (# qparamList 'trts2select')#1 
-        else. key2upd8=. 'NOTAVALIDKEY' end. 
+        else. key2upd8=. '' end. 
       end.
     case. 'objectvtrts'    do.
       if. (<'trts2select') e. x do. 
@@ -756,7 +793,7 @@ updateKeyState=: 4 : 0
         else. sm=. <'phen' end. 
         kval=. sm makeTrtColLbl trts 
         kval=. (<'BR') (kval ((([: # [) > [ i. [: < ]) # [ i. [: < ]) 'pNLB')} kval 
-      else. key2upd8=. 'NOTAVALIDKEY' end. 
+      else. key2upd8=. '' end. 
     case. 'phens2sim' do.
     
       frmtyps=. 'selnmeth';'summtype'
@@ -777,7 +814,7 @@ updateKeyState=: 4 : 0
           st=. qparamList 'summtype'
         else. st=. 'phen';'genD' end. 
         kval=. st makeTrtColLbl trts 
-      else. key2upd8=. 'NOTAVALIDKEY' end.
+      else. key2upd8=. '' end.
     case. 'selectlistcols' do.
       if. (<'trts2select') e. x do. 
         trts=. qparamList 'trts2select'
@@ -787,7 +824,7 @@ updateKeyState=: 4 : 0
         trtflds=. sm makeTrtColLbl trts 
         nttrt=. getTrtsNot ANIMINI getIniVals key2upd8 
         kval=. nttrt,trtflds
-      else. key2upd8=. 'NOTAVALIDKEY' end.
+      else. key2upd8=. '' end.
     case. 'trts2sim' do.
     
       frmtrts=. ;:'trtsrecorded trts2select trts2summ'
@@ -800,10 +837,8 @@ updateKeyState=: 4 : 0
     case. do. 
       kval=. qparamList key2upd8
   end.
-  if. -. key2upd8-:'NOTAVALIDKEY' do.
-    ANIMINI=: ANIMINI updateIniStrings kval;key2upd8
-  end.
-  ''
+  if. key2upd8-:'' do. kval=.'' end.
+  kval;key2upd8
 )
 
 makeMateAlloc=: 4 : 0
@@ -821,8 +856,8 @@ makeMateAlloc=: 4 : 0
     ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
     msg=. msg, (,.'Female ';'Male ') prefsuf ms
     if. *./*./ok=. ok,okhdr do. 
-      ANIMINI_z_=. 'animini' getInfo x
-      'ndams d2s xhrd'=. (<ANIMINI) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
+      anini=. 'animini' getInfo x
+      'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
       nsires=. <.0.5&+ ndams%d2s   
       
       idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' 
@@ -892,8 +927,8 @@ validMateAlloc=: 4 : 0
       ma=. readcsv fnme
       oklen=. *# ma 
       'hdr ma'=. split ma
-      ANIMINI_z_=. 'animini' getInfo x
-      'popsz cage mage'=. (<ANIMINI) getIniVals each 'hrdsizes';'cullage';'mateage'
+      anini=. 'animini' getInfo x
+      'popsz cage mage'=. (<anini) getIniVals each 'hrdsizes';'cullage';'mateage'
       oknmtgs=. (#ma)=+/popsz
       
       
@@ -1214,9 +1249,9 @@ QRYcomb=: ;:'caseinstanceid enrolled validcase'
 QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
-QRYof=: ;:'coursecases coursedetails coursename coursesumrys'
-UPDof=: ;:''
-INSof=: ;:''
+QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
+UPDof=: ;:'deleteofferingcases updateofferingstext'
+INSof=: ;:'createoffering addofferingcases'
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
@@ -1230,7 +1265,7 @@ DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
 DBcol     =: ;:'caseinst2expire username'
-DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
+DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail existoffering existofferingcases'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
@@ -1488,7 +1523,6 @@ sqlins_newenrolment=: 0 : 0
   VALUES (?,?,?);
 )
 
-
 sqlins_newsession=: 0 : 0
   INSERT INTO sessions (ss_id,ss_urid,ss_salt,ss_hash,ss_expire)
   VALUES(?,?,?,?,julianday('now','20 minutes'));
@@ -1679,7 +1713,44 @@ sqlupd_setusers=: 0 : 0
 
 sqlupd_deleteusers=: 0 : 0
   DELETE FROM users
-  WHERE ur_id=?
+  WHERE ur_id=?;
+)
+
+sqlins_createoffering=: 0 : 0
+  INSERT INTO offerings (of_crid,of_year,of_smid,of_dmid,of_admin)
+  VALUES (?,?,?,?,?);
+)
+
+sqlsel_existoffering=: 0 : 0
+  SELECT of.of_id of_id 
+  FROM `offerings` of
+  WHERE (of.of_crid =?) 
+    AND (of.of_year =?)
+    AND (of.of_smid =?)
+    AND (of.of_dmid =?);
+)
+
+sqlsel_existofferingcases=: 0 : 0
+  SELECT oc.rowid rowid 
+  FROM `offeringcases` oc
+  WHERE (oc.oc_ofid IN (?)) 
+    AND (oc.oc_csid IN (?));
+)
+
+sqlins_addofferingcases=: 0 : 0
+  INSERT INTO offeringcases (oc_ofid,oc_csid)
+  VALUES(?,?);
+)
+
+sqlupd_deleteofferingcases=: 0 : 0
+  DELETE FROM offeringcases
+  WHERE rowid=?;
+)
+
+sqlupd_updateofferingstext=: 0 : 0
+  UPDATE offeringstext
+  SET ox_intro=?
+  WHERE ox_id=?;
 )
 
 coclass 'rgssqliteq'
@@ -1859,6 +1930,7 @@ buildParamsForm=: 3 : 0
   fsts=. cf_value buildFieldset each fs_id
   frm=. LF join lgd;fsts, boxopen buildButtons ''
   frm=. FORM id 'params' name 'params' method 'post' action 'case.jhp' frm
+  erase 'ANIMINI_z_ TRTINFO_z_'
   DIV class 'form-container' frm
 )
 buildFieldset=: 3 : 0
@@ -1993,7 +2065,7 @@ buildForm=: 3 : 0
       page=. 'coursesumry_plot.jhp'
       qry=. '?',args ((<'ciids'),.ciids),((<'trts'),.trtsseld),(<'inftyps'),.inftypsseld
       imgattrs=. ('src';page,qry),('id';'sumryplot'),: 'alt';'Summary plot'
-      qry=. '?',args (<'ciids'),.{.ciids
+      qry=. '?',args ((<'ciids'),.{.ciids),:(<'rand'),.<randPassword 7
       aattrs=. ('href';'coursesumry_plotpdf.jhp',qry),('target';'_blank'),: 'title';'Click to see PDF version of plot'
       frm=. tag  aattrs atr (,'a') (txt elm)~(imgattrs) atr elm 'img'
     case. 'sumrydef' do.
@@ -2489,7 +2561,7 @@ addPS_z_=: addPS_rgsdiradd_
 dropPS_z_=: dropPS_rgsdiradd_
 require 'dir files'
 3 : 0 ''
-if. -.IFCONSOLE do. 
+if. (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. 
   require 'dir_add' 
 end.
 )
@@ -2599,7 +2671,7 @@ dat=: 4 5 6{invtble
 require 'dir arc/zip/zfiles'
 require 'strings files'  
 3 : 0 ''
-  if. -.IFCONSOLE do. 
+  if.  (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. 
     require 'dir_add' 
   end.
 )

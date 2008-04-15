@@ -221,15 +221,6 @@ BEGIN
        VALUES (new.cs_id,new.cs_admin,50);
 END;
 
---CREATE TRIGGER enrol_new_user -- enrol new users in Experiment with AnSim course 
---AFTER INSERT ON users
---BEGIN
---     INSERT INTO enrolments (en_urid,en_ofid,en_rlid)
---     VALUES(new.ur_id,6,1);
---     INSERT INTO enrolmentroles (el_enid,el_rlid)
---     VALUES (last_insert_rowid(),1);
---END;
-
 CREATE TRIGGER delete_enrols
 BEFORE DELETE ON users
 BEGIN

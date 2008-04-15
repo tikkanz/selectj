@@ -35,8 +35,8 @@ try.
       errormsg=: qparam 'err'
 	  transfer page
 	case. 'chgparams' do.
-	  updateSelnDetails ciid NB. update caseinstance directory info from submitted form
       NB. transfer 'page' NB. causes error so can see problem
+	  updateSelnDetails ciid NB. update caseinstance directory info from submitted form
 	  ('action';'chgdparams') redirect 'case.jhp'
     case. 'chgusrdescr' do.
       ciun=. qparam 'ciusrname'

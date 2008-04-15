@@ -89,7 +89,7 @@ insert into offerings (of_crid, of_year, of_smid, of_dmid, of_admin) values (5,'
 
 insert into offeringstext (ox_intro) values('This is dummy introductory text for this offering of your course. Please edit to replace with desired text');
 insert into offeringstext (ox_intro) values('
-All new users are automatically enrolled in to this course. It consists of a few basic
+All new users are automatically enrolled in to this course by default. It consists of a few basic
 Cases to give you a taste of what SelectJ and AnimalSim are capable of.</p>
 <p>Please feel free to explore the cases listed below.</p>
 <p>If you wish to enrol in other courses that use AnimalSim please contact your
@@ -156,8 +156,15 @@ insert into casefieldsets (cf_csid,cf_fsid,cf_value) values (3,35,1);
 
 -- trigger automatially creates casestext entry for intro
 update casestext set cx_text='
-Intro texta. Lorem ipsum dolor sit amet consectetuer natoque sed libero tellus pede. Risus urna condimentum Pellentesque enim habitasse mauris pretium Aenean eros porta. At elit neque nonummy lorem cursus urna ipsum et auctor mattis. Augue id scelerisque quis dui ornare id leo Nulla odio nascetur. Venenatis nulla lacinia semper id justo ipsum mus lacinia.</p>
-<p>Consectetuer lacinia Ut Nam convallis eget id purus congue adipiscing ac. Dui convallis sit id Aenean tincidunt est dictumst aliquam eros id. Et ac in Nam scelerisque ut quis pulvinar faucibus ac justo. Feugiat vel justo orci Donec enim elit pulvinar pede eu rutrum. Nam quis Pellentesque id tortor et Morbi elit mi Donec pretium. Quis montes ridiculus rhoncus Nulla eu.
+There is a common misconception that increasing the size of a breeding population will increase the rate of genetic progress through selection. Use this case to verify whether this is not in fact true.</p>
+<p>Use the "Selection details" page to choose a trait to select for and the size of your breeding population.</p>
+<p>You can use the "Describe case" page to label and describe a case so you can distinguish how it was special or different from the other cases you run.</p>
+<p>The "Breed population" command will breed your population for 10 selection cycles according to your choices on the "Selection details" page</p>
+<p>Things to try:
+   <ul><li>Breed a population several times with the same selection details to see how big the effect of "chance" variation is on the result.</li>
+   <li>What are the differences you get if you breed a small vs a large population (for the same trait)?</li>
+   <li>Are the magnitude of the differences different for different traits?</li>
+   </ul> 
 ' where cx_csid=1 and cx_xnid=1;
 
 update casestext set cx_text='
