@@ -11,3 +11,5 @@ NB. Set up the table structure in the database
 exec__db fread FDIR,FDDL
 exec__db fread FDIR,FDATA
 destroy__db ''
+
+NB.! Offer to deltree all subfolders of userpop except for '.svn'
