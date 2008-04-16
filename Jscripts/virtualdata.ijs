@@ -25,8 +25,9 @@ INSur=: ;:'newuser newperson newenrolment'
 
 NB. y is mostly offering id 
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
-UPDof=: ;:'deleteofferingcases updateofferingstext'
-INSof=: ;:'createoffering addofferingcases'
+QRYof=: QRYof, ;:'offeringoxid countofferingsoxid'
+UPDof=: ;:'deleteofferingcases updateofferingstext updateofferingoxid'
+INSof=: ;:'createoffering addofferingcases createofferingstext'
 
 NB. y is mostly session id 
 QRYss=: ;:'sessioninfo'
@@ -50,7 +51,8 @@ DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
 DBcol     =: ;:'caseinst2expire username'
-DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail existoffering existofferingcases'
+DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
+DBitem=: DBitem, ;:'existoffering existofferingcases offeringoxid countofferingsoxid'
 
 NB. =========================================================
 NB. Valid query names where info not sourced from database (probably file)

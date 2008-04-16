@@ -290,3 +290,26 @@ sqlupd_updateofferingstext=: 0 : 0
   SET ox_intro=?
   WHERE ox_id=?;
 )
+
+sqlins_createofferingstext=: 0 : 0
+  INSERT INTO offeringstext (ox_intro)
+  VALUES(?);
+)
+
+sqlupd_updateofferingoxid=: 0 : 0
+  UPDATE offerings
+  SET of_oxid=?
+  WHERE of_id=?;
+)
+
+sqlsel_offeringoxid=: 0 : 0
+  SELECT of.of_oxid of_oxid
+  FROM `offerings` of
+  WHERE of.of_id=?;
+)
+
+sqlsel_countofferingsoxid=: 0 : 0
+  SELECT count(of.of_oxid) cnt_oxid
+  FROM `offerings` of
+  WHERE of.of_oxid=?;
+)

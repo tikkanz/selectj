@@ -12,16 +12,34 @@ createOfferings=: 3 : 0
 
 NB. deleteOfferings
 NB.  need to first delete appropriate:
-NB.     offeringstext, offeringcases, enrolments, caseinstances
+NB.     offeringstext(only if unique to offering), offeringcases(trigger), enrolments(trigger), caseinstances
 NB. probably best just to make inactive by updating status to _1
 
-NB. updateOfferingText
-NB. result is ??
-NB. y is ox_id of offering text to udpate
+NB.*updateOfferingsText v updates an offeringstext entry.
+NB.     All offerings using that offeringstext entry are affected.
+NB. result is 1 if successful
+NB. y is of_id of an offering linked to the offeringstext entry to update
 NB. x is literal list of new offering text
 updateOfferingsText=: 4 : 0
-  'updateofferingstext' updateInfo x;y
+  oxid=. 'offeringoxid' getInfo y
+  0='updateofferingstext' updateInfo x;oxid
 )
+
+NB.*updateOfferingText v links Offering to new offeringstext entry.
+NB.       only this offering is affected.
+NB. result is 1 if successful
+NB. y is numeric of_id of offering to update
+NB. x is literal list of ox_intro contents to create entry for and link to
+updateOfferingText=: 4 : 0
+  oxid=. 'offeringoxid' getInfo y NB. oxid for this offering?
+  if. 1<'countofferingsoxid' getInfo oxid do. NB. create new offeringstext and change of_oxid.
+    oxid=. 'createofferingstext' insertInfo x
+    0='updateofferingoxid' updateInfo oxid;y
+  else. NB. oxid is unique to this offering so just update
+    0='updateofferingstext' updateInfo x;oxid
+  end.
+)
+
 
 NB.*addOfferingCases v adds case(s) to offering(s)
 NB. result is numeric list of new rowids in offeringcases table
