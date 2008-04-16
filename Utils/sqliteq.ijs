@@ -109,7 +109,16 @@ updateDBTable=: dyad sdefine
   r=. (boxopen y) apply__db ". 'sqlupd_',x
 )
 
-execSQL=: dyad sdefine
+NB. querySQL v provide SQL query directly
+NB. result is boxed table result of SQL query 
+NB. y is literal list of SQL query.
+querySQL=: monad sdefine
+  r=. query__db y
+)
+NB. execSQL v provide SQL command directly
+NB. result is 2-item numeric list of changes
+NB. y is literal list of SQL command (insert, delete, update).
+execSQL=: monad sdefine
   r=. exec__db y
 )
 
