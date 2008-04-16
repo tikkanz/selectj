@@ -228,6 +228,20 @@ BEGIN
      WHERE en_urid=old.ur_id;
 END;
 
+CREATE TRIGGER delete_offering_enrolments
+BEFORE DELETE ON offerings
+BEGIN
+     DELETE FROM enrolments
+     WHERE en_ofid=old.of_id;
+END;
+
+CREATE TRIGGER delete_offeringcases
+BEFORE DELETE ON offerings
+BEGIN
+     DELETE FROM offeringcases
+     WHERE oc_ofid=old.of_id;
+END;
+
 CREATE VIEW `offering_info` AS 
 SELECT of.of_id of_id ,
        cr.cr_id cr_id ,

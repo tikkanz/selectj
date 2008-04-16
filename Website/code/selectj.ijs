@@ -518,8 +518,19 @@ createOfferings=: 3 : 0
   'createoffering' insertInfo boxopen"0 msk#y
 )
 updateOfferingsText=: 4 : 0
-  'updateofferingstext' updateInfo x;y
+  oxid=. 'offeringoxid' getInfo y
+  0='updateofferingstext' updateInfo x;oxid
 )
+updateOfferingText=: 4 : 0
+  oxid=. 'offeringoxid' getInfo y 
+  if. 1<'countofferingsoxid' getInfo oxid do. 
+    oxid=. 'createofferingstext' insertInfo x
+    0='updateofferingoxid' updateInfo oxid;y
+  else. 
+    0='updateofferingstext' updateInfo x;oxid
+  end.
+)
+
 addOfferingCases=: 4 : 0
   ofcs=. >,{x;y 
   msk=. 0=existOfferingCases ofcs 
@@ -1250,8 +1261,9 @@ QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
-UPDof=: ;:'deleteofferingcases updateofferingstext'
-INSof=: ;:'createoffering addofferingcases'
+QRYof=: QRYof, ;:'offeringoxid countofferingsoxid'
+UPDof=: ;:'deleteofferingcases updateofferingstext updateofferingoxid'
+INSof=: ;:'createoffering addofferingcases createofferingstext'
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
@@ -1265,7 +1277,8 @@ DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
 DBcol     =: ;:'caseinst2expire username'
-DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail existoffering existofferingcases'
+DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
+DBitem=: DBitem, ;:'existoffering existofferingcases offeringoxid countofferingsoxid'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
@@ -1751,6 +1764,29 @@ sqlupd_updateofferingstext=: 0 : 0
   UPDATE offeringstext
   SET ox_intro=?
   WHERE ox_id=?;
+)
+
+sqlins_createofferingstext=: 0 : 0
+  INSERT INTO offeringstext (ox_intro)
+  VALUES(?);
+)
+
+sqlupd_updateofferingoxid=: 0 : 0
+  UPDATE offerings
+  SET of_oxid=?
+  WHERE of_id=?;
+)
+
+sqlsel_offeringoxid=: 0 : 0
+  SELECT of.of_oxid of_oxid
+  FROM `offerings` of
+  WHERE of.of_id=?;
+)
+
+sqlsel_countofferingsoxid=: 0 : 0
+  SELECT count(of.of_oxid) cnt_oxid
+  FROM `offerings` of
+  WHERE of.of_oxid=?;
 )
 
 coclass 'rgssqliteq'
@@ -2490,8 +2526,10 @@ insertDBTable=: dyad sdefine
 updateDBTable=: dyad sdefine
   r=. (boxopen y) apply__db ". 'sqlupd_',x
 )
-
-execSQL=: dyad sdefine
+querySQL=: monad sdefine
+  r=. query__db y
+)
+execSQL=: monad sdefine
   r=. exec__db y
 )
 
