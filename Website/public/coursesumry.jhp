@@ -8,7 +8,7 @@ try.
   end.
   action=. qparam 'action'
   select. ' ' taketo action
-    case. 'Compare';'Plot';'Tabulate' do.
+    case. 'Analyse';'Plot';'Tabulate' do.
       ciids=. 0 qparamList 'ciid'
       if. 0=#ciids do. redirect 'coursesumry.jhp' return. end.
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
@@ -18,7 +18,7 @@ try.
       trtsseld_rgswebforms_=:  qparamList 'traits'
       inftypsseld_rgswebforms_=: qparamList 'inftyps'
       if. (0=#inftypsseld_rgswebforms_) +. 0=#trtsseld_rgswebforms_ do.
-        action=.'Compare' end.
+        action=.'Analyse' end.
       cfform=: 'sumrydef' buildForm ciids
       NB. (cfform) fwrites 'D:\Web\SelectJ\userpop\tikka\jhp.log'
       select. ' ' taketo action

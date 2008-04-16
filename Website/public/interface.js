@@ -127,7 +127,7 @@ function resetCase(cistage, cistored) {
 	act = "reset" //default to reset case
 	stc = false   //default to not store case
 	if ((99==cistage) && (!cistored)) {
-		stc = !confirm("Your case is complete but has not yet been stored.\n\nAre you sure you want to reset without storing first?");
+		stc = !confirm("Your case is complete but has not yet been saved.\n\nAre you sure you want to reset without saving first?");
 	}
 	else if((cistage>1) && (cistage<99)){
 		if (!confirm("Your case is not yet complete.\n\nAre you sure you want to reset and lose your progress so far?")){

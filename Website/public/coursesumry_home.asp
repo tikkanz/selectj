@@ -27,13 +27,13 @@
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
   <div class="story">
-    <h3>Your Stored Cases</h3>
-    <p>Select one or more stored cases to summarise/compare. </p>
+    <h3>Your Saved Cases</h3>
+    <p>Select one or more saved cases to analyse. </p>
     <form name="cfcases" id="cfcases" method="post" action="coursesumry.jhp">
      <table cellspacing=0>
        <thead>
          <tr>
-           <th colspan="2">Stored Case ID</th><th>Your Case description</th><th>Base Case description</th><th>Actions</th>
+           <th colspan="2">Saved Case ID</th><th>Your Case description</th><th>Base Case description</th><th>Actions</th>
          </tr>
        </thead>
        <tbody>
@@ -57,7 +57,7 @@
        <% end. %>
        </tbody>
        <tfoot>
-         <tr class="tbltools"><td colspan="5"><input name="action" type="submit" value="Compare Cases" /><input name="action" type="submit" value="Delete Selected" /></td>
+         <tr class="tbltools"><td colspan="5"><input name="action" type="submit" value="Analyse Case(s)" /><input name="action" type="submit" value="Delete Selected" /></td>
          </tr>
        </tfoot>
      </table>

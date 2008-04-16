@@ -173,45 +173,73 @@ Intro textb. Lorem ipsum dolor sit amet consectetuer Nulla Donec vitae ridiculus
 ' where cx_csid=2 and cx_xnid=1;
 
 update casestext set cx_text='
-Intro textc. Lorem ipsum dolor sit amet consectetuer felis et facilisi vitae Aenean. Nunc Vivamus dictumst parturient Vestibulum augue morbi ut at sem amet. Vestibulum nonummy ut magnis dui justo libero tempus tempor in quis. Mi enim Cras pellentesque ligula diam pulvinar Nam egestas aliquet feugiat. Pellentesque Integer.</p>
-<p>Vel orci Phasellus semper ut semper lacinia ut elit tincidunt egestas. Nisl lacus elit ridiculus Suspendisse hendrerit diam ornare Donec pellentesque id. Mauris libero ultrices sociis augue consectetuer Donec ut nulla Aenean sodales. Massa nibh tellus tincidunt Mauris natoque nec cursus augue.</p>
-<p>Ac Nunc semper non sodales Vestibulum est neque pulvinar sociis dolor. Pulvinar id enim amet quis orci felis laoreet dolor ultrices ligula. Wisi ante fringilla elit ac Phasellus enim pretium elit vitae leo. Laoreet eget Morbi malesuada pede Nam cursus nulla turpis dui quis. Semper arcu vel.
+Breeders have a number of decisions they need to make when selecting their population.</p>
+<ul><li>What they want to achieve by selection (Selection Objective)</li>
+<li>Which traits to record and select for</li>
+<li>How best to select their replacement sires and dams</li>
+</ul>
+<p>The objective of this project is for you to put yourself in the position of a breeder. Decide what market
+you wish to supply sires to, what your selection objective will be and how you will go about reaching
+that objective.</p>
+<p>You should determine and record your target market and selection objective before beginning
+the simulation. You should also document your selection strategies in such a way that someone else would
+be able to follow them.</p>
+<p>Once you have chosen your desired <em>selection details</em>, you can breed your initial
+crop of potential sires and dams.</p>
 ' where cx_csid=3 and cx_xnid=1;
 
 insert into casestext (cx_csid,cx_xnid,cx_text) values (1,11,'
-Instruction texta. Lorem ipsum dolor sit amet consectetuer nibh Ut libero egestas quis. Eget Curabitur pellentesque Sed Nullam tempor Lorem Vestibulum Cras libero laoreet. </p>
-<p>Et fringilla tortor lacinia tincidunt nunc fames magnis est mauris ut. Porttitor Pellentesque elit Morbi nec natoque Cras ut Suspendisse In nascetur. </p>
-<p>Aenean magnis Sed dui at justo et nonummy at augue risus. Molestie massa morbi felis neque ligula pretium a habitasse.
+Choose the desired size of your breeding population and the trait you wish to select for (selection is on phenotype only). </p>
+<p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
+
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (1,99,'
-Conclusion texta. Lorem ipsum dolor sit amet consectetuer hendrerit sociis elit Quisque nibh. Consectetuer tortor risus consectetuer Ut Pellentesque tincidunt neque non laoreet egestas. Justo tellus ac id.</p>
-<p>Vestibulum mi metus amet id augue nec condimentum feugiat turpis dui. Nullam justo faucibus pede Vestibulum porttitor tortor lacinia semper tellus auctor. Interdum at tincidunt wisi.</p>
-<p>Pede at ac congue orci elit consectetuer eu pede consequat montes. Pede vel mauris laoreet leo elit quis id nunc metus nulla. Lobortis condimentum pellentesque est Curabitur.
+Your breeding population has now been selected for 10 selection cycles and the case is complete.</p>
+<p>If you wish to analyse the results of your case you should save them. If you Reset the case before
+the results are saved, then a new case will be initialised and the results of the completed one will be lost.</p>
+<p>You can analyse the results of one or more saved cases by clicking <em>Analyse saved case(s)</em>. 
+<p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below.
 ');
 
 insert into casestext (cx_csid,cx_xnid,cx_text) values (2,11,' 
 Instruction textb. Lorem ipsum dolor sit amet consectetuer Integer at Curabitur amet gravida. Elit dolor Curabitur nec elit Vivamus neque.</p>
-<p>Sed laoreet fringilla Curabitur lacinia semper dignissim senectus nibh nibh Maecenas. Netus consequat Donec quis.</p>
-<p>Pellentesque accumsan eros natoque In eleifend tellus iaculis cursus Maecenas cursus. Risus vel elit at Curabitur justo accumsan.
+<p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (2,99,'
-Conclusion textb. Lorem ipsum dolor sit amet consectetuer at id quis pede laoreet. Integer malesuada et penatibus ligula convallis malesuada ipsum elit vitae consequat. Nunc risus.</p>
-<p>Proin Maecenas risus tincidunt dignissim Aenean facilisi morbi mauris consequat metus. Massa platea Donec tincidunt ridiculus amet leo leo Quisque sem Nulla. Dolor porta.
+Your breeding population has now been selected for 10 selection cycles and the case is complete.</p>
+<p>If you wish to analyse the results of your case you should save them. If you Reset the case before
+the results are saved, then a new case will be initialised and the results of the completed one will be lost.</p>
+<p>You can analyse the results of one or more saved cases by clicking <em>Analyse saved case(s)</em>. 
+<p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below.
 ');
 
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,11,'
 Instruction textc. Lorem ipsum dolor sit amet consectetuer justo Donec eget Maecenas eu. Vel Sed sollicitudin rhoncus orci eleifend urna et nec nonummy.</p>
 <p>Enim libero tempor nibh Curabitur Nam Curabitur pede convallis mauris Nulla. Quis convallis tristique tellus odio turpis in Aenean tincidunt ac quis. Volutpat.</p>
-<p>In leo urna mauris Aliquam faucibus Suspendisse Praesent at magnis tincidunt. Aliquam quis orci Nam laoreet sapien consectetuer laoreet ante.</p>
-<p>Id congue Sed vitae nec dolor Sed iaculis Nulla et amet. Nisl mauris ante convallis orci justo felis risus interdum id.
+<p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,21,'
-Between cycle textc. Lorem ipsum dolor sit amet consectetuer at lacus odio wisi mauris. Eu tincidunt a id In Vestibulum.</p>
-<p>Neque et eget Nunc id Phasellus penatibus semper mollis risus Suspendisse. Rhoncus id dapibus ut Lorem Pellentesque ipsum tempus.
+It is some time prior to mating and you need to make some selection decisions about which
+females and males to breed from this coming year.</p> 
+<ul><li>Download each of the selection lists containing potential sires and dams.</li>
+<li> Open the selection lists in Excel and delete all rows except for the header at the top
+and the rows containing animals you wish to breed from.</li> 
+<li> Save the selection lists as .csv files somewhere on your hard disk where you can find it later.</li>
+<li> Upload the lists of selected dams and sires and breed them.</li> 
+</ul>
+<p>You will need to do repeat this step until you have completed 8 cycles of selection.
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,99,'
-Conclusion textc. Lorem ipsum dolor sit amet consectetuer at elit scelerisque Aenean metus. Orci Duis et consequat dapibus id Nulla et ipsum Phasellus.</p>
-<p>Sed feugiat volutpat Quisque non id nisl ac sem lorem et. Vestibulum nascetur Quisque molestie condimentum enim id aliquam ligula amet diam. Pretium Nullam.
+You have now completed 8 cycles of selection for your breeding population.</p>
+<p>How good was your population''s progress towards your objective? How could/would you improve your selection
+strategy if you were starting again?</p>
+<p>To analyse the results of your case you should save them first. If you <em>Reset case</em> before
+the results are saved, then a new case will be initialised and the results of the completed one will be lost.</p>
+<p>You can analyse the results of one or more saved cases by clicking <em>Analyse saved case(s)</em>. 
+<p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below.
 ');
 
 insert into offeringcases (oc_ofid, oc_csid) values (1,1);

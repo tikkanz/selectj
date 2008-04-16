@@ -37,7 +37,7 @@
     <p class="info" style="display:<%=(action-:'chgdparams'){::'none';'block'%>">Your Selection details were successfully changed. </p>
     <p class="info" style="display:<%=(action-:'chgdusrdescr'){::'none';'block'%>">Your Case description was successfully changed. </p>
     <p class="info" style="display:<%=(action-:'resetfin'){::'none';'block'%>">The case was successfully reset. </p>
-    <p class="info" style="display:<%=(action-:'storefin'){::'none';'block'%>">The case was successfully stored. </p>
+    <p class="info" style="display:<%=(action-:'storefin'){::'none';'block'%>">The case was successfully saved. </p>
     <p class="info" style="display:<%=(action-:'cyclefin'){::'none';'block'%>">The selection cycle(s) completed successfully </p>    
     <p class="error" style="display:<%=('err'-: _3{.action){::'none';'block'%>"><%=errormsg %></p>
   </div>
@@ -46,7 +46,7 @@
     <h3><%=xn_name%> </h3>
     <p><%=cx_text%> </p>
 
-    <p>What do you want to do next? Choose a task from the menu on the right. </p>
+    <br/>
     <div id="SelListDwn" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
       <fieldset>
         <legend>Download selection lists </legend>
@@ -78,7 +78,7 @@
       <fieldset> <legend>What to do with completed Case?</legend>
    		<form action="case.jhp" method="post" name="dlSUM" id="dlSUM">
            <input title="Save completed case" type="submit" id="action0" name="action" value="Save case" />
-           <input title="Save completed case and compare with other stored cases" type="submit" id="action1" name="action" value="Compare case" />
+           <input title="Save completed case and analyse it now" type="submit" id="action1" name="action" value="Analyse case" />
            <input title="Discard completed case and start a new one" type="submit" id="action0" name="action" value="Discard case" />
   		</form>
    		<form action="download.jhp" method="post" name="dlSUM" id="dlSUM">
@@ -100,7 +100,7 @@
 	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
       <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can compare it with others later">Save completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
     </dl>&nbsp;
   </div> 
 </div>

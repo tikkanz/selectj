@@ -64,7 +64,7 @@
 	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
       <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can compare it with others later">Save completed case';'coursesumry.jhp">Compare stored case' %></a></dd> 
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
     </dl>&nbsp;
   </div> 
 </div>

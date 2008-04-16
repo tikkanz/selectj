@@ -63,11 +63,11 @@ try.
 	  end.
 	  expireCaseInstance ciid
 	  ('action';'resetfin') redirect 'case.jhp'
-    case. 'save';'store';'compare' do.
+    case. 'save';'store';'analyse' do.
       storeCaseInstance ciid
       if. (<action) e. 'save';'store' do.
         ('action';'storefin') redirect 'case.jhp'
-      elseif. action-:'compare' do.
+      elseif. action-:'analyse' do.
         redirect 'coursesumry.jhp'
       end.
     case. 'uploadsl' do.
