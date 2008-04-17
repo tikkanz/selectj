@@ -184,14 +184,14 @@ that objective.</p>
 <p>You should determine and record your target market and selection objective before beginning
 the simulation. You should also document your selection strategies in such a way that someone else would
 be able to follow them.</p>
-<p>Once you have chosen your desired <em>selection details</em>, you can breed your initial
-crop of potential sires and dams.</p>
+<p>Once you have chosen your desired <em>Selection details</em>, you can breed your initial
+crop of potential sires and dams by clicking <em>Breed population</em>.</p>
 ' where cx_csid=3 and cx_xnid=1;
 
 insert into casestext (cx_csid,cx_xnid,cx_text) values (1,11,'
 Choose the desired size of your breeding population and the trait you wish to select for (selection is on phenotype only). </p>
 <p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
-<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the <em>CaseHome</em> page. </p>
 
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (1,99,'
@@ -205,7 +205,7 @@ the results are saved, then a new case will be initialised and the results of th
 insert into casestext (cx_csid,cx_xnid,cx_text) values (2,11,' 
 Instruction textb. Lorem ipsum dolor sit amet consectetuer Integer at Curabitur amet gravida. Elit dolor Curabitur nec elit Vivamus neque.</p>
 <p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
-<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the <em>CaseHome</em> page. </p>
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (2,99,'
 Your breeding population has now been selected for 10 selection cycles and the case is complete.</p>
@@ -216,21 +216,32 @@ the results are saved, then a new case will be initialised and the results of th
 ');
 
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,11,'
-Instruction textc. Lorem ipsum dolor sit amet consectetuer justo Donec eget Maecenas eu. Vel Sed sollicitudin rhoncus orci eleifend urna et nec nonummy.</p>
-<p>Enim libero tempor nibh Curabitur Nam Curabitur pede convallis mauris Nulla. Quis convallis tristique tellus odio turpis in Aenean tincidunt ac quis. Volutpat.</p>
+In the form below you need to make a number of choices.<br/>
+You can indicate the number of Dams you wish to mate to each sire as well as the ages at which males'' and females'' progeny are first born.</p>
+<p>You need to choose:</p>
+<ul><li>which traits to record (measure) on your animals (<em>Traits to record</em>)</li>
+    <li>which traits to select your replacements on (<em>Traits to select</em>) and what type of information to use (<em>Selection Method</em>)</li>
+</ul>
+<p>You can also choose what information you wish to summarise at the end of your case. You will 
+probably at least want to summarise the traits that you selected on, but you may also want to 
+investigate the effects on other traits as a result of your selection strategy.</p>
 <p>If you wish to return your choices to how they were when you opened this page, click <em>Discard Changes</em> at the bottom of the page.
-<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the main Case page. </p>
+<p>Once you are happy with your choices click <em>Save Changes</em> at the bottom of the page to update your case and return to the <em>CaseHome</em> page. </p>
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,21,'
-It is some time prior to mating and you need to make some selection decisions about which
-females and males to breed from this coming year.</p> 
+It is prior to mating and you need to make some selection decisions about which
+females and males to breed from this coming season.</p> 
 <ul><li>Download each of the selection lists containing potential sires and dams.</li>
-<li> Open the selection lists in Excel and delete all rows except for the header at the top
-and the rows containing animals you wish to breed from.</li> 
-<li> Save the selection lists as .csv files somewhere on your hard disk where you can find it later.</li>
-<li> Upload the lists of selected dams and sires and breed them.</li> 
+<li>Open the selection lists in Excel and apply your selection strategy to choose your replacements by deleting
+the rows containing all the unwanted animals. (Leave the header at the top)</li> 
+<li>Save as comma-delimited files (.csv) on your computer with an appropriate
+name (e.g. <code>Ewe_replacments.csv</code>) somewhere you will be able to find them again.</li>
+<li>Browse to each of the files that you just saved, then click <em>Upload Files & Breed</em>.</li> 
 </ul>
-<p>You will need to do repeat this step until you have completed 8 cycles of selection.
+<p>You will need to repeat this step until you have completed 8 cycles of selection.</p>
+<p>Once you click <em>Upload Files & Breed</em>, it can take some time for your sires and dams to be mated, their progeny generated and 
+selection lists to be created. However, once your lists have been uploaded you can safely close your
+AnimalSim session and next time you login, the new selection lists should be available.
 ');
 insert into casestext (cx_csid,cx_xnid,cx_text) values (3,99,'
 You have now completed 8 cycles of selection for your breeding population.</p>
@@ -239,7 +250,8 @@ strategy if you were starting again?</p>
 <p>To analyse the results of your case you should save them first. If you <em>Reset case</em> before
 the results are saved, then a new case will be initialised and the results of the completed one will be lost.</p>
 <p>You can analyse the results of one or more saved cases by clicking <em>Analyse saved case(s)</em>. 
-<p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below.
+<p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below. The Pivot Tables 
+feature of Excel is very useful for summarising this file.
 ');
 
 insert into offeringcases (oc_ofid, oc_csid) values (1,1);
