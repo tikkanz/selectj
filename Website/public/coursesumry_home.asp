@@ -37,7 +37,7 @@
          </tr>
        </thead>
        <tbody>
-       <% for_idx. i.#ci_id do. %>
+	     <% if. 0<:4!:0 <'ci_id' do. for_idx. i.#ci_id do. %>
          <tr class="r<%= ,":2|idx %>">
 		   <td class="tblheading2"><label for="ciid<%=idx%>"><%= idx{ci_id %></label></td>
            <td><input name="ciid" id="ciid<%=idx%>" type="checkbox" value="<%= idx{ci_id %>" /></td>
@@ -54,7 +54,10 @@
                 <a href="download.jhp?filetype=ansumrycsv&filename=Summary.csv&ciid=<%= idx{ci_id %>">download&nbsp;Summary&nbsp;Info</a>
            </td>
          </tr>
-       <% end. %>
+       <% end. else.%>
+       <tr class="r0"><td colspan="5">&nbsp;<br/>No saved cases<br/>&nbsp;</td></tr>
+       <% end. %>       
+
        </tbody>
        <tfoot>
          <tr class="tbltools"><td colspan="5"><input name="action" type="submit" value="Analyse Case(s)" /><input name="action" type="submit" value="Delete Selected" /></td>
