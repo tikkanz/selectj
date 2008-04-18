@@ -186,7 +186,7 @@ getParamState=: 3 : 0
       vals=. <"0 anini getIniVals y
       if. 1 do. NB.! 'select'-:pr_ctype NB. if select control
         seld=. boxopen vals
-        vals=. <"0 (100,200*>:i.5), 1500 2000 4000
+        vals=. <"0 (100,200*>:i.5), 1500 2000
       end.
     case. 'mateage' do.
       vals=. <"0 anini getIniVals y
