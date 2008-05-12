@@ -65,7 +65,7 @@ NB. x is optional role id for enrolment [default is 1 (student)]
 enrolUsers=: 3 : 0
   1 enrolUsers y
 :
-  'uids ofids'=. 2{.!.(<6) boxopen y
+  'uids ofids'=. 2{.!.(<6) boxopen y NB. fill 1 is default offering
   rlids=. (#uids)$x
   enrl=.(>,{uids;ofids),.(#ofids)#rlids
   if. 0=#enrl do. '' return. end.
@@ -167,7 +167,7 @@ NB. y is content (session ticket) of sessionID cookie
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'sessioninfo' getInfo sid
+  sinfo=.'sessioninfo' getInfo sid NB. returns ss_urid, ss_salt, timeleft
   if. 0=#sinfo do. 0 return. end. NB. no (active) session
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   NB. assign hdrnames

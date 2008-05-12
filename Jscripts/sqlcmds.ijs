@@ -215,6 +215,7 @@ NB. Admin SQL
 
 sqlsel_userlist=: 0 : 0
   SELECT ur.ur_id ur_id ,
+         ur.ur_uname ur_uname ,
          ur.ur_status ur_status ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
