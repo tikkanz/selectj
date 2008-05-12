@@ -52,6 +52,7 @@
     <table id="userlist" class="tbldetails" cellspacing=0 width="100%"><tr class="rh">
       <th colspan="2">UserID</th>
       <th>First</th>
+      <th>Username</th>
       <th>Last</th>
       <th>Active</th>
       </tr>
@@ -60,7 +61,8 @@
         <tr class="r<%=(selected~:i{ur_id){'s',":2|i%>">
         <td class="tblheading2"><a href="admin.jhp?action=Index&urid=<%= i{ur_id %>&Flt_active=<%= fltactive %>&Flt_guest=<%= fltguest %>"><%= i{ur_id %></a></td>
         <td><input type="checkbox" name="urid" id="urid<%= i %>"  value="<%= i{ur_id %>"></td>
-        <td><label for="urid<%= i %>"><%= i{pp_fname %></label></td>
+        <td><label for="urid<%= i %>"><%= i{ur_uname %></label></td>
+        <td><%= i{pp_fname %></td>        
         <td><%= i{pp_lname %></td>
         <td align="center"><%= i{ur_status %></td>
         </tr>
