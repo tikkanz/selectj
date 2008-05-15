@@ -30,8 +30,8 @@
   </div>
   </div>
   <div class="story">
-     <h3><%= xn_name %> </h3>
-      <p><%=cx_text%> </p>
+     <h3><%= casetextname %> </h3>
+      <p><%=casetext%> </p>
     <p class="warning" style="display:<%=(0<currcycle){::'none';'block'%>">Editing your selection details once selection has started will often result in strange results and errors.<br/> If you really think you want to do this, check with your course administrator first! </p>
       <%=caseform%>
   </div>

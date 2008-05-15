@@ -53,10 +53,15 @@ CREATE TABLE scendefs (
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
   sd_filen CHAR(100) ); -- filename of zip file containing scendef. Instead of file name could store files as BLOBS?
 
-CREATE TABLE textblocks ( -- names for blocks of text (not just in cases?)
-  xn_id    INTEGER NOT NULL PRIMARY KEY,
-  xn_name  CHAR(64) NOT NULL,  -- name for text block eg. 'Introduction' or 'Materials and Methods'
-  xn_code  CHAR(16) NOT NULL );  -- code for text block eg. 'intro' or 'instruct'   
+CREATE TABLE textblocks (  -- block of text used in interface
+  xb_id     INTEGER NOT NULL PRIMARY KEY,
+  xb_text   TEXT DEFAULT 'Lorem ipsum dolor sit.' );  -- block of text
+
+CREATE TABLE blocktypes ( -- "types" of text blocks
+  bt_id    INTEGER NOT NULL PRIMARY KEY,
+  bt_name  CHAR(64) NOT NULL,  -- name for block type eg. 'Introduction' or 'Materials and Methods'
+  bt_code  CHAR(16) NOT NULL,  -- code for block type eg. 'caseintro' or 'instruct' 
+  bt_xbid  INTEGER REFERENCES textblocks(xb_id) DEFAULT 1); -- xb_id of default text for this block type     
 
 CREATE TABLE fieldsets ( -- fieldsets available to a case form
   fs_id    INTEGER NOT NULL PRIMARY KEY,
@@ -105,12 +110,14 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
   of_smid   INTEGER NOT NULL REFERENCES semesters(sm_id),
   of_dmid   INTEGER NOT NULL REFERENCES delivmodes(dm_id),
   of_admin  INTEGER DEFAULT NULL REFERENCES users(ur_id), -- Paper coordinator
-  of_oxid   INTEGER DEFAULT 1 REFERENCES offeringstext(ox_id),
+--  of_oxid   INTEGER DEFAULT 1 REFERENCES offeringstext(ox_id),
   of_status INTEGER DEFAULT 1 );  
 
 CREATE TABLE offeringstext (  -- text used in interface with offering
-  ox_id     INTEGER NOT NULL PRIMARY KEY,
-  ox_intro  TEXT DEFAULT NULL );  -- text for start of course_home.asp
+  ox_ofid  INTEGER NOT NULL REFERENCES offerings(of_id) ,
+  ox_btid  INTEGER NOT NULL REFERENCES blocktypes(bt_id) DEFAULT 200,
+  ox_xbid  INTEGER REFERENCES textblocks(xb_id) DEFAULT 3, -- id of text block
+  PRIMARY KEY(ox_ofid,ox_btid) );
 
 CREATE TABLE enrolments (  -- intersection of user, offering and user role for that offering
   en_urid   INTEGER NOT NULL REFERENCES users(ur_id),
@@ -151,16 +158,15 @@ CREATE TABLE fieldsetparams ( -- params and label for each fieldset
 
 CREATE TABLE casestext (  -- text applicable to each scenario/case
   cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
-  cx_xnid  INTEGER NOT NULL REFERENCES textblocks(xn_id) ,
-  cx_text  TEXT DEFAULT 'Lorem ipsum dolor sit.' ,  -- text to set scene for scenario
-  PRIMARY KEY(cx_csid,cx_xnid) );
+  cx_btid  INTEGER NOT NULL REFERENCES blocktypes(bt_id) ,
+  cx_xbid  INTEGER DEFAULT 1 REFERENCES textblocks(xb_id) , -- id of text block
+  PRIMARY KEY(cx_csid,cx_btid) );
 
 CREATE TABLE caseroles (
   cl_csid INTEGER NOT NULL REFERENCES cases(cs_id),
   cl_urid INTEGER NOT NULL REFERENCES users(ur_id),
   cl_rlid INTEGER NOT NULL REFERENCES roles(rl_id),
   PRIMARY KEY(cl_csid,cl_urid,cl_rlid) );
-
 
 CREATE TABLE offeringcases (  -- cases available for each offering
   oc_ofid INTEGER NOT NULL REFERENCES offerings(of_id) ,
@@ -185,18 +191,34 @@ CREATE TABLE errors (
   er_sdid   INTEGER NOT NULL REFERENCES scendefs(sd_id),
   er_errmsg CHAR(100) );  -- text of last error message   
 
-CREATE TRIGGER link_offtext
-AFTER INSERT ON offerings
-WHEN EXISTS(SELECT of_oxid FROM offerings WHERE of_crid=new.of_crid AND of_id != new.of_id)
---when exists another offering with same course as new offering
-BEGIN
-  UPDATE offerings 
-  SET of_oxid= 
-      (SELECT of_oxid FROM offerings 
-       WHERE of_crid=new.of_crid AND of_id != new.of_id
-       ORDER BY of_smid,of_year DESC) 
-    WHERE of_id=new.of_id;
-END;
+-- rather than creating default entries, will look for entry & if it doesn't exist return the textblock specified by the default bt_xbid for that blocktype.
+-- CREATE TRIGGER create_offtext
+-- AFTER INSERT ON offerings
+-- --insert a default entry in offeringstext for ox_ofid (ox_btid=200 & ox_xbid=3)
+-- BEGIN
+--   INSERT INTO offeringstext (ox_ofid) values (new.of_id);
+-- END;
+-- 
+-- CREATE TRIGGER update_offtext_link
+-- AFTER INSERT ON offeringstext
+-- WHEN EXISTS(SELECT of_id FROM offerings WHERE of_crid=new.of_crid AND of_id != new.of_id)
+-- --then if another offering with same course as new offering exists update ox_xbid to that of other offering
+-- BEGIN
+--   UPDATE offeringstext 
+--   SET ox_xbid= 
+--       (SELECT ox_xbid FROM offeringstext 
+--        WHERE of_crid=new.of_crid AND of_id != new.of_id
+--        ORDER BY of_smid,of_year DESC) 
+--     WHERE of_id=new.of_id;
+-- END;
+
+--CREATE TRIGGER create_casetext -- creates placeholder for intro text for a case when it is created
+--AFTER INSERT ON cases
+--BEGIN
+--       INSERT INTO casestext (cx_csid,cx_xnid)
+--       VALUES (new.cs_id,1);
+--END;
+
 
 CREATE TRIGGER create_offadminrole
 AFTER INSERT ON offerings
@@ -205,13 +227,6 @@ BEGIN
        VALUES (new.of_admin,new.of_id,12);
 --       INSERT INTO enrolmentroles (el_enid,el_rlid)
 --       VALUES (last_insert_rowid(),12);
-END;
-
-CREATE TRIGGER create_casetext -- creates placeholder for intro text for a case when it is created
-AFTER INSERT ON cases
-BEGIN
-       INSERT INTO casestext (cx_csid,cx_xnid)
-       VALUES (new.cs_id,1);
 END;
 
 CREATE TRIGGER create_caseowner
@@ -235,12 +250,23 @@ BEGIN
      WHERE en_ofid=old.of_id;
 END;
 
-CREATE TRIGGER delete_offeringcases
+CREATE TRIGGER deletecascade_offering
 BEFORE DELETE ON offerings
 BEGIN
      DELETE FROM offeringcases
      WHERE oc_ofid=old.of_id;
+     DELETE FROM offeringstext
+     WHERE ox_ofid=old.of_id;
 END;
+
+-- CREATE TRIGGER deletecascade_offeringstext
+-- BEFORE DELETE ON offeringstext
+-- the when statement needs to check that xbid is not used by any other offering
+-- WHEN 1=SELECT count(ox_xbid) FROM offeringstext WHERE 
+-- BEGIN
+-- 		 DELETE FROM textblocks
+-- 		 WHERE xb_id=old.ox_xbid
+-- END;
 
 CREATE VIEW `offering_info` AS 
 SELECT of.of_id of_id ,

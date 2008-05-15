@@ -388,14 +388,14 @@ registerUser=: 3 : 0
 enrolUsers=: 3 : 0
   1 enrolUsers y
 :
-  'uids ofids'=. 2{.!.(<6) boxopen y
+  'uids ofids'=. 2{.!.(<1) boxopen y 
   rlids=. (#uids)$x
   enrl=.(>,{uids;ofids),.(#ofids)#rlids
   if. 0=#enrl do. '' return. end.
   'newenrolment' insertInfo <"0 enrl
 )
 createUsers=: 3 : 0
-  6 createUsers y 
+  1 createUsers y 
 :
  uids=. ,registerUser"1 y
  rowids=. 1 enrolUsers ((0&< # ])uids);x 
@@ -451,7 +451,7 @@ validLogin=: 3 : 0
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'sessioninfo' getInfo sid
+  sinfo=.'sessioninfo' getInfo sid 
   if. 0=#sinfo do. 0 return. end. 
   'hdr dat'=. split sinfo         
   (hdr)=. |:dat                   
@@ -512,24 +512,77 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+getOfferingText=: 3 : 0
+ 200 getOfferingText y
+:
+ 'btid ofid'=. x;y
+ if. 0=#res=. 'offeringtext' getInfo ofid;btid do.
+   res=. 'defaulttext' getInfo btid
+ end.
+ res
+)
+getOfferingxbids=: 3 : 0"1
+ assert. 2>:{:$y
+ 'ofid btid'=. 2{.!.200 y
+ if. 0= xbid=. existOfferingsText ofid,btid do. 
+   xbid=. 'defaulttextid' getInfo btid
+ end.
+ xbid
+)
+existOfferingsText=: 3 : 0"1
+ assert. 2>:{:$y
+ 'ofid btid'=. 2{.!.200 y
+  xbid=. 'offeringxbid' getInfo boxopen"0 ofid,btid
+  if. xbid-: empty'' do. 0 else. xbid end.
+)
+getCaseText=: 3 : 0
+ 1 getCaseText y
+:
+ 'btid csid'=. x;y
+ if. 0=#res=. 'casetext' getInfo csid;btid do.
+   res=. 'defaulttext' getInfo btid
+ end.
+ res
+)
 createOfferings=: 3 : 0
   msk=. 0=existOfferings }:"1 y
   if. 0= +/msk do. '' return. end. 
   'createoffering' insertInfo boxopen"0 msk#y
 )
+updateTextBlock=: 4 : 0
+  0='updatetextblock' updateInfo x;xbid
+)
 updateOfferingsText=: 4 : 0
-  oxid=. 'offeringoxid' getInfo y
-  0='updateofferingstext' updateInfo x;oxid
+  'ofid btid'=. 2{.!.200 y  
+  xbid=. btid existOfferingsText ofid
+  x updateTextBlock xbid
 )
 updateOfferingText=: 4 : 0
-  oxid=. 'offeringoxid' getInfo y 
-  if. 1<'countofferingsoxid' getInfo oxid do. 
-    oxid=. 'createofferingstext' insertInfo x
-    0='updateofferingoxid' updateInfo oxid;y
+  'ofid btid'=. 2{.!.200 y   
+  if. xbid=. existOfferingsText ofid,btid do.  
+    if. 1<'countofferingxbid' getInfo xbid do. 
+      xbid=. 'createtextblock' insertInfo x  
+      0='updateofferingxbid' updateInfo xbid;ofid;btid 
+    else. 
+      0= x updateTextBlock xbid  
+    end.
   else. 
-    0='updateofferingstext' updateInfo x;oxid
+    xbid=. 'createtextblock' insertInfo x  
+    'createofferingstext' insertInfo ofid;btid;xbid 
   end.
 )
+updateOfferingxbid=: 4 : 0
+  'ofid btid'=. 2{.!.200 y   
+  if. xbid=. existOfferingsText ofid,btid do.  
+    0='updateofferingxbid' updateInfo x;ofid;btid 
+  else. 
+    0= 'createofferingstext' insertInfo ofid;btid;x 
+  end.
+)
+
+
+
+
 
 addOfferingCases=: 4 : 0
   ofcs=. >,{x;y 
@@ -720,7 +773,7 @@ getParamState=: 3 : 0
       vals=. <"0 anini getIniVals y
       if. 1 do. 
         seld=. boxopen vals
-        vals=. <"0 (100,200*>:i.5), 1500 2000 4000
+        vals=. <"0 (100,200*>:i.5), 1500 2000
       end.
     case. 'mateage' do.
       vals=. <"0 anini getIniVals y
@@ -1252,7 +1305,8 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform scendefpath txtblks'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: QRYci, ;:'scendefpath txtblks casetext'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1261,9 +1315,10 @@ QRYother=: ;:'idfromemail userlogin'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
-QRYof=: QRYof, ;:'offeringoxid countofferingsoxid'
-UPDof=: ;:'deleteofferingcases updateofferingstext updateofferingoxid'
+QRYof=: QRYof, ;:'offeringxbid countofferingxbid offeringtext defaulttext defaulttextid'
+UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
+INSof=: INSof, ;:'createtextblock'
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
@@ -1275,10 +1330,10 @@ DBINS=: INSci,INSur,INSof,INSss
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
-DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
+DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
-DBitem=: DBitem, ;:'existoffering existofferingcases offeringoxid countofferingsoxid'
+DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
@@ -1676,11 +1731,9 @@ sqlupd_delstoredcaseinst=: 0 : 0
 )
 
 sqlsel_txtblks=: 0 : 0
-  SELECT 
-      xn_id,
-      xn_name
-  FROM 
-      textblocks;
+  SELECT bt_id,
+         bt_name
+  FROM   blocktypes;
 )
 sqlsel_animinipath=: 0 : 0
   SELECT sd.sd_filen sd_filen 
@@ -1690,6 +1743,7 @@ sqlsel_animinipath=: 0 : 0
 )
 sqlsel_userlist=: 0 : 0
   SELECT ur.ur_id ur_id ,
+         ur.ur_uname ur_uname ,
          ur.ur_status ur_status ,
          pp.pp_fname pp_fname ,
          pp.pp_lname pp_lname
@@ -1760,33 +1814,39 @@ sqlupd_deleteofferingcases=: 0 : 0
   WHERE rowid=?;
 )
 
-sqlupd_updateofferingstext=: 0 : 0
-  UPDATE offeringstext
-  SET ox_intro=?
-  WHERE ox_id=?;
+sqlins_createofferingstext=: 0 : 0
+  INSERT INTO offeringstext (ox_ofid,ox_btid,ox_xbid)
+  VALUES(?,?,?);
 )
 
-sqlins_createofferingstext=: 0 : 0
-  INSERT INTO offeringstext (ox_intro)
+sqlins_createtextblock=: 0 : 0
+  INSERT INTO textblocks (xb_text)
   VALUES(?);
 )
 
-sqlupd_updateofferingoxid=: 0 : 0
-  UPDATE offerings
-  SET of_oxid=?
-  WHERE of_id=?;
+sqlins_updatetextblock=: 0 : 0
+  UPDATE textblocks 
+  SET xb_text=?
+  WHERE xb_id=?;
 )
 
-sqlsel_offeringoxid=: 0 : 0
-  SELECT of.of_oxid of_oxid
-  FROM `offerings` of
-  WHERE of.of_id=?;
+sqlupd_updateofferingxbid=: 0 : 0
+  UPDATE offeringstext
+  SET ox_xbid=?
+  WHERE (ox_ofid=?) AND (ox_btid=?);
 )
 
-sqlsel_countofferingsoxid=: 0 : 0
-  SELECT count(of.of_oxid) cnt_oxid
-  FROM `offerings` of
-  WHERE of.of_oxid=?;
+sqlsel_offeringxbid=: 0 : 0
+  SELECT ox_xbid
+  FROM  offeringstext
+  WHERE  (ox_ofid=?)
+         AND (ox_btid=?);
+)
+
+sqlsel_countofferingxbid=: 0 : 0
+  SELECT count(ox_xbid) cnt_xbid
+  FROM offeringstext
+  WHERE ox_xbid=?;
 )
 
 coclass 'rgssqliteq'
@@ -1845,20 +1905,42 @@ sqlsel_effrole=: 0 : 0
 )
 
 sqlsel_coursedetails=: 0 : 0
-SELECT off_info.of_id of_id,
-      off_info.cr_name cr_name,
-      off_info.cr_code cr_code,
-      off_info.of_year of_year,
-      off_info.sm_code sm_code,
-      off_info.dm_code dm_code,
-      off_info.pp_adminfname pp_adminfname,
-      off_info.pp_adminlname pp_adminlname,
-      ox.ox_intro ox_intro
-FROM  `offeringstext`  ox
-      INNER JOIN `offerings` off ON (ox.ox_id = off.of_oxid) 
-      INNER JOIN `offering_info` off_info ON (off.of_id = off_info.of_id) 
-WHERE (off_info.of_id=?)
+  SELECT of_id,
+       cr_name,
+       cr_code,
+       of_year,
+       sm_code,
+       dm_code,
+       pp_adminfname,
+       pp_adminlname
+  FROM offering_info
+  WHERE (of_id=?)
 )
+
+sqlsel_offeringtext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM   textblocks  xb
+       INNER JOIN offeringstext ox ON (xb.xb_id = ox.ox_xbid) 
+       INNER JOIN blocktypes  bt ON (bt.bt_id = ox.ox_btid) 
+  WHERE  (ox.ox_ofid=?)
+         AND (bt.bt_id=?);
+)
+
+sqlsel_defaulttext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM textblocks  xb
+       INNER JOIN blocktypes bt ON (xb.xb_id = bt.bt_xbid) 
+  WHERE (bt.bt_id=?);
+)
+
+sqlsel_defaulttextid=: 0 : 0
+  SELECT bt_xbid
+  FROM blocktypes
+  WHERE (bt_id=?);
+)
+
 
 sqlsel_coursename=: 0 : 0
   SELECT off_info.cr_name cr_name ,
@@ -1906,14 +1988,21 @@ sqlupd_casestage=: 0 : 0
 sqlsel_casedetails=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
-         sd.sd_descr sd_descr ,
-         xn.xn_name xn_name ,
-         cx.cx_text cx_text
+         sd.sd_descr sd_descr
 FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-      INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
-      INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 
-WHERE (cs.cs_id =?) AND (xn.xn_id =?);
+WHERE (cs.cs_id =?);
 )
+
+sqlsel_casetext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM   textblocks  xb
+       INNER JOIN casestext cx ON (xb.xb_id = cx.cx_xbid) 
+       INNER JOIN blocktypes bt ON (bt.bt_id = cx.cx_btid) 
+  WHERE  (cx.cx_csid=?)
+         AND (bt.bt_id=?);
+)
+
 
 sqlsel_param=: 0 : 0
   SELECT pr.pr_class pr_class ,

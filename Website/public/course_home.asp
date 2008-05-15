@@ -28,7 +28,7 @@
   <!-- InstanceBeginEditable name="pgContent" -->
   <div class="story">
     <h3>Introduction</h3>
-    <p><%=ox_intro%></p>
+    <p><%=offtext%></p>
         <table cellspacing=0 width=78%><thead><tr class=rh>
       <th>AnimalSim Cases</th>
       </tr></thead>

@@ -43,11 +43,11 @@
   </div>
   </div>
   <div class="story">
-    <h3><%=xn_name%> </h3>
-    <p><%=cx_text%> </p>
+    <h3><%=casetextname%> </h3>
+    <p><%=casetext%> </p>
 
     <br/>
-    <div id="SelListDwn" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
+    <div id="SelListDwn" style="display:<%=('Between Cycles'-:,casetextname){::'none';'block'%>">
       <fieldset>
         <legend>Download selection lists </legend>
   		<form action="download.jhp" method="post" name="dlSLf" id="dlSLf">
@@ -62,7 +62,7 @@
   		</form>
       </fieldset>
     </div>
-    <div id="SelListUp" style="display:<%=('Between Cycles'-:,xn_name){::'none';'block'%>">
+    <div id="SelListUp" style="display:<%=('Between Cycles'-:,casetextname){::'none';'block'%>">
       <fieldset> <legend> Upload .csv files of Selected parents </legend>
       <form action="case.jhp" method="post" enctype="multipart/form-data" name="UpldSL" id="UpldSL">
           <input name="action" type="hidden" id="action" value="uploadSL" />
@@ -74,7 +74,7 @@
       </form>
       </fieldset>
     </div>
-    <div class="tbltools" id="casesumry" style="display:<%=('Conclusion'-:,xn_name){::'none';'block'%>">
+    <div class="tbltools" id="casesumry" style="display:<%=('Conclusion'-:,casetextname){::'none';'block'%>">
       <fieldset> <legend>What to do with completed Case?</legend>
    		<form action="case.jhp" method="post" name="dlSUM" id="dlSUM">
            <input title="Save completed case" type="submit" id="action0" name="action" value="Save case" />

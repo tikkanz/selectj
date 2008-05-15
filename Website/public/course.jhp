@@ -13,6 +13,7 @@ try.
 		'uid ofid'=. uofid
 	    setcolnames 'usergreeting' getInfo uid
         setcolnames 'coursedetails' getInfo ofid
+        'offtextname offtext'=: getOfferingText ofid
 		setcolnames 'coursecases' getInfo ofid
     	NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	    transfer page
