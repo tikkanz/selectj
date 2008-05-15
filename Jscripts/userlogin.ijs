@@ -60,12 +60,12 @@ NB.*enrolUsers v enrols user(s) in offering(s)
 NB. result is numeric list of new row numbers in enrolments table if successful
 NB. y is 1 or 2-element boxed list
 NB.     0{::y is numeric list of user ids to enrol
-NB.     1{::y is optional numeric offering id(s) to enrol every user id in (default 6)
+NB.     1{::y is optional numeric offering id(s) to enrol every user id in (default 1)
 NB. x is optional role id for enrolment [default is 1 (student)]
 enrolUsers=: 3 : 0
   1 enrolUsers y
 :
-  'uids ofids'=. 2{.!.(<6) boxopen y NB. fill 1 is default offering
+  'uids ofids'=. 2{.!.(<1) boxopen y NB. fill 1 is default offering
   rlids=. (#uids)$x
   enrl=.(>,{uids;ofids),.(#ofids)#rlids
   if. 0=#enrl do. '' return. end.
@@ -79,7 +79,7 @@ NB.     column for each parameter required by registerUser
 NB.        ('action uname fname lname refnum email passwd')
 NB. x is optional numeric list of offering id(s) to enrol every user in
 createUsers=: 3 : 0
-  6 createUsers y NB. enrol in Expt with AnSim course by default
+  1 createUsers y NB. enrol in Expt with AnSim course by default
 :
  uids=. ,registerUser"1 y
  rowids=. 1 enrolUsers ((0&< # ])uids);x NB. enrol non-negative uids

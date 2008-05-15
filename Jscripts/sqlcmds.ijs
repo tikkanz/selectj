@@ -193,11 +193,9 @@ sqlupd_delstoredcaseinst=: 0 : 0
 )
 
 sqlsel_txtblks=: 0 : 0
-  SELECT 
-      xn_id,
-      xn_name
-  FROM 
-      textblocks;
+  SELECT bt_id,
+         bt_name
+  FROM   blocktypes;
 )
 
 NB. =========================================================
@@ -286,31 +284,37 @@ sqlupd_deleteofferingcases=: 0 : 0
   WHERE rowid=?;
 )
 
-sqlupd_updateofferingstext=: 0 : 0
-  UPDATE offeringstext
-  SET ox_intro=?
-  WHERE ox_id=?;
+sqlins_createofferingstext=: 0 : 0
+  INSERT INTO offeringstext (ox_ofid,ox_btid,ox_xbid)
+  VALUES(?,?,?);
 )
 
-sqlins_createofferingstext=: 0 : 0
-  INSERT INTO offeringstext (ox_intro)
+sqlins_createtextblock=: 0 : 0
+  INSERT INTO textblocks (xb_text)
   VALUES(?);
 )
 
-sqlupd_updateofferingoxid=: 0 : 0
-  UPDATE offerings
-  SET of_oxid=?
-  WHERE of_id=?;
+sqlins_updatetextblock=: 0 : 0
+  UPDATE textblocks 
+  SET xb_text=?
+  WHERE xb_id=?;
 )
 
-sqlsel_offeringoxid=: 0 : 0
-  SELECT of.of_oxid of_oxid
-  FROM `offerings` of
-  WHERE of.of_id=?;
+sqlupd_updateofferingxbid=: 0 : 0
+  UPDATE offeringstext
+  SET ox_xbid=?
+  WHERE (ox_ofid=?) AND (ox_btid=?);
 )
 
-sqlsel_countofferingsoxid=: 0 : 0
-  SELECT count(of.of_oxid) cnt_oxid
-  FROM `offerings` of
-  WHERE of.of_oxid=?;
+sqlsel_offeringxbid=: 0 : 0
+  SELECT ox_xbid
+  FROM  offeringstext
+  WHERE  (ox_ofid=?)
+         AND (ox_btid=?);
+)
+
+sqlsel_countofferingxbid=: 0 : 0
+  SELECT count(ox_xbid) cnt_xbid
+  FROM offeringstext
+  WHERE ox_xbid=?;
 )

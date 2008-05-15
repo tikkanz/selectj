@@ -12,33 +12,69 @@ createOfferings=: 3 : 0
 
 NB. deleteOfferings
 NB.  need to first delete appropriate:
-NB.     offeringstext(only if unique to offering), offeringcases(trigger), enrolments(trigger), caseinstances
+NB.     offeringstext, 
+NB.     textblock, (only if unique to offering)
+NB.     offeringcases(trigger), 
+NB.     enrolments(trigger), 
+NB.     caseinstances
 NB. probably best just to make inactive by updating status to _1
 
-NB.*updateOfferingsText v updates an offeringstext entry.
-NB.     All offerings using that offeringstext entry are affected.
+NB.*updateTextBlock v updates text in a textblock entry.
+NB.    All items referencing that textblock are affected.
 NB. result is 1 if successful
-NB. y is of_id of an offering linked to the offeringstext entry to update
+NB. y is xb_id of textblock to update
+NB. x is literal list of new textblock text
+updateTextBlock=: 4 : 0
+  0='updatetextblock' updateInfo x;xbid
+)
+
+NB.*updateOfferingsText v updates textblock for an Offering and blocktype.
+NB.    All items referencing that textblock are affected.
+NB. y is a 1 or 2-item numeric list of of_id [and bt_id] entry that uses the textblock to be updated
 NB. x is literal list of new offering text
 updateOfferingsText=: 4 : 0
-  oxid=. 'offeringoxid' getInfo y
-  0='updateofferingstext' updateInfo x;oxid
+  'ofid btid'=. 2{.!.200 y  NB. 200 is default btid for offering
+  xbid=. btid existOfferingsText ofid
+  x updateTextBlock xbid
 )
 
 NB.*updateOfferingText v links Offering to new offeringstext entry.
 NB.       only this offering is affected.
 NB. result is 1 if successful
-NB. y is numeric of_id of offering to update
-NB. x is literal list of ox_intro contents to create entry for and link to
+NB. y is 2-item numeric list of of_id and bt_id corresponding to textblock to update
+NB. x is literal list of xb_text contents to create entry for and link to
 updateOfferingText=: 4 : 0
-  oxid=. 'offeringoxid' getInfo y NB. oxid for this offering?
-  if. 1<'countofferingsoxid' getInfo oxid do. NB. create new offeringstext and change of_oxid.
-    oxid=. 'createofferingstext' insertInfo x
-    0='updateofferingoxid' updateInfo oxid;y
-  else. NB. oxid is unique to this offering so just update
-    0='updateofferingstext' updateInfo x;oxid
+  'ofid btid'=. 2{.!.200 y   NB. 200 is default btid for offering
+  if. xbid=. existOfferingsText ofid,btid do.  NB. not using default textblock
+    if. 1<'countofferingxbid' getInfo xbid do. NB. other offeringstext use same textblock
+      xbid=. 'createtextblock' insertInfo x  NB. create new textblock
+      0='updateofferingxbid' updateInfo xbid;ofid;btid NB.  update ox_xbid
+    else. NB. xbid is unique to this offering
+      0= x updateTextBlock xbid  NB. update textblock
+    end.
+  else. NB. was using default textblock
+    xbid=. 'createtextblock' insertInfo x  NB. create new textblock
+    'createofferingstext' insertInfo ofid;btid;xbid NB. create new offeringstext entry
   end.
 )
+
+NB.*updateOfferingxbid v links Offering to existing textblock entry.
+NB.     textblock is not affected and is now potentially shared.
+NB. result is 1 if successful
+NB. y is 1 or 2-item numeric list of of_id and bt_id corresponding to textblock to update
+NB. x is numeric xb_id of textblock to link to
+updateOfferingxbid=: 4 : 0
+  'ofid btid'=. 2{.!.200 y   NB. 200 is default btid for offering
+  if. xbid=. existOfferingsText ofid,btid do.  NB. not using default textblock
+    0='updateofferingxbid' updateInfo x;ofid;btid NB.  update ox_xbid
+  else. NB. was using default textblock
+    0= 'createofferingstext' insertInfo ofid;btid;x NB. create new offeringstext entry
+  end.
+)
+
+
+
+
 
 
 NB.*addOfferingCases v adds case(s) to offering(s)

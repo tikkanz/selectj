@@ -12,7 +12,8 @@ NB.  * updateInfo
 NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id 
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform scendefpath txtblks'
+QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: QRYci, ;:'scendefpath txtblks casetext'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
@@ -25,9 +26,10 @@ INSur=: ;:'newuser newperson newenrolment'
 
 NB. y is mostly offering id 
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
-QRYof=: QRYof, ;:'offeringoxid countofferingsoxid'
-UPDof=: ;:'deleteofferingcases updateofferingstext updateofferingoxid'
+QRYof=: QRYof, ;:'offeringxbid countofferingxbid offeringtext defaulttext defaulttextid'
+UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
+INSof=: INSof, ;:'createtextblock'
 
 NB. y is mostly session id 
 QRYss=: ;:'sessioninfo'
@@ -42,17 +44,17 @@ NB. DBINSall n Boxed list of all INSERT query names.
 DBINS=: INSci,INSur,INSof,INSss
 
 NB. =========================================================
-NB. Classify database query names according to result type required
+NB. Classify database select query names according to result type required
 NB. (table, tablestr, row, column, item etc)
   DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
-DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics'
+DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
-DBitem=: DBitem, ;:'existoffering existofferingcases offeringoxid countofferingsoxid'
+DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
 
 NB. =========================================================
 NB. Valid query names where info not sourced from database (probably file)

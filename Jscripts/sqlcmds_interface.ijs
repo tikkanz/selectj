@@ -61,20 +61,42 @@ sqlsel_effrole=: 0 : 0
 )
 
 sqlsel_coursedetails=: 0 : 0
-SELECT off_info.of_id of_id,
-      off_info.cr_name cr_name,
-      off_info.cr_code cr_code,
-      off_info.of_year of_year,
-      off_info.sm_code sm_code,
-      off_info.dm_code dm_code,
-      off_info.pp_adminfname pp_adminfname,
-      off_info.pp_adminlname pp_adminlname,
-      ox.ox_intro ox_intro
-FROM  `offeringstext`  ox
-      INNER JOIN `offerings` off ON (ox.ox_id = off.of_oxid) 
-      INNER JOIN `offering_info` off_info ON (off.of_id = off_info.of_id) 
-WHERE (off_info.of_id=?)
+  SELECT of_id,
+       cr_name,
+       cr_code,
+       of_year,
+       sm_code,
+       dm_code,
+       pp_adminfname,
+       pp_adminlname
+  FROM offering_info
+  WHERE (of_id=?)
 )
+
+sqlsel_offeringtext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM   textblocks  xb
+       INNER JOIN offeringstext ox ON (xb.xb_id = ox.ox_xbid) 
+       INNER JOIN blocktypes  bt ON (bt.bt_id = ox.ox_btid) 
+  WHERE  (ox.ox_ofid=?)
+         AND (bt.bt_id=?);
+)
+
+sqlsel_defaulttext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM textblocks  xb
+       INNER JOIN blocktypes bt ON (xb.xb_id = bt.bt_xbid) 
+  WHERE (bt.bt_id=?);
+)
+
+sqlsel_defaulttextid=: 0 : 0
+  SELECT bt_xbid
+  FROM blocktypes
+  WHERE (bt_id=?);
+)
+
 
 sqlsel_coursename=: 0 : 0
   SELECT off_info.cr_name cr_name ,
@@ -125,14 +147,21 @@ sqlupd_casestage=: 0 : 0
 sqlsel_casedetails=: 0 : 0
   SELECT sd.sd_name sd_name ,
          sd.sd_code sd_code ,
-         sd.sd_descr sd_descr ,
-         xn.xn_name xn_name ,
-         cx.cx_text cx_text
+         sd.sd_descr sd_descr
 FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-      INNER JOIN `casestext` cx ON ( `cs`.`cs_id` = `cx`.`cx_csid` ) 
-      INNER JOIN `textblocks` xn ON ( `xn`.`xn_id` = `cx`.`cx_xnid` ) 
-WHERE (cs.cs_id =?) AND (xn.xn_id =?);
+WHERE (cs.cs_id =?);
 )
+
+sqlsel_casetext=: 0 : 0
+  SELECT bt.bt_name bt_name,
+         xb.xb_text xb_text
+  FROM   textblocks  xb
+       INNER JOIN casestext cx ON (xb.xb_id = cx.cx_xbid) 
+       INNER JOIN blocktypes bt ON (bt.bt_id = cx.cx_btid) 
+  WHERE  (cx.cx_csid=?)
+         AND (bt.bt_id=?);
+)
+
 
 sqlsel_param=: 0 : 0
   SELECT pr.pr_class pr_class ,
