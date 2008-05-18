@@ -535,6 +535,20 @@ existOfferingsText=: 3 : 0"1
   xbid=. 'offeringxbid' getInfo boxopen"0 ofid,btid
   if. xbid-: empty'' do. 0 else. xbid end.
 )
+getCasexbids=: 3 : 0"1
+ assert. 2>:{:$y
+ 'csid btid'=. 2{.!.1 y 
+ if. 0= xbid=. existCasesText csid,btid do. 
+   xbid=. 'defaulttextid' getInfo btid
+ end.
+ xbid
+)
+existCasesText=: 3 : 0"1
+ assert. 2>:{:$y
+ 'csid btid'=. 2{.!.1 y  
+  xbid=. 'casexbid' getInfo boxopen"0 csid,btid
+  if. xbid-: empty'' do. 0 else. xbid end.
+)
 getCaseText=: 3 : 0
  1 getCaseText y
 :
@@ -544,13 +558,13 @@ getCaseText=: 3 : 0
  end.
  res
 )
+updateTextBlock=: 4 : 0
+  0='updatetextblock' updateInfo x;xbid
+)
 createOfferings=: 3 : 0
   msk=. 0=existOfferings }:"1 y
   if. 0= +/msk do. '' return. end. 
   'createoffering' insertInfo boxopen"0 msk#y
-)
-updateTextBlock=: 4 : 0
-  0='updatetextblock' updateInfo x;xbid
 )
 updateOfferingsText=: 4 : 0
   'ofid btid'=. 2{.!.200 y  
@@ -568,7 +582,7 @@ updateOfferingText=: 4 : 0
     end.
   else. 
     xbid=. 'createtextblock' insertInfo x  
-    'createofferingstext' insertInfo ofid;btid;xbid 
+    0< 'createofferingstext' insertInfo ofid;btid;xbid 
   end.
 )
 updateOfferingxbid=: 4 : 0
@@ -579,11 +593,33 @@ updateOfferingxbid=: 4 : 0
     0= 'createofferingstext' insertInfo ofid;btid;x 
   end.
 )
-
-
-
-
-
+updateCasesText=: 4 : 0
+  'csid btid'=. 2{.!.1 y  
+  xbid=. btid existCasesText csid
+  x updateTextBlock xbid
+)
+updateCaseText=: 4 : 0
+  'csid btid'=. 2{.!.1 y   
+  if. xbid=. existCasesText csid,btid do.  
+    if. 1<'countcasexbid' getInfo xbid do. 
+      xbid=. 'createtextblock' insertInfo x  
+      0='updatecasexbid' updateInfo xbid;csid;btid 
+    else. 
+      0= x updateTextBlock xbid  
+    end.
+  else. 
+    xbid=. 'createtextblock' insertInfo x  
+    0< 'createcasestext' insertInfo csid;btid;xbid 
+  end.
+)
+updateCasexbid=: 4 : 0
+  'csid btid'=. 2{.!.1 y   
+  if. xbid=. existCasesText csid,btid do.  
+    0='updatecasexbid' updateInfo x;csid;btid 
+  else. 
+    0= 'createcasestext' insertInfo csid;btid;x 
+  end.
+)
 addOfferingCases=: 4 : 0
   ofcs=. >,{x;y 
   msk=. 0=existOfferingCases ofcs 
@@ -1305,8 +1341,8 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform'
-QRYci=: QRYci, ;:'scendefpath txtblks casetext'
+QRYci=: ;:'animinipath caseinstpath caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: QRYci, ;:'scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1319,12 +1355,15 @@ QRYof=: QRYof, ;:'offeringxbid countofferingxbid offeringtext defaulttext defaul
 UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
 INSof=: INSof, ;:'createtextblock'
+QRYcs=: ;:'casetext casexbid countcasexbid casedetails'
+UPDcs=: ;:'updatecasexbid'
+INScs=: ;:'createcasestext'
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
-DBQRY=: QRYci,QRYof,QRYur,QRYss,QRYcomb,QRYother
-DBUPD=: UPDci,UPDur,UPDof,UPDss
-DBINS=: INSci,INSur,INSof,INSss
+DBQRY=: QRYci,QRYof,QRYur,QRYcs,QRYss,QRYcomb,QRYother
+DBUPD=: UPDci,UPDur,UPDof,UPDcs,UPDss
+DBINS=: INSci,INSur,INSof,INScs,INSss
   DBtable   =:          ;:'casedetails caseinstname paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
@@ -1334,6 +1373,7 @@ DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext d
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
+DBitem=: DBitem, ;:'casexbid countcasexbid'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
@@ -1848,6 +1888,31 @@ sqlsel_countofferingxbid=: 0 : 0
   FROM offeringstext
   WHERE ox_xbid=?;
 )
+
+sqlins_createcasestext=: 0 : 0
+  INSERT INTO casestext (cx_csid,cx_btid,cx_xbid)
+  VALUES(?,?,?);
+)
+
+sqlupd_updatecasexbid=: 0 : 0
+  UPDATE casestext
+  SET cx_xbid=?
+  WHERE (cx_csid=?) AND (cx_btid=?);
+)
+
+sqlsel_casexbid=: 0 : 0
+  SELECT cx_xbid
+  FROM  casestext
+  WHERE  (cx_csid=?)
+         AND (cx_btid=?);
+)
+
+sqlsel_countcasexbid=: 0 : 0
+  SELECT count(cx_xbid) cnt_xbid
+  FROM casestext
+  WHERE cx_xbid=?;
+)
+
 
 coclass 'rgssqliteq'
 sqlsel_usergreeting=: 0 : 0
