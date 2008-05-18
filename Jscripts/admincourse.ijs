@@ -1,5 +1,14 @@
 NB.verbs for adminstering courses and course offerings
 
+NB.*updateTextBlock v updates text in a textblock entry.
+NB.    All items referencing that textblock are affected.
+NB. result is 1 if successful
+NB. y is xb_id of textblock to update
+NB. x is literal list of new textblock text
+updateTextBlock=: 4 : 0
+  0='updatetextblock' updateInfo x;xbid
+)
+
 NB.*createOfferings v creates course offering(s)
 NB. result is numeric list of offering ids created
 NB. y is numeric table with row for each offering and columns for:
@@ -18,15 +27,6 @@ NB.     offeringcases(trigger),
 NB.     enrolments(trigger), 
 NB.     caseinstances
 NB. probably best just to make inactive by updating status to _1
-
-NB.*updateTextBlock v updates text in a textblock entry.
-NB.    All items referencing that textblock are affected.
-NB. result is 1 if successful
-NB. y is xb_id of textblock to update
-NB. x is literal list of new textblock text
-updateTextBlock=: 4 : 0
-  0='updatetextblock' updateInfo x;xbid
-)
 
 NB.*updateOfferingsText v updates textblock for an Offering and blocktype.
 NB.    All items referencing that textblock are affected.
@@ -54,7 +54,7 @@ updateOfferingText=: 4 : 0
     end.
   else. NB. was using default textblock
     xbid=. 'createtextblock' insertInfo x  NB. create new textblock
-    'createofferingstext' insertInfo ofid;btid;xbid NB. create new offeringstext entry
+    0< 'createofferingstext' insertInfo ofid;btid;xbid NB. create new offeringstext entry
   end.
 )
 
@@ -72,10 +72,49 @@ updateOfferingxbid=: 4 : 0
   end.
 )
 
+NB.*updateCasesText v updates textblock for a Case and blocktype.
+NB.    All items referencing that textblock are affected.
+NB. y is a 1 or 2-item numeric list of cs_id [and bt_id] entry that uses the textblock to be updated
+NB. x is literal list of new offering text
+updateCasesText=: 4 : 0
+  'csid btid'=. 2{.!.1 y  NB. 1 is default btid for case
+  xbid=. btid existCasesText csid
+  x updateTextBlock xbid
+)
 
+NB.*updateCaseText v links Case to new casestext entry.
+NB.       only this case is affected.
+NB. result is 1 if successful
+NB. y is 2-item numeric list of cs_id and bt_id corresponding to textblock to update
+NB. x is literal list of xb_text contents to create entry for and link to
+updateCaseText=: 4 : 0
+  'csid btid'=. 2{.!.1 y   NB. 1 is default btid for offering
+  if. xbid=. existCasesText csid,btid do.  NB. not using default textblock
+    if. 1<'countcasexbid' getInfo xbid do. NB. other casestext use same textblock
+      xbid=. 'createtextblock' insertInfo x  NB. create new textblock
+      0='updatecasexbid' updateInfo xbid;csid;btid NB.  update cx_xbid
+    else. NB. xbid is unique to this offering
+      0= x updateTextBlock xbid  NB. update textblock
+    end.
+  else. NB. was using default textblock
+    xbid=. 'createtextblock' insertInfo x  NB. create new textblock
+    0< 'createcasestext' insertInfo csid;btid;xbid NB. create new casestext entry
+  end.
+)
 
-
-
+NB.*updateCasexbid v links Case to existing textblock entry.
+NB.     textblock is not affected and is now potentially shared.
+NB. result is 1 if successful
+NB. y is 1 or 2-item numeric list of cs_id and bt_id corresponding to textblock to update
+NB. x is numeric xb_id of textblock to link to
+updateCasexbid=: 4 : 0
+  'csid btid'=. 2{.!.1 y   NB. 1 is default btid for offering
+  if. xbid=. existCasesText csid,btid do.  NB. not using default textblock
+    0='updatecasexbid' updateInfo x;csid;btid NB.  update cx_xbid
+  else. NB. was using default textblock
+    0= 'createcasestext' insertInfo csid;btid;x NB. create new casestext entry
+  end.
+)
 
 NB.*addOfferingCases v adds case(s) to offering(s)
 NB. result is numeric list of new rowids in offeringcases table

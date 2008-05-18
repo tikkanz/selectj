@@ -318,3 +318,27 @@ sqlsel_countofferingxbid=: 0 : 0
   FROM offeringstext
   WHERE ox_xbid=?;
 )
+
+sqlins_createcasestext=: 0 : 0
+  INSERT INTO casestext (cx_csid,cx_btid,cx_xbid)
+  VALUES(?,?,?);
+)
+
+sqlupd_updatecasexbid=: 0 : 0
+  UPDATE casestext
+  SET cx_xbid=?
+  WHERE (cx_csid=?) AND (cx_btid=?);
+)
+
+sqlsel_casexbid=: 0 : 0
+  SELECT cx_xbid
+  FROM  casestext
+  WHERE  (cx_csid=?)
+         AND (cx_btid=?);
+)
+
+sqlsel_countcasexbid=: 0 : 0
+  SELECT count(cx_xbid) cnt_xbid
+  FROM casestext
+  WHERE cx_xbid=?;
+)

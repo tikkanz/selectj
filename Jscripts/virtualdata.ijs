@@ -12,8 +12,8 @@ NB.  * updateInfo
 NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id 
-QRYci=: ;:'animinipath caseinstpath casedetails caseinstname caseinststatus caseinstbasics casestage paramform'
-QRYci=: QRYci, ;:'scendefpath txtblks casetext'
+QRYci=: ;:'animinipath caseinstpath caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: QRYci, ;:'scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
@@ -31,17 +31,22 @@ UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
 INSof=: INSof, ;:'createtextblock'
 
+NB. y is mostly case id 
+QRYcs=: ;:'casetext casexbid countcasexbid casedetails'
+UPDcs=: ;:'updatecasexbid'
+INScs=: ;:'createcasestext'
+
 NB. y is mostly session id 
 QRYss=: ;:'sessioninfo'
 UPDss=: ;:'expiresession extendsession'
 INSss=: ;:'newsession'
 
 NB. DBQRYall n Boxed list of all SELECT query names.
-DBQRY=: QRYci,QRYof,QRYur,QRYss,QRYcomb,QRYother
+DBQRY=: QRYci,QRYof,QRYur,QRYcs,QRYss,QRYcomb,QRYother
 NB. DBUPDall n Boxed list of all UPDATE query names.
-DBUPD=: UPDci,UPDur,UPDof,UPDss
+DBUPD=: UPDci,UPDur,UPDof,UPDcs,UPDss
 NB. DBINSall n Boxed list of all INSERT query names.
-DBINS=: INSci,INSur,INSof,INSss
+DBINS=: INSci,INSur,INSof,INScs,INSss
 
 NB. =========================================================
 NB. Classify database select query names according to result type required
@@ -55,6 +60,7 @@ DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext d
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
+DBitem=: DBitem, ;:'casexbid countcasexbid'
 
 NB. =========================================================
 NB. Valid query names where info not sourced from database (probably file)

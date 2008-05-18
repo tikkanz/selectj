@@ -1,4 +1,4 @@
-NB. verbs for working with offerings
+NB. verbs for working with courses and course offerings
 
 NB.*getOfferingText v Returns requested textblock for offering
 NB. returns boxed list of blocktype name and textblock for offering of requested blocktype
@@ -32,11 +32,36 @@ getOfferingxbids=: 3 : 0"1
 NB.*existOfferingsText v checks to see if textblock type is specified for an offering(s)
 NB. result is numeric list of textblock ids if specifed else 0s if not.
 NB. y is numeric table of 0{"1 offering ids
-NB.                      1{"1 blocktype ids
+NB.                      1{"1 blocktype ids. Optional, defaults to 
 existOfferingsText=: 3 : 0"1
  assert. 2>:{:$y
  'ofid btid'=. 2{.!.200 y
   xbid=. 'offeringxbid' getInfo boxopen"0 ofid,btid
+  if. xbid-: empty'' do. 0 else. xbid end.
+)
+
+NB.*getCasexbids v Returns id of textblock for case and blocktype
+NB. result is numeric list of textblock ids for case and blocktype.
+NB. y is 1 or 2-item numeric list OR 1 or 2-column numeric table 
+NB.       0{"1 case ids.
+NB.       1{"1 blocktype ids. Optional, defaults to 1 (caseintro)
+getCasexbids=: 3 : 0"1
+ assert. 2>:{:$y
+ 'csid btid'=. 2{.!.1 y NB. default btid is 1
+ if. 0= xbid=. existCasesText csid,btid do. NB. using default xbid
+   xbid=. 'defaulttextid' getInfo btid
+ end.
+ xbid
+)
+
+NB.*existCasesText v checks to see if textblock type is specified for a case(s)
+NB. result is numeric list of textblock ids if specifed else 0s if not.
+NB. y is numeric table of 0{"1 case ids
+NB.                      1{"1 blocktype ids. Optional, defaults to 1 (caseintro)
+existCasesText=: 3 : 0"1
+ assert. 2>:{:$y
+ 'csid btid'=. 2{.!.1 y  NB. default btid is 1
+  xbid=. 'casexbid' getInfo boxopen"0 csid,btid
   if. xbid-: empty'' do. 0 else. xbid end.
 )
 
