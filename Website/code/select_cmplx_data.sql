@@ -24,9 +24,9 @@ insert into roles (rl_id,rl_name,rl_code,rl_descr) values (22,'Case Owner', 'COW
 insert into roles (rl_id,rl_name,rl_code,rl_descr) values (50,'Site Administrator', 'SADMIN', 'Super user');
 
 insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (1,'Introduction','caseintro',4);
-insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (11,'Instructions','instruct',5);
-insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (21,'Between Cycles','btwncycles',6);
-insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (99,'Conclusion','conc',7);
+insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (11,'Instructions','caseinstruct',5);
+insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (21,'Between Cycles','casebtwncycles',6);
+insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (99,'Conclusion','caseconc',7);
 insert into blocktypes (bt_id,bt_name,bt_code,bt_xbid) values (200,'Introduction','offintro',3);
 
 insert into fieldsets (fs_id,fs_name,fs_code) values (1,'Selection progress','progress');
@@ -207,6 +207,19 @@ the results are saved, then a new case will be initialised and the results of th
 <p>You can download a comma-separated-value (csv) file with information on every animal that existed in your population by clicking <em>Download Summary file</em> below. The Pivot Tables 
 feature of Excel is very useful for summarising this file.
 ');
+
+-- Information/Status and Error messages
+insert into messagetext (mx_code, mx_text) values ('caseintro','You have not yet started selecting your population.');
+insert into messagetext (mx_code, mx_text) values ('casebtwncycles','Your population is beginning cycle <%=currcycle %> of <%=ncycles %> cycles of selection.');
+insert into messagetext (mx_code, mx_text) values ('caseconc','All your selection cycles are complete.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('chgdparams','info','Your Selection details were successfully changed.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('chgdusrdescr','info','Your Case description was successfully changed.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('resetfin','info','The case was successfully reset.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('storefin','info','The case was successfully saved.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('cyclefin','info','The selection cycle(s) completed successfully.');
+insert into messagetext (mx_code, mx_class, mx_text) values ('error','error','There was some sort of error!');
+insert into messagetext (mx_code, mx_class, mx_text) values ('mateerr','error','There was some sort of error!');
+insert into messagetext (mx_code, mx_class, mx_text) values ('slerr','error','There was some sort of error!');
 
 insert into offeringstext (ox_ofid,ox_btid,ox_xbid) values (1,200,8); -- default course
 insert into offeringstext (ox_ofid,ox_btid,ox_xbid) values (6,200,2); -- test assignment

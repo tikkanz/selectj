@@ -53,6 +53,11 @@ CREATE TABLE scendefs (
   sd_descr CHAR(100) DEFAULT NULL,  -- short description of scenario purpose
   sd_filen CHAR(100) ); -- filename of zip file containing scendef. Instead of file name could store files as BLOBS?
 
+CREATE TABLE messagetext (  -- block of text used in interface
+  mx_code  CHAR(32) NOT NULL PRIMARY KEY,
+  mx_class CHAR(32) DEFAULT NULL, -- use to store the style class for formating purposes (info, error)
+  mx_text  TEXT DEFAULT 'Lorem ipsum dolor sit.' ); -- message text
+
 CREATE TABLE textblocks (  -- block of text used in interface
   xb_id     INTEGER NOT NULL PRIMARY KEY,
   xb_text   TEXT DEFAULT 'Lorem ipsum dolor sit.' );  -- block of text
@@ -181,7 +186,7 @@ CREATE TABLE caseinstances (  -- case instance for user offering
   ci_usrname  CHAR(32) DEFAULT NULL,   -- user's name for CaseInstance
   ci_usrdescr TEXT DEFAULT NULL, -- user's description for CaseInstance
   ci_stored   INTEGER DEFAULT 0, -- summary files stored? 0 no; 1 yes
-  ci_stage    INTEGER DEFAULT 1 REFERENCES textblocks(xn_id),   -- stage, 
+  ci_stage    INTEGER DEFAULT 1 REFERENCES blocktypes(bt_id),   -- stage, 
   ci_status   INTEGER DEFAULT 1);      -- 0 no longer current; 1 current
 
 CREATE TABLE errors (

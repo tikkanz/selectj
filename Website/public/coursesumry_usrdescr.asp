@@ -54,8 +54,7 @@
   </div>
 <!-- InstanceEndEditable --></div> 
 <!--end content --><div id="navBar"> 
-  <div id="sectionLinks"> 
-
+  <div id="userMenu"> 
     <dl> 
       <dt>Case Menu</dt>
       <dd><a href="case.jhp?action=home" title="Return to case home (make no changes)">CaseHome</a></dd>
@@ -63,7 +62,16 @@
 	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
       <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
-      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
+      <dd style="display:<%=(cistage-:'caseconc'){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
+    </dl>&nbsp;
+    </div>
+    <div id="adminMenu" style="display:<%=(offrole>1){::'none';'block'%>"> 
+    <dl> 
+      <dt>Admin Menu</dt>
+      <dd><a href="case_adm.jhp?action=edittext" title="Edit or replace page text">Edit text</a></dd>
+	  <dd><a href="case_adm.jhp?action=usrdescr" title="Give this case its own name and description">Save as new case</a></dd> 
+	  <dd><a href="case_adm.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
+      <dd><a href="case_adm.jhp?action=manage" title="Manage cases">Manage cases</a></dd> 
     </dl>&nbsp;
   </div> 
 </div>

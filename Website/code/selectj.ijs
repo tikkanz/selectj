@@ -468,7 +468,22 @@ writeTicket=: 3 : 0
   'tsid thash'=.y
   ('ssid=',":tsid),'&hash=',thash
 )
-
+getOfferingRole=: 3 : 0
+  if. 0-: uid=.validSession'' do. 0 return. end.
+  uid getOfferingRole y
+:
+  if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
+  role=.'offeringrole' getInfo x;y
+  if. #role do. role else. 0 end.
+)
+getCaseRole=: 3 : 0
+  if. 0-: uid=.validSession'' do. 0 return. end.
+  uid getCaseRole y
+:
+  if. 0=#y do. y=. 0 qcookie 'CaseID' end.
+  role=.'caserole' getInfo x;y
+  if. #role do. role else. 0 end.
+)
 cleanGuests=: 3 : 0
   ginfo=. 'expiredguests' getInfo ''
   if. 0=#ginfo do. 0 return. end. 
@@ -513,50 +528,55 @@ deleteUsers=: 3 : 0
   end.
 )
 getOfferingText=: 3 : 0
- 200 getOfferingText y
-:
- 'btid ofid'=. x;y
- if. 0=#res=. 'offeringtext' getInfo ofid;btid do.
-   res=. 'defaulttext' getInfo btid
- end.
- res
+  200 getOfferingText y
+  :
+  'btid ofid'=. x;y
+  if. 0=#res=. 'offeringtext' getInfo ofid;btid do.
+    res=. 'defaulttext' getInfo btid
+  end.
+  res
 )
 getOfferingxbids=: 3 : 0"1
- assert. 2>:{:$y
- 'ofid btid'=. 2{.!.200 y
- if. 0= xbid=. existOfferingsText ofid,btid do. 
-   xbid=. 'defaulttextid' getInfo btid
- end.
- xbid
+  assert. 2>:{:$y
+  'ofid btid'=. 2{.!.200 y
+  if. 0= xbid=. existOfferingsText ofid,btid do. 
+    xbid=. 'defaulttextid' getInfo btid
+  end.
+  xbid
 )
 existOfferingsText=: 3 : 0"1
- assert. 2>:{:$y
- 'ofid btid'=. 2{.!.200 y
+  assert. 2>:{:$y
+  'ofid btid'=. 2{.!.200 y
   xbid=. 'offeringxbid' getInfo boxopen"0 ofid,btid
   if. xbid-: empty'' do. 0 else. xbid end.
 )
 getCasexbids=: 3 : 0"1
- assert. 2>:{:$y
- 'csid btid'=. 2{.!.1 y 
- if. 0= xbid=. existCasesText csid,btid do. 
-   xbid=. 'defaulttextid' getInfo btid
- end.
- xbid
+  assert. 2>:{:$y
+  'csid btid'=. 2{.!.1 y 
+  if. 0= xbid=. existCasesText csid,btid do. 
+    xbid=. 'defaulttextid' getInfo btid
+  end.
+  xbid
 )
 existCasesText=: 3 : 0"1
- assert. 2>:{:$y
- 'csid btid'=. 2{.!.1 y  
+  assert. 2>:{:$y
+  'csid btid'=. 2{.!.1 y  
   xbid=. 'casexbid' getInfo boxopen"0 csid,btid
   if. xbid-: empty'' do. 0 else. xbid end.
 )
 getCaseText=: 3 : 0
- 1 getCaseText y
-:
- 'btid csid'=. x;y
- if. 0=#res=. 'casetext' getInfo csid;btid do.
-   res=. 'defaulttext' getInfo btid
- end.
- res
+  1 getCaseText y
+  :
+  'btid csid'=. x;y
+  if. 0=#res=. 'casetext' getInfo csid;btid do.
+    res=. 'defaulttext' getInfo btid
+  end.
+  res
+)
+getMsg=: 4 : 0
+  y=. 2{.boxopen y
+  res=. 2{.boxopen 'msgtxt' getInfo x
+  res=. (y-.a:) (I. a:~:y)} res
 )
 updateTextBlock=: 4 : 0
   0='updatetextblock' updateInfo x;xbid
@@ -999,7 +1019,8 @@ allocateMatings=: 4 : 0
   (;:'DTag DFlk STag SFlk');< (>{.parents),.sires
 )
 breedPopln=: 3 : 0
-  stge=. (>:checkCycle y){1 21 99
+  stages=. 1 21 99 
+  stge=. (>:checkCycle y){stages
   if. stge<99 do.   
     msg=. y validMateAlloc stge
     if. 1-:msg do. 
@@ -1008,7 +1029,7 @@ breedPopln=: 3 : 0
           inipath=. 'animinipath' getFnme y
           writeIniStrings 1;'Resume';'Control';inipath
         end.
-        stge=. (>:checkCycle y){1 21 99
+        stge=. (>:checkCycle y){stages
         updateCaseStage stge;y
         msg=. 1
       else.     
@@ -1346,8 +1367,9 @@ QRYci=: QRYci, ;:'scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
+QRYur=: QRYur, ;:'offeringrole caserole'
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
-QRYother=: ;:'idfromemail userlogin'
+QRYother=: ;:'idfromemail userlogin msgtxt'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
@@ -1370,10 +1392,11 @@ DBINS=: INSci,INSur,INSof,INScs,INSss
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
+DBrow =: DBrow, ;:'msgtxt'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
-DBitem=: DBitem, ;:'casexbid countcasexbid'
+DBitem=: DBitem, ;:'casexbid countcasexbid caserole offeringrole'
 FLQRY=: ;:'animini trtinfoall caseprogress'
 FLQRY=: FLQRY, ;:'animsumry animsumrycnt ansumrycsv animsumryhdr '
 FLQRY=: FLQRY, ;:'selnlistfem selnlistmale '
@@ -1913,6 +1936,12 @@ sqlsel_countcasexbid=: 0 : 0
   WHERE cx_xbid=?;
 )
 
+sqlsel_msgtxt=: 0 : 0
+  SELECT mx_text,
+         mx_class
+  FROM   messagetext
+  WHERE  mx_code=?;
+)
 
 coclass 'rgssqliteq'
 sqlsel_usergreeting=: 0 : 0
@@ -1947,26 +1976,33 @@ sqlsel_usercourses=: 0 : 0
        AND (rl2.rl_id > rl.rl_id)
      ) -- end select do not remove this SQL comment otherwise bracket closes noun
   GROUP BY of_id
-  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
+  ORDER BY off_info.cr_code  ASC, off_info.of_year  ASC;
 )
-sqlsel_effrole=: 0 : 0
-  SELECT off_info.of_id of_id ,
-         rl.rl_id rl_id ,
-         rl.rl_name rl_name 
-  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
-        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
-  WHERE (en.en_urid =?) 
-    AND (off_info.of_id=?) 
+sqlsel_offeringrole=: 0 : 0
+  SELECT rl.rl_id rl_id 
+  FROM  enrolments en INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid=?) 
+    AND (en.en_ofid=?) 
     AND NOT EXISTS (
-      SELECT  off_info2.of_id of_id , 
-              rl2.rl_id FROM offering_info off_info2
-      INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
-      INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+      SELECT  en2.en_rlid FROM enrolments en2 INNER JOIN 
+			  roles rl2 ON ( en2.en_rlid = rl2.rl_id )
       WHERE (en2.en_urid == en.en_urid) 
-        AND (off_info2.of_id == off_info.of_id) 
-        AND (rl2.rl_id > rl.rl_id)
+        AND (en2.en_ofid == en.en_ofid) 
+        AND (en2.en_rlid > en.en_rlid)
       ) -- end select do not remove this SQL comment otherwise bracket closes noun
-  GROUP BY of_id
+)
+sqlsel_caserole=: 0 : 0
+  SELECT rl.rl_id rl_id 
+  FROM  caseroles cl INNER JOIN roles rl ON ( cl.cl_rlid = rl.rl_id ) 
+  WHERE (cl.cl_urid=?) 
+    AND (cl.cl_csid=?) 
+    AND NOT EXISTS (
+      SELECT  cl2.cl_rlid FROM caseroles cl2 INNER JOIN 
+			  roles rl2 ON ( cl2.cl_rlid = rl2.rl_id )
+      WHERE (cl2.cl_urid == cl.cl_urid) 
+        AND (cl2.cl_csid == cl.cl_csid) 
+        AND (cl2.cl_rlid > cl.cl_rlid)
+      ) -- end select do not remove this SQL comment otherwise bracket closes noun
 )
 
 sqlsel_coursedetails=: 0 : 0
@@ -2039,8 +2075,10 @@ sqlsel_coursesumrys=: 0 : 0
 
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
+         bt.bt_code ci_stagecode ,
          ci.ci_stored ci_stored
-  FROM  `caseinstances`  ci 
+  FROM  blocktypes  bt
+        INNER JOIN caseinstances ci ON (bt.bt_id = ci.ci_stage)
   WHERE (ci.ci_id =?);
 )
 

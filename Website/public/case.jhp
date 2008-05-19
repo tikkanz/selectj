@@ -24,16 +24,18 @@ try.
         qry redirect page
 	case. 'home';'storefin';'resetfin';'chgdparams';'chgdusrdescr';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
-	  'cistage cistored'=: 'casestage' getInfo ciid
+	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'usergreeting' getInfo uid
 	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid;cistage
+      setcolnames 'casedetails' getInfo csid
       setcolnames 'caseinstname' getInfo ciid
-      'casetextname casetext'=: cistage getCaseText csid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      'casetextname casetext'=: cistage getCaseText csid
+      'casemsg casemsgclass'=: action getMsg qparam 'err'
+      'casestatus casestatusclass'=: cistagecode getMsg ''
+      offrole=: uid getOfferingRole ofid
       cinstid=: ciid
-      errormsg=: qparam 'err'
 	  transfer page
 	case. 'chgparams' do.
       NB. transfer 'page' NB. causes error so can see problem
@@ -46,7 +48,7 @@ try.
 	  ('action';'chgdusrdescr') redirect 'case.jhp'
 	case. 'params';'usrdescr' do.
 	  page=. '~CGI/case_',action,'.asp'
-	  'cistage cistored'=: 'casestage' getInfo ciid
+	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
 	  setcolnames 'usergreeting' getInfo uid
 	  setcolnames 'coursename' getInfo ofid
@@ -54,12 +56,13 @@ try.
       'casetextname casetext'=: 11 getCaseText csid
       setcolnames 'caseinstname' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      offrole=: uid getOfferingRole ofid
       cinstid=: ciid
 	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
 	  transfer page
 	case. 'reset';'discard' do.
       dostore=. 'true'-: 'false' qparam 'store' NB. default to discard
-	  'cistage cistored'=. 'casestage' getInfo ciid
+	  'cistage cistagecode cistored'=. 'casestage' getInfo ciid
 	  if. dostore *. (99=cistage) *. -. cistored do.
         storeCaseInstance ciid
 	  end.

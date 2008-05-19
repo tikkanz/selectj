@@ -166,7 +166,7 @@ table{
 	margin-top:8px;
 	background-color:white;
 }
-#caseInfo div {
+#caseInfo div,  #caseInfo h2{
 	padding:2px;
 }
 #caseInfo p,#caseInfo h3 {
@@ -445,9 +445,9 @@ font-weight: normal;
 html>body #navBar dd {border-bottom: none;}
 
 
-/*********** #sectionLinks styles ***********/
+/*********** #userMenu styles ***********/
 
-#sectionLinks{
+#userMenu{
 	position: relative;
 	margin: 0;
 	padding: 15px 0px 0px 0px;
@@ -455,17 +455,17 @@ html>body #navBar dd {border-bottom: none;}
 	font-size: 90%;
 }
 
-#sectionLinks dt{
+#userMenu dt{
 	padding: 0px 0px 1px 10px;
 	font-weight:bold;
 	color:#668800;
 }
 
-#sectionLinks h3{
+#userMenu h3{
 	padding: 10px 0px 2px 20px;
 }
 
-#sectionLinks a:link{
+#userMenu a:link{
 	padding: 2px 0px 2px 20px;
 	border-top: 1px solid #ccc;
 	width: 100%;
@@ -474,16 +474,61 @@ html>body #navBar dd {border-bottom: none;}
 	width: auto;
 }
 
-#sectionLinks a:visited{
+#userMenu a:visited{
 	border-top: 1px solid #ccc;
 	padding: 2px 0px 2px 20px;
 }
 
-#sectionLinks a:hover{
+#userMenu a:hover{
 	border-top: 1px solid #ccc;
 	background-color: #ddd;
 	padding: 2px 0px 2px 20px;
 }
+
+/*********** #adminMenu styles ***********/
+
+#navBar #adminMenu{
+	background-color: #ffdd77;
+}
+
+#adminMenu{
+	position: relative;
+	margin: 0;
+	padding: 15px 0px 0px 0px;
+	border-bottom: 1px solid #ccc;
+	font-size: 90%;
+}
+
+#adminMenu dt{
+	padding: 0px 0px 1px 10px;
+	font-weight:bold;
+	color:#668800;
+}
+
+#adminMenu h3{
+	padding: 10px 0px 2px 20px;
+}
+
+#adminMenu a:link{
+	padding: 2px 0px 2px 20px;
+	border-top: 1px solid #ccc;
+	width: 100%;
+  voice-family: "\"}\""; 
+  voice-family:inherit;
+	width: auto;
+}
+
+#adminMenu a:visited{
+	border-top: 1px solid #ccc;
+	padding: 2px 0px 2px 20px;
+}
+
+#adminMenu a:hover{
+	border-top: 1px solid #ccc;
+	background-color: #ddd;
+	padding: 2px 0px 2px 20px;
+}
+
 
 
 /*********** .relatedLinks styles ***********/
