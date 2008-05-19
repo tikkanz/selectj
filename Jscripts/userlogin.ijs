@@ -120,8 +120,8 @@ updateSession=: 3 : 0
 
 NB.*validCase v Checks if case id is valid for user offering
 NB. returns 0 if not, otherwise returns 3-item boxed list of userID;offeringID;caseID
-NB. y is optional numeric offering id (cs_id), otherwise reads cookie
-NB. x is optional 2-item boxed list of user id;offering id, otherwise gets via enrolledIn
+NB. y is optional numeric case id (cs_id), otherwise reads cookie
+NB. x is optional 2-item boxed list of user id;offering id, otherwise gets via validEnrolment
 NB. calling with no left argument will update session expiry if valid
 validCase=: 3 : 0
   if. 0-: uofid=.validEnrolment'' do. 0 return. end.
@@ -186,4 +186,32 @@ NB. returns string to write to cookie
 writeTicket=: 3 : 0
   'tsid thash'=.y
   ('ssid=',":tsid),'&hash=',thash
+)
+
+NB.*getOfferingRole v gets effective role of user for an offering
+NB. returns 0 if none, otherwise returns user's effective role for offering (role with highest rl_id)
+NB. y is optional numeric offering id (of_id), otherwise reads cookie
+NB. x is optional numeric user id, otherwise gets via sessionticket cookie
+NB. calling with no left argument will update session expiry if valid
+getOfferingRole=: 3 : 0
+  if. 0-: uid=.validSession'' do. 0 return. end.
+  uid getOfferingRole y
+:
+  if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
+  role=.'offeringrole' getInfo x;y
+  if. #role do. role else. 0 end.
+)
+
+NB.*getCaseRole v gets effective role of user for a case
+NB. returns 0 if none, otherwise returns user's effective role for case (role with highest rl_id)
+NB. y is optional numeric case id (cs_id), otherwise reads cookie
+NB. x is optional numeric user id, otherwise gets via sessionticket cookie
+NB. calling with no left argument will update session expiry if valid
+getCaseRole=: 3 : 0
+  if. 0-: uid=.validSession'' do. 0 return. end.
+  uid getCaseRole y
+:
+  if. 0=#y do. y=. 0 qcookie 'CaseID' end.
+  role=.'caserole' getInfo x;y
+  if. #role do. role else. 0 end.
 )

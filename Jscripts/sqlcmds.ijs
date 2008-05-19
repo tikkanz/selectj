@@ -342,3 +342,10 @@ sqlsel_countcasexbid=: 0 : 0
   FROM casestext
   WHERE cx_xbid=?;
 )
+
+sqlsel_msgtxt=: 0 : 0
+  SELECT mx_text,
+         mx_class
+  FROM   messagetext
+  WHERE  mx_code=?;
+)

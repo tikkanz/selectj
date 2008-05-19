@@ -79,7 +79,8 @@ NB.*breedPopln v Breeds population if necessary and possible.
 NB. returns 1 for successfully bred, 0 for breeding not required, else error messages
 NB. y is ciid
 breedPopln=: 3 : 0
-  stge=. (>:checkCycle y){1 21 99
+  stages=. 1 21 99 NB. caseintro, casebtwncycles, caseconc
+  stge=. (>:checkCycle y){stages
   if. stge<99 do.   NB. check if cycles complete
     msg=. y validMateAlloc stge
     if. 1-:msg do. NB. passed all checks
@@ -88,7 +89,7 @@ breedPopln=: 3 : 0
           inipath=. 'animinipath' getFnme y
           writeIniStrings 1;'Resume';'Control';inipath
         end.
-        stge=. (>:checkCycle y){1 21 99
+        stge=. (>:checkCycle y){stages
         updateCaseStage stge;y
         msg=. 1
       else.     NB. AnimalSim error

@@ -35,29 +35,39 @@ sqlsel_usercourses=: 0 : 0
        AND (rl2.rl_id > rl.rl_id)
      ) -- end select do not remove this SQL comment otherwise bracket closes noun
   GROUP BY of_id
-  ORDER BY off_info.cr_code  Asc, off_info.of_year  Asc;
+  ORDER BY off_info.cr_code  ASC, off_info.of_year  ASC;
 )
 
 NB. gets effective role of user for a course offering
-NB. i.e. role with highest rl_id
-sqlsel_effrole=: 0 : 0
-  SELECT off_info.of_id of_id ,
-         rl.rl_id rl_id ,
-         rl.rl_name rl_name 
-  FROM  offering_info off_info INNER JOIN enrolments en ON ( off_info.of_id = en.en_ofid ) 
-        INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
-  WHERE (en.en_urid =?) 
-    AND (off_info.of_id=?) 
+NB. i.e. role with highest rl_id 
+sqlsel_offeringrole=: 0 : 0
+  SELECT rl.rl_id rl_id 
+  FROM  enrolments en INNER JOIN roles rl ON ( en.en_rlid = rl.rl_id ) 
+  WHERE (en.en_urid=?) 
+    AND (en.en_ofid=?) 
     AND NOT EXISTS (
-      SELECT  off_info2.of_id of_id , 
-              rl2.rl_id FROM offering_info off_info2
-      INNER JOIN enrolments en2 ON ( off_info2.of_id = en2.en_ofid ) 
-      INNER JOIN roles rl2 ON ( en2.en_rlid = rl2.rl_id )
+      SELECT  en2.en_rlid FROM enrolments en2 INNER JOIN 
+			  roles rl2 ON ( en2.en_rlid = rl2.rl_id )
       WHERE (en2.en_urid == en.en_urid) 
-        AND (off_info2.of_id == off_info.of_id) 
-        AND (rl2.rl_id > rl.rl_id)
+        AND (en2.en_ofid == en.en_ofid) 
+        AND (en2.en_rlid > en.en_rlid)
       ) -- end select do not remove this SQL comment otherwise bracket closes noun
-  GROUP BY of_id
+)
+
+NB. gets effective role of user for a case
+NB. i.e. role with highest rl_id 
+sqlsel_caserole=: 0 : 0
+  SELECT rl.rl_id rl_id 
+  FROM  caseroles cl INNER JOIN roles rl ON ( cl.cl_rlid = rl.rl_id ) 
+  WHERE (cl.cl_urid=?) 
+    AND (cl.cl_csid=?) 
+    AND NOT EXISTS (
+      SELECT  cl2.cl_rlid FROM caseroles cl2 INNER JOIN 
+			  roles rl2 ON ( cl2.cl_rlid = rl2.rl_id )
+      WHERE (cl2.cl_urid == cl.cl_urid) 
+        AND (cl2.cl_csid == cl.cl_csid) 
+        AND (cl2.cl_rlid > cl.cl_rlid)
+      ) -- end select do not remove this SQL comment otherwise bracket closes noun
 )
 
 sqlsel_coursedetails=: 0 : 0
@@ -133,8 +143,10 @@ sqlsel_coursesumrys=: 0 : 0
 
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
+         bt.bt_code ci_stagecode ,
          ci.ci_stored ci_stored
-  FROM  `caseinstances`  ci 
+  FROM  blocktypes  bt
+        INNER JOIN caseinstances ci ON (bt.bt_id = ci.ci_stage)
   WHERE (ci.ci_id =?);
 )
 

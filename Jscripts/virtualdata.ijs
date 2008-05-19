@@ -19,8 +19,9 @@ INSci=: ;:'newcaseinstance'
 
 NB. y is mostly user id 
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
+QRYur=: QRYur, ;:'offeringrole caserole'
 QRYcomb=: ;:'caseinstanceid enrolled validcase'
-QRYother=: ;:'idfromemail userlogin'
+QRYother=: ;:'idfromemail userlogin msgtxt'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 
@@ -57,10 +58,11 @@ NB. (table, tablestr, row, column, item etc)
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
+DBrow =: DBrow, ;:'msgtxt'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
-DBitem=: DBitem, ;:'casexbid countcasexbid'
+DBitem=: DBitem, ;:'casexbid countcasexbid caserole offeringrole'
 
 NB. =========================================================
 NB. Valid query names where info not sourced from database (probably file)
