@@ -12,7 +12,7 @@ NB.  * updateInfo
 NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id 
-QRYci=: ;:'animinipath caseinstpath caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: ;:'animinipath caseinstpath caseinstance caseinststatus caseinstbasics casestage paramform'
 QRYci=: QRYci, ;:'scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
@@ -26,14 +26,14 @@ UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
 
 NB. y is mostly offering id 
-QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
+QRYof=: ;:'coursecases usercourse coursesumrys existoffering existofferingcases'
 QRYof=: QRYof, ;:'offeringxbid countofferingxbid offeringtext defaulttext defaulttextid'
 UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
 INSof=: INSof, ;:'createtextblock'
 
 NB. y is mostly case id 
-QRYcs=: ;:'casetext casexbid countcasexbid casedetails'
+QRYcs=: ;:'casetext casexbid countcasexbid'
 UPDcs=: ;:'updatecasexbid'
 INScs=: ;:'createcasestext'
 
@@ -52,9 +52,9 @@ DBINS=: INSci,INSur,INSof,INScs,INSss
 NB. =========================================================
 NB. Classify database select query names according to result type required
 NB. (table, tablestr, row, column, item etc)
-  DBtable   =:          ;:'casedetails caseinstname paramform'
+  DBtable   =:          ;:'caseinstance paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
-  DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
+  DBtable   =: DBtable, ;:'coursecases usercourse coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'

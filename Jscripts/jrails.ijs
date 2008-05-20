@@ -231,9 +231,9 @@ buildForm=: 3 : 0
       inftypmsk=. |:unqinftyps&e. every inftyps
       inftypmsk=. inftypmsk{ '-';'*'
       NB. inftypmsk=. inftypmsk{ '&nbsp;';'&#9679;'
-      csinsts=. 'caseinstname' getInfo  boxopenatoms ciids
-      csinstsidx=. 0=# every {."1 }. csinsts
-      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts
+      csinsts=. 'caseinstance' getInfo  boxopenatoms ciids
+      csinstsidx=. 0=# every {."1 }. csinsts NB. cases with non-null user name
+      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts NB. username if non-null else sd_name
     NB.! could also add headerrow to table with sd_name in it as well as
     NB.! put in ciid in headerrow too.
       

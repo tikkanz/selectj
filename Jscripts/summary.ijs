@@ -109,7 +109,7 @@ preplotsummry=: 4 :0
   NB. could investigate wrapping Trait name label over multiple lines if long.
   NB. trtnms =. >'Fleece weight 12';'Live weight 8' NB. get text for base traits
   trtnms =. >~.getTrtBase getTrtsOnly collbls NB. just base trait labels for now
-  cinms=. 'caseinstname' getInfo  boxopenatoms y
+  cinms=. 'caseinstance' getInfo  boxopenatoms y
   cinmsidx=. 0=# every {."1 }. cinms
   cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
   fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
