@@ -25,7 +25,7 @@
   </div> 
 </div> 
 <!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <a href="user.jhp?action=home">myCourses</a> &gt; <a href="course.jhp?action=home">CourseHome</a> &gt; <a href="coursesumry.jhp?action=home">Stored Cases</a> &gt; <span class="current">User Description</span><!-- InstanceEndEditable --></div>
-<div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %><!-- InstanceEndEditable --></div>
+<div class="courseName"><!-- InstanceBeginEditable name="courseName" --><%= cr_code%> - <%= cr_name %> <span class="objcode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span><!-- InstanceEndEditable --></div>
 <div id="content">
   <!-- InstanceBeginEditable name="pgContent" -->
   <div id="caseInfo">
@@ -62,7 +62,7 @@
 	  <dd><a href="case.jhp?action=params" title="View and/or change current case settings">Selection details</a></dd> 
       <dd><a href="case.jhp?action=breed" title="Breed your population using current settings">Breed  population</a></dd> 
       <dd><a href="case.jhp?action=reset&store=false" title="Discard current case and start a new one" onClick="return resetCase(<%= cistage %>,<%= cistored %>)">Reset case</a></dd>
-      <dd style="display:<%=(cistage-:'caseconc'){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
+      <dd style="display:<%=(cistage=99){::'none';'block'%>"> <a href="<%= cistored{::'case.jhp?action=store" title="Save completed case so you can analyse it later">Save completed case';'coursesumry.jhp">Analyse saved case' %></a></dd> 
     </dl>&nbsp;
     </div>
     <div id="adminMenu" style="display:<%=(offrole>1){::'none';'block'%>"> 

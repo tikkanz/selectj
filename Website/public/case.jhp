@@ -24,12 +24,9 @@ try.
         qry redirect page
 	case. 'home';'storefin';'resetfin';'chgdparams';'chgdusrdescr';'cyclefin';'mateerr';'slerr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
-	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid
-      setcolnames 'caseinstname' getInfo ciid
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
       'casetextname casetext'=: cistage getCaseText csid
       'casemsg casemsgclass'=: action getMsg qparam 'err'
@@ -48,14 +45,11 @@ try.
 	  ('action';'chgdusrdescr') redirect 'case.jhp'
 	case. 'params';'usrdescr' do.
 	  page=. '~CGI/case_',action,'.asp'
-	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid
-      'casetextname casetext'=: 11 getCaseText csid
-      setcolnames 'caseinstname' getInfo ciid
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
+      'casetextname casetext'=: 11 getCaseText csid
       offrole=: uid getOfferingRole ofid
       cinstid=: ciid
 	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls

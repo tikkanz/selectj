@@ -13,8 +13,7 @@ try.
       if. 0=#ciids do. redirect 'coursesumry.jhp' return. end.
       page=. '~CGI/coursesumry_sumdef.asp'  NB. destination page
 	  'uid ofid'=. uofid
-	  setcolnames 'usergreeting' getInfo uid
-      setcolnames 'coursedetails' getInfo ofid
+      setcolnames 'usercourse' getInfo uofid
       trtsseld_rgswebforms_=:  qparamList 'traits'
       inftypsseld_rgswebforms_=: qparamList 'inftyps'
       if. (0=#inftypsseld_rgswebforms_) +. 0=#trtsseld_rgswebforms_ do.
@@ -38,8 +37,7 @@ try.
 	  DeleteCookie 'CaseID'
       page=. '~CGI/coursesumry_home.asp'  NB. destination page
 	  'uid ofid'=. uofid
-	  setcolnames 'usergreeting' getInfo uid
-      setcolnames 'coursedetails' getInfo ofid
+	  setcolnames 'usercourse' getInfo uofid
 	  setcolnames 'coursesumrys' getInfo uofid
       NB. if. 0> 4!:0 <'of_id' do. of_id=:i.0 0 end.
 	  transfer page
@@ -53,10 +51,8 @@ try.
       ciid=.4 qparam 'ciid'
 	  page=. '~CGI/coursesumry_',action,'.asp'
 	  'uid ofid csid'=. 'caseinstbasics' getInfo ciid
-      setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid;11
-      setcolnames 'caseinstname' getInfo ciid
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
       cinstid=: ciid
 	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
 	  transfer page

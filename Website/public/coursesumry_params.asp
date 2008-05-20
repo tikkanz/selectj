@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="forms.css" type="text/css" />
 </head>
 <body onload="disableForm('params')">
-<div class="courseName"><%= cr_code%> - <%= cr_name %></div>
+<div class="courseName"><%= cr_code%> - <%= cr_name %> <span class="objcode">(<%=cr_code%>_<%=of_year%>_<%=sm_code%>_<%=dm_code%>)</span></div>
 <div id="content">
   <div id="caseInfo">
     <div id="caseName"><h2><%= sd_name %> <span class="objcode" title="ID number for your case">(<%=cinstid%>)</span> <span class="subhead"><%=ci_usrname%></span></h2>

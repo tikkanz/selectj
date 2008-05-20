@@ -1184,7 +1184,7 @@ preplotsummry=: 4 :0
   
   
   trtnms =. >~.getTrtBase getTrtsOnly collbls 
-  cinms=. 'caseinstname' getInfo  boxopenatoms y
+  cinms=. 'caseinstance' getInfo  boxopenatoms y
   cinmsidx=. 0=# every {."1 }. cinms
   cinms=. >(<"1 (i.<:#cinms),.cinmsidx){}.cinms
   fnme=. ('sumryfolderpath' getFnme ;{.y),'sumryplot.pdf'
@@ -1362,7 +1362,7 @@ plotsummry1=: 3 : 0
   pd 'save png'
  
 )
-QRYci=: ;:'animinipath caseinstpath caseinstname caseinststatus caseinstbasics casestage paramform'
+QRYci=: ;:'animinipath caseinstpath caseinstance caseinststatus caseinstbasics casestage paramform'
 QRYci=: QRYci, ;:'scendefpath txtblks'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
@@ -1372,12 +1372,12 @@ QRYcomb=: ;:'caseinstanceid enrolled validcase'
 QRYother=: ;:'idfromemail userlogin msgtxt'
 UPDur=: ;:'deleteusers resetusers setusers'
 INSur=: ;:'newuser newperson newenrolment'
-QRYof=: ;:'coursecases coursedetails coursename coursesumrys existoffering existofferingcases'
+QRYof=: ;:'coursecases usercourse coursesumrys existoffering existofferingcases'
 QRYof=: QRYof, ;:'offeringxbid countofferingxbid offeringtext defaulttext defaulttextid'
 UPDof=: ;:'deleteofferingcases updateofferingxbid updatetextblock'
 INSof=: ;:'createoffering addofferingcases createofferingstext'
 INSof=: INSof, ;:'createtextblock'
-QRYcs=: ;:'casetext casexbid countcasexbid casedetails'
+QRYcs=: ;:'casetext casexbid countcasexbid'
 UPDcs=: ;:'updatecasexbid'
 INScs=: ;:'createcasestext'
 QRYss=: ;:'sessioninfo'
@@ -1386,9 +1386,9 @@ INSss=: ;:'newsession'
 DBQRY=: QRYci,QRYof,QRYur,QRYcs,QRYss,QRYcomb,QRYother
 DBUPD=: UPDci,UPDur,UPDof,UPDcs,UPDss
 DBINS=: INSci,INSur,INSof,INScs,INSss
-  DBtable   =:          ;:'casedetails caseinstname paramform'
+  DBtable   =:          ;:'caseinstance paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
-  DBtable   =: DBtable, ;:'coursecases coursedetails coursename coursesumrys'
+  DBtable   =: DBtable, ;:'coursecases usercourse coursesumrys'
 DBtable   =: DBtable, ;:'sessioninfo txtblks'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
@@ -1751,17 +1751,6 @@ sqlsel_scendefpath=: 0 : 0
   WHERE (ci.ci_id =?);
 )
 
-sqlsel_caseinstname=: 0 : 0
-  SELECT ci.ci_usrname ci_usrname ,
-         sd.sd_name sd_name ,
-         ci.ci_usrdescr ci_usrdescr ,
-         sd.sd_descr sd_descr ,
-         sd.sd_code sd_code 
-  FROM  `cases` cs INNER JOIN `caseinstances` ci ON ( `cs`.`cs_id` = `ci`.`ci_csid` ) 
-        INNER JOIN `scendefs` sd ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-  WHERE (ci.ci_id =?);
-)
-
 sqlupd_caseinstusrdescr=: 0 : 0
   UPDATE caseinstances
   SET    ci_usrname=? ,
@@ -1951,6 +1940,20 @@ sqlsel_usergreeting=: 0 : 0
   WHERE ur.ur_id=?;
 )
 
+sqlsel_usercourse=: 0 : 0
+  SELECT pp.pp_fname      pp_fname,
+         pp.pp_lname      pp_lname,
+         off_info.cr_name cr_name,
+         off_info.cr_code cr_code,
+         off_info.of_year of_year,
+         off_info.sm_code sm_code,
+         off_info.dm_code dm_code
+  FROM  people pp
+        INNER JOIN users ur ON (pp.pp_id = ur.ur_ppid)
+        ,offering_info off_info
+  WHERE (ur.ur_id=?) AND (off_info.of_id=?)
+)
+
 sqlsel_usercourses=: 0 : 0
   SELECT off_info.of_id of_id ,
          off_info.cr_name cr_name ,
@@ -2005,19 +2008,6 @@ sqlsel_caserole=: 0 : 0
       ) -- end select do not remove this SQL comment otherwise bracket closes noun
 )
 
-sqlsel_coursedetails=: 0 : 0
-  SELECT of_id,
-       cr_name,
-       cr_code,
-       of_year,
-       sm_code,
-       dm_code,
-       pp_adminfname,
-       pp_adminlname
-  FROM offering_info
-  WHERE (of_id=?)
-)
-
 sqlsel_offeringtext=: 0 : 0
   SELECT bt.bt_name bt_name,
          xb.xb_text xb_text
@@ -2040,14 +2030,6 @@ sqlsel_defaulttextid=: 0 : 0
   SELECT bt_xbid
   FROM blocktypes
   WHERE (bt_id=?);
-)
-
-
-sqlsel_coursename=: 0 : 0
-  SELECT off_info.cr_name cr_name ,
-         off_info.cr_code cr_code 
-  FROM `offering_info` off_info
-  WHERE (off_info.of_id =?);
 )
 
 sqlsel_coursecases=: 0 : 0
@@ -2073,6 +2055,22 @@ sqlsel_coursesumrys=: 0 : 0
   ORDER BY ci.ci_id  Asc, ci.ci_csid  Asc;
 )
 
+sqlsel_caseinstance=: 0 : 0
+  SELECT ci.ci_usrname  ci_usrname,
+         sd.sd_name     sd_name,
+         ci.ci_usrdescr ci_usrdescr,
+         sd.sd_descr    sd_descr,
+         sd.sd_code     sd_code,
+         ci.ci_stage    cistage,
+         bt.bt_code     cistagecode,
+         ci.ci_stored   cistored
+  FROM  blocktypes  bt
+        INNER JOIN caseinstances ci ON (bt.bt_id = ci.ci_stage) 
+        INNER JOIN cases ON (cases.cs_id = ci.ci_csid) 
+        INNER JOIN scendefs  sd ON (sd.sd_id = cases.cs_sdid) 
+  WHERE (ci.ci_id=?)
+)
+
 sqlsel_casestage=: 0 : 0
   SELECT ci.ci_stage ci_stage ,
          bt.bt_code ci_stagecode ,
@@ -2086,14 +2084,6 @@ sqlupd_casestage=: 0 : 0
   UPDATE caseinstances
   SET ci_stage=?
   WHERE (ci_id=?);
-)
-
-sqlsel_casedetails=: 0 : 0
-  SELECT sd.sd_name sd_name ,
-         sd.sd_code sd_code ,
-         sd.sd_descr sd_descr
-FROM  `scendefs` sd INNER JOIN `cases` cs ON ( `sd`.`sd_id` = `cs`.`cs_sdid` ) 
-WHERE (cs.cs_id =?);
 )
 
 sqlsel_casetext=: 0 : 0
@@ -2314,9 +2304,9 @@ buildForm=: 3 : 0
       inftypmsk=. |:unqinftyps&e. every inftyps
       inftypmsk=. inftypmsk{ '-';'*'
       
-      csinsts=. 'caseinstname' getInfo  boxopenatoms ciids
-      csinstsidx=. 0=# every {."1 }. csinsts
-      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts
+      csinsts=. 'caseinstance' getInfo  boxopenatoms ciids
+      csinstsidx=. 0=# every {."1 }. csinsts 
+      csnmes=. (<"1 (i.<:#csinsts),.csinstsidx){}.csinsts 
     
     
       

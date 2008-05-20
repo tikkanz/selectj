@@ -13,12 +13,9 @@ try.
   select. action
 	case. 'home';'chgdtxt';'chgdusrdescr' do.
       page=. '~CGI/case_home.asp'  NB. destination page
-	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid;cistage
-      setcolnames 'caseinstname' getInfo ciid
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
       cinstid=: ciid
       errormsg=: qparam 'err'
@@ -35,21 +32,16 @@ try.
     case. 'edtxt' do.
       NB. need to validate user rights at some stage
 	  page=. '~CGI/case_adm_',action,'.asp'
-	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      NB. setcolnames 'casedetails' getInfo csid;cistage
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
 	  caseform=: ('case',action) buildForm csid;cistage
 	  transfer page
 	case. 'params';'usrdescr' do.
 	  page=. '~CGI/case_',action,'.asp'
-	  'cistage cistagecode cistored'=: 'casestage' getInfo ciid
 	  'uid ofid csid'=. uofcsid
-	  setcolnames 'usergreeting' getInfo uid
-	  setcolnames 'coursename' getInfo ofid
-      setcolnames 'casedetails' getInfo csid;11
-      setcolnames 'caseinstname' getInfo ciid
+	  setcolnames 'usercourse' getInfo uid;ofid
+      setcolnames 'caseinstance' getInfo ciid
 	  'currcycle ncycles'=: 'caseprogress' getInfo ciid
       cinstid=: ciid
 	  caseform=: ('case',action) buildForm ciid NB. dynamically create form with controls
