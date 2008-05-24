@@ -1,22 +1,23 @@
-NB. verbs for zipping and extracting directory trees using arc/zip addon
+NB. Verbs for zipping and extracting directory trees using the arc/zip addon
 
 require 'dir arc/zip/zfiles'
 require 'strings files'  NB. would get loaded by other scripts anyway
 NB. needs addPS, dircreate verbs from dir_add.ijs script
-NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
+NB. http://www.jsoftware.com/jwiki/Scripts/DirectoryUtils
 3 : 0 ''
-  if.  (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. NB. need to make sure it is included in project for console
+  if. (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. NB. need to make sure it is included in project for console
     require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
   end.
 )
 
 coclass 'rgsztrees'
 
-NB.*unziptree v unzip zipfile y to directory tree x
-NB. eg. todir unziptree fromzip
-NB. returns 2-item list 0{ number of directories created
-NB.                     1{ number of files successfully extracted
-NB. any existing files of the same name will be written over
+NB.*unziptree v Unzips zipfile y into directory x
+NB. form: ToDir unziptree FromZip
+NB. returns: 2-item numeric list
+NB.       0{ number of directories created
+NB.       1{ number of files successfully extracted
+NB. Any existing files with the same filename will be written over.
 unziptree=: 4 : 0
   'todir fromzip'=. x;y
   todir=. addPS todir
@@ -38,10 +39,11 @@ unziptree=: 4 : 0
   (+/resdir),+/resfile
 )
 
-NB.*ziptree v zip directory tree y to zipfile x
-NB. eg. tozip ziptree fromdir
-NB. returns 2-item list 0{ number of directories written to zipfile
-NB.                     1{ number of files written to zipfile
+NB.*ziptree v Zips directory tree y into zipfile x
+NB. form: ToZip ziptree FromDir
+NB. returns: 2-item numeric list 
+NB.       0{ number of directories written to zipfile
+NB.       1{ number of files written to zipfile
 ziptree=: 4 : 0
   'tozip fromdir'=. x;y
   if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
@@ -61,28 +63,30 @@ ziptree=: 4 : 0
   (+/resdir),+/resfile
 )
 
-NB.*zipfiles v Add/Append one or more files to a zip file.
-NB. returns 2-item numeric list 
-NB.               0{ number of directories written to zipfile
-NB.               1{ number of files written to zipfile
-NB. y is 1 or more-item boxed list of file names to zip
-NB. x is 1 or 2-item boxed list.
-NB.         0{ is name of zip file
-NB.         1{ is optional info on what directory info to include in zip.
-NB.               0. don't include any directories
-NB.               1. include full directory paths
-NB.              ''. (i.e. empty) (default) Base directory is highest directory common to all files.
-NB.  <prfx2basedir>. explicitly specify directory(s) to prefix base directory with
-NB. eg.     tozip zipfiles fname1;fname2;fname3
-NB. eg. (tozip;0) zipfiles fname1;fname2;fname3
-NB. eg. (tozip;'testing') zipfiles fname1;fname2;fname3
+NB.*zipfiles v Adds/Appends one or more files to a zip file
+NB. form: (ToZip[;DirInf]) zipfiles FileNames
+NB. returns: 2-item numeric list
+NB.       0{ number of directories written to zipfile
+NB.       1{ number of files written to zipfile
+NB. y is: boxed list of file names to zip
+NB. x is: 1 or 2-item boxed list
+NB.       0{ is name of zip file
+NB.       1{ is optional info on what directory info to include in zip
+NB.               (0) don't include any directory information
+NB.               (1) include full directory paths
+NB.              ('') (i.e. empty) (default) Base directory is highest directory common to all files.
+NB.   (BaseDirPrefix) explicitly specify directory name to prefix base directory with
+NB. eg:     tozip zipfiles fname1;fname2;fname3
+NB. eg: (tozip;0) zipfiles fname1;fname2;fname3
+NB. eg: (tozip;'testing/here') zipfiles fname1;fname2;fname3
+NB. Adding a file that already exists in the zipfile will result in 2 copies in the zipfile.
 zipfiles=: 4 : 0
   fromfiles=. boxopen y
   'tozip dirinf'=. 2{. boxopen x
   if. *./-.fexist @> fromfiles do. 0 return. end. NB. stop if no fromfiles found
   repps=. (<PATHSEP_j_,'/') charsub&.> ] NB. replaces PATHSEP_j_ with '/'
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
-  aprf=. ]  ,&.>~ [: < [   NB. catenates x to start of each y
+  aprf=. ] ,&.>~ [: < [   NB. catenates x to start of each y
   if. (0-:dirinf) +. (''-:dirinf) *. 1=#fromfiles do. NB. no dirs or only one file to zip
     tofiles=. '/' taketo&.|. each repps fromfiles
     tofiles=. tofiles,.<tozip
@@ -108,9 +112,10 @@ zipfiles=: 4 : 0
   (+/resdir),+/resfile
 )
 
-NB.*ztypes v get file types for contents of zip file
-NB. vector of numeric types, file (1) dir (2)
-NB. eg. ztypes jpath '~addons/arc/zip/test.zip'
+NB.*ztypes v Gets file types for contents of zip file
+NB. form: ztypes ZipFileName
+NB. returns: Numeric list of types, file (1) dir (2)
+NB. eg:   ztypes jpath '~addons/arc/zip/test.zip'
 ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
 
 zextract=: fwrite~ zread

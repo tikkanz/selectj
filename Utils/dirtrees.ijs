@@ -1,25 +1,26 @@
-NB. verbs for copying and deleting directory trees
+NB. Verbs for copying and deleting directory trees
 
 require 'dir files'
 NB. needs addPS, dropPS, dircreate, pathcreate, verbs from dir_add.ijs script
-NB. part of http://www.jsoftware.com/jwiki/Scripts/DirectoryTrees
+NB. http://www.jsoftware.com/jwiki/Scripts/DirectoryUtils
 3 : 0 ''
-if. (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. NB. need to make sure it is included in project for console
-  require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
-end.
+  if. (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. NB. need to make sure it is included in project for console
+    require 'dir_add' NB. mapped to ~user/projects/utils/dir_add.ijs in startup.ijs
+  end.
 )
 coclass 'rgstrees'
 
-NB.*copytree v copies directory tree from directory y to directory x
-NB. eg. todir copytree fromdir
-NB. returns 2-item list 0{ number of directories created
-NB.                     1{ number of files successfully copied
-NB. any existing files of the same name will be written over
+NB.*copytree v Copies directory tree from directory y to directory x
+NB. form: ToDir copytree FromDir
+NB. returns: 2-item numeric list
+NB.       0{ number of directories created
+NB.       1{ number of files successfully copied
+NB. Any existing files of the same name will be written over.
 copytree=: 4 : 0
   'todir fromdir'=. addPS each x;y
   if. -.direxist fromdir do. 0 0 return. end. NB. exit if fromdir not found
   dprf=. ] }.&.>~ [: # [  NB. drops #x chars from beginning of each y
-  aprf=. ]  ,&.>~ [: < [    NB. catenates x to start of each y
+  aprf=. ] ,&.>~ [: < [    NB. catenates x to start of each y
   fromdirs=. }. dirpath fromdir
   todirs=. todir aprf fromdir dprf fromdirs
   fromfiles=. {."1 dirtree fromdir
@@ -30,19 +31,26 @@ copytree=: 4 : 0
   (+/resdir),+/resfile
 )
 
-NB.*deltree v delete directory tree
-NB. returns 1 if all files and folders in tree are deleted
-NB.         0 on error or if some cannot be deleted
-NB. y is filename of directory to delete
+NB.*deltree v Delete directory tree
+NB. form: deltree DirectoryName
+NB. returns: boolean
+NB.       (1) if all files and folders in tree are deleted
+NB.       (0) on error or if some cannot be deleted
+NB. y is: literal filename of directory to delete
 deltree=: 3 : 0
   try.
-    res=.0< ferase {."1 dirtree y
+    res=. 0< ferase {."1 dirtree y
     *./ res,0<ferase |.dirpath y
   catch. 0 end.
 )
+NB. =========================================================
+NB. Verbs local to rgstrees locale
 
-NB. tofile fcopy fromfile
+NB.*fcopy v Copies file from one filename to another
+NB. form: ToFile fcopy FromFile
 fcopy=: fwrite~ fread
 
+NB. =========================================================
+NB. Declarations in z locale
 copytree_z_=: copytree_rgstrees_
 deltree_z_=: deltree_rgstrees_
