@@ -21,10 +21,7 @@ PRIMARYFILES=: 0 : 0
 ~user/projects/utils/tag
 ~user/projects/utils/sqliteq
 ~user/projects/utils/passwdhash
-~user/projects/utils/dir_add
-~user/projects/utils/dirtrees
 ~user/projects/utils/invtables
-~user/projects/utils/ziptrees
 )
 
 PRIMARYLIBS=: 0 : 0
@@ -32,6 +29,8 @@ convert
 csv
 dates
 dir
+dirtrees
+dirutils
 dll
 files
 inifiles
@@ -47,6 +46,7 @@ tara
 task
 winapi
 zip
+ziptrees
 )
 
 DEVFILES=: 0 : 0
