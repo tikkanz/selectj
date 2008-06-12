@@ -1,10 +1,19 @@
 NB. =========================================================
-NB. generalized writing of one or more excel sheets to a workbook using tara
-NB. similar to readexcelsheets
+NB. Generalized writing of one or more Excel sheets to a workbook using tara
+NB. Similar idea to readexcelsheets
+
 NB.*writesheets v write arrays to sheets of Excel workbook
+NB. returns: numeric 1 if successful.
 NB. form: ([<sheetname(s)>],.<sheetcontent(s)>) writesheets <filename>
-NB. if <sheetname(s)> not given then use default
-NB. could assume if x is numeric table it is data for 1 worksheet
+NB. y is: literal filename of workbook to create
+NB. x is: One of;
+NB.       literal (data to write in topleft cell of Sheet1)
+NB.       numeric matrix (data to write to Sheet1)
+NB.       boxed (numeric/literal/mixed) matrix (data to write to Sheet1)
+NB.       2-column matrix, 
+NB.          Sheetnames in 1st col (literal)
+NB.          Associated data formats (above) for sheetnames
+NB. if <sheetname(s)> not given then defaults used default
 writesheets=: 4 : 0
   if. 0=#x do. empty'' return. end. NB. if empty xarg then return.
   shts=. makexarg x
@@ -201,29 +210,6 @@ blocks tst1
 tmp=: 4 6$'abcdefghijklmnopqrstuvwx'
 ((1 1,: 3 2) ,: 0 3,:2 3) <@toupper;.0 tmp
 
-)
-
-NB. =========================================================
-NB. Obsolete
-
-Note 'old stuff'
-bytype=: 1 : 'u;.1~ (1, 2~:/\ ])'
-NB. box bytype     <bytype
-NB. count bytype   #bytype
-NB. type bytype   {.bytype
-lens=: <@({.bytype # #bytype)"1  NB. lengths of blocks of 1s
-shapes=: [: ; 1: ,. &.> lens          NB. shapes of blocks of 1s
-
-tlcols=: <@I.@firstones"1  NB.  leftmost columns of blocks of 1s
-toplefts=: i.@:# ,.&.> tlcols  NB. topleft index of blocks of 1s
-)
-
-Note 'old testing'
-;toplefts tst2   NB. list of topleft of blocks of 1s
-;toplefts -.tst2 NB. list of topleft of blocks of 0s
-
-(;@toplefts ,:"1 ;@shapes) tst1
-;(toplefts ,:"1 &.> shapes) tst1
 )
 
 NB. =========================================================
