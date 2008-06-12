@@ -133,8 +133,11 @@ l1s=: [: (minblks { ]) lastones ,: lastones"1
 tlsop=: [: indices f1s
 brsop=: [: indices l1s
 
-shapes=: [: >: brsop - tlsop  NB. shapes of blocks of 1s
-blocks=: tlsop ,:"1 shapes  NB. blocks of 1s
+NB. if column-oriented use  |."1 indices |: firstones tst1
+NB. if column-oriented use  |."1 indices |: lastones  tst1
+
+shapes=: [: >: brs - tls  NB. shapes of blocks of 1s
+blocks=: tls ,:"1 shapes  NB. blocks of 1s
 
 Note 'testing'
 tls tst1          NB. list of topleft of blocks of 1s
