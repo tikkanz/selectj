@@ -1,48 +1,167 @@
 NB. =========================================================
 NB. generalized writing of one or more excel sheets to a workbook using tara
 NB. similar to readexcelsheets
-NB. form: (<sheetname(s)>,.<sheetcontent(s)>) writesheets <filename>
+NB.*writesheets v write arrays to sheets of Excel workbook
+NB. form: ([<sheetname(s)>],.<sheetcontent(s)>) writesheets <filename>
 NB. if <sheetname(s)> not given then use default
-NB. if 1=L.x then assume contains data for 1 worksheet.
 NB. could assume if x is numeric table it is data for 1 worksheet
-NB. could assume for literal x with L.=0 that is data for topleft cell of 1 worksheet
-NB. ? when 2<L.x then error?
+writesheets=: 4 : 0
+  if. 0=#x do. empty'' return. end. NB. if empty xarg then return.
+  shts=. makexarg x
+  shtnme=. ((0 < #) {:: 'Sheet1'&;) (<0 0) {:: shts
+  bi=. ('Arial' ; 220 ; shtnme) conew 'biffbook'
+  shtdat=. (<0 1){:: shts
+  bi writeShtdat shtdat
+  shts=. }.shts
+  bi addSheets"1 shts
+  save__bi y
+  destroy__bi ''
+)
 
+NB. isdata v Verb decides on type of x argument to writesheets
+NB. returns 0 for array of names and data, 1 for single data matrix.
+isdata=: 3 : 0
+  if. 1< lvls=. L. y do. 0 return. NB. if 1<L.x must be multiple sheets
+  elseif. 0= lvls do. 1 return. NB. if not boxed then must be data for single sheet
+  elseif. 2< {:$ y do. 1 return. NB. if more than 2 items/cols then data for one sheet
+  elseif. -. *./2= 3!:0 &> {."1 y do. 1 return. NB. if not all 1st col contents are literal then must be one sheet
+  elseif. 1< #@$ &> {:"1 y do. 0 return. NB. if any last col contents have rank greater than 1 then must be multiple sheets
+  elseif. do. 1 NB. else assume that boxed data for one sheet
+  end.
+)
 
-NB. need to write string data and numeric data separately
-NB. to minimise the number of calls it would be good to
+NB. makexarg v Ensures that xarg to writesheets has right form.
+NB. returns: 2-item/column vector/array.
+NB.       {."1 are sheetnames, {:"1 are boxed rank-2 arrays of sheetdata
+makexarg=: 3 : 0
+  if. isdata y do.
+    if. 2= 3!:0 y do. y=. <y end.
+    y=. a:,. <mfva y
+  else.
+    if. 2>{:$ y do. NB. if only 1 item/col add empty column of sheetnames
+      y=. a:,.y
+    end.
+    if. #idx=. (I. b=. ischar &>{:"1 y) do.  NB. sheets with unboxed string data
+      upd=. ({."1 ,. mfva@<&.>@({:"1)) b#y NB. boxed versions
+      y=. upd idx }y
+    end.
+  end.
+  mfv1 y
+)
+
+NB. addSheets v Creates new sheet and writes data to it
+NB. form: <wkbklocale> addSheets <sheetname>;<array>
+addSheets=: 4 : 0
+  'shtnme shtdat'=. y
+  addsheet__x shtnme
+  x writeShtdat shtdat
+)
+
+NB. writeShtdat v Writes array to current worksheet
+NB. form: <wkbklocale> writeShtdat <array>
+NB. Writes blocks of string data and numeric data separately
+NB. Only 1d blocks at present. to minimise the number of calls it would be good to
 NB. find rectangular blocks of same type and write them
 NB. using (<corner>,:<shape>) u;.0 <array>
-
-
-
-
-NB. large workbook > 10MB size
-test12=: 3 : 0
-bi=. ('Courier New' ; 220) conew 'biffbook'
-writenumber__bi 0 0 ; < < ("0) i.6 10
-writestring__bi 6 0 ; < < ("1) 6 10 7$'ABCDEFGHIJKLMNOPQRSTUVW'
-save__bi jpath '~temp/tara12.xls'
-destroy__bi ''
-)
-NB. Adding New Worksheet
-test8=: 3 : 0
-bi=. ('Courier New' ; 220 ; 'first worksheet') conew 'biffbook'  NB. name of first worksheet as the third parameter
-writestring__bi 1 3 ; 'total 3 worksheets'
-addsheet__bi ''
-writestring__bi 1 3 ; 'sheet2'
-addsheet__bi 'last sheet'                NB. name of worksheet
-writestring__bi 1 3 ; 'last sheet'
-NB. switch to sheet1, (sheeti is 0-based)
-sheeti__bi=. 0
-writestring__bi 2 3 ; 'sheet1'
-save__bi jpath '~temp/tara8.xls'
-destroy__bi ''
+writeShtdat=: 4 : 0
+  if. 0=L.y do.
+    writenumber__x 0 0;y
+  else.
+    as=. ischar &> y
+    blks=. blocksx as
+    tls=. {.0 2|: blks
+    strdat=: blks <;.0 y NB. blocks of char
+    writestring__x"1 (<"1 tls),.strdat
+    blks=. blocksx -.as
+    tls=. {.0 2|: blks
+    numdat=. blks ([:<>);.0 y  NB. blocks of non-char
+    writenumber__x"1 (<"1 tls),.numdat
+  end.
 )
 
+NB. =========================================================
+NB. test
+Note 'testargs'
+x1=: i.3 4
+x4=: 'No name, single char'
+x2=: 'num array';i.3 4
+x3=: ('num array';i.3 4),:'num array2';i.2 2
+x5=: ('num array';i.3 4),:'boxnum array';<<"0 i.2 2
+x6=: ('num array';i.3 4),:'boxchr array';<4 2$'abcd';'kdisd';'eiij asj'
+x7=: ('';i.3 4),:'boxmix array';<4 2$'abcd';54;'eiij';2;4.4
+x8=: 'data 1';'data 2'
+x9=: 4 2$'abcd';54;'eiij';2;4.4
+x10=: ('numarr';i.3 4),: 'boxchr';'jsadla'
+If sheet name is not present or empty string the use default.
+)
+Note 'tests for writesheets'
+x1 writesheets jpath '~temp/tarawsht1.xls'
+x3 writesheets jpath '~temp/tarawsht2.xls'
+x4 writesheets jpath '~temp/tarawsht3.xls'
+x5 writesheets jpath '~temp/tarawsht4.xls'
+x6 writesheets jpath '~temp/tarawsht5.xls'
+x7 writesheets jpath '~temp/tarawsht6.xls'
+x8 writesheets jpath '~temp/tarawsht7.xls'
+x9 writesheets jpath '~temp/tarawsht8.xls'
+x10 writesheets jpath '~temp/tarawsht9.xls'
+)
 
+NB. =========================================================
+NB. working 1d solution for creating blocks.
+mfv1=: ,:^:(#&$ = 1:)       NB. makes 1-row matrix from vector
+mfva=: ,:^:([: 2&> #@$)^:_  NB. makes a matrix from an atom or vector
+ischar=: 3!:0 e. 2 131072"_
+firstones=: > 0: , }:
+lastones=: > 0: ,~ }.
+indices=: $ #: I.@,   NB. get row,.col indices of 1s in matrix
+indices=: 4$.$.       NB. faster leaner?
+isrowblks=: >/@(+/^:(#&$)"_1) NB. are blocks row oriented
 
+NB. ---------------------------------------------------------
+NB. tacit solution (works best for row-oriented blocks)
+tls=: [: indices firstones"1 NB. topleft index of blocks of 1s
+brs=: [: indices lastones"1  NB. bottomright index of blocks of 1s
 
+shapes=: [: >: brs - tls  NB. shapes of blocks of 1s
+blocks=: tls ,:"1 shapes  NB. blocks of 1s
+
+NB. ---------------------------------------------------------
+NB. explicit solution (chooses best block orientation)
+blocksx=: 3 : 0
+  fo=. (firstones ,: firstones"1) y
+  if. isr=. isrowblks fo do. NB. row-oriented
+    tl=. indices isr { fo
+    br=. indices lastones"1 y
+  else. NB. column-oriented
+    tl=. |."1 indices |: isr { fo
+    br=. |."1 indices |: lastones y
+  end.
+  tl ,:"1 >:br-tl
+)
+
+Note 'testing'
+tls tst1          NB. list of topleft of blocks of 1s
+tls -.tst1        NB. list of topleft of blocks of 0s
+
+(blocks ischar &> tsta) <;.0 tsta  NB. blocks of char (you will need to create a tsta to run this)
+(blocks -.ischar &> tsta) <;.0 tsta  NB. blocks of non-char
+(blocksx -.ischar &> tsta) ([:<>);.0 tsta  NB. blocks of non-char
+)
+
+NB. =========================================================
+NB. Attempt 2d version for creating blocks
+
+tl=: (firstones *. firstones"1)  NB. topright
+br=: (lastones *. lastones"1)    NB. bottomleft
+
+Note 'testing'
+('tst1';'firstones';'lastones';'firstones"1';'lastones"1'),:(;firstones;lastones;firstones"1;lastones"1) tst1
+indices tl tst1
+indices br tst1
+)
+
+NB. =========================================================
+NB. test data
 tsta=: readexcel jpath '~temp/tararead.xls'
 tst1=: ischar every tsta
 tst1=: _99&".;._2 (0 : 0)
@@ -60,6 +179,7 @@ tst1=: _99&".;._2 (0 : 0)
 0 0 0 1 1 1
 )
 
+Note 'examples'
 blocks tst1
 0 3  NB. topleft of block
 1 3  NB. shape of block
@@ -76,78 +196,15 @@ blocks tst1
 7 3
 5 3
 
-topleft -.tst1
-0 0
-2 3
-
-3 2
-2 3
-
-3 0
-2 3
-
-5 3
-2 3
-
-11 3
-2 3
-
-
-
-
 ]tst2=: 5 9?.@$2
-0 1 0 1 1 1 0 0 0
-1 0 1 0 0 1 0 0 0
-0 0 1 1 1 0 0 0 0
-0 1 1 0 0 1 0 1 0
-0 0 0 1 0 1 0 0 0
 
 tmp=: 4 6$'abcdefghijklmnopqrstuvwx'
 ((1 1,: 3 2) ,: 0 3,:2 3) <@toupper;.0 tmp
 
-tl=: (firstones *. firstones"1)  NB. topright
-br=: (lastones *. lastones"1)    NB. bottomleft
-NB. indices=: (1 , {:@$) *"1 [: (<. ,. 1&|) {:@$ %~ [: I. ,
-indices=: $ #: I.@, NB. get row,.col indices of 1s in matrix
-
-('tst1';'firstones';'lastones';'firstones"1';'lastones"1'),:(;firstones;lastones;firstones"1;lastones"1) tst1
-
-indices tl tst1
-indices br tst1
-
-NB. =========================================================
-NB. working solution for creating blocks.
-ischar=: 3!:0 e. 2 131072"_
-firstones=: > 0: , }:
-lastones=: > 0: ,~ }.
-indices=: $ #: I.@,   NB. get row,.col indices of 1s in matrix
-
-
-tls=: [: indices firstones"1 NB. topleft index of blocks of 1s
-brs=: [: indices lastones"1  NB. bottomright index of blocks of 1s
-
-minblks=: >/@(+/^:(#&$)"_1) NB. are blocks column oriented
-f1s=: [: (minblks { ]) firstones ,: firstones"1
-l1s=: [: (minblks { ]) lastones ,: lastones"1
-
-tlsop=: [: indices f1s
-brsop=: [: indices l1s
-
-NB. if column-oriented use  |."1 indices |: firstones tst1
-NB. if column-oriented use  |."1 indices |: lastones  tst1
-
-shapes=: [: >: brs - tls  NB. shapes of blocks of 1s
-blocks=: tls ,:"1 shapes  NB. blocks of 1s
-
-Note 'testing'
-tls tst1          NB. list of topleft of blocks of 1s
-tls -.tst1        NB. list of topleft of blocks of 0s
-
-(blocks   ischar &> tsta) <;.0 tsta  NB. blocks of char (you will need to create a tsta to run this)
-(blocks -.ischar &> tsta) <;.0 tsta  NB. blocks of non-char
 )
-NB. =========================================================
 
+NB. =========================================================
+NB. Obsolete
 
 Note 'old stuff'
 bytype=: 1 : 'u;.1~ (1, 2~:/\ ])'
@@ -167,3 +224,30 @@ Note 'old testing'
 
 (;@toplefts ,:"1 ;@shapes) tst1
 ;(toplefts ,:"1 &.> shapes) tst1
+)
+
+NB. =========================================================
+NB. Workbook writing examples
+
+NB. large workbook > 10MB size
+test12=: 3 : 0
+  bi=. ('Courier New' ; 220) conew 'biffbook'
+  writenumber__bi 0 0 ; < < ("0) i.6 10
+  writestring__bi 6 0 ; < < ("1) 6 10 7$'ABCDEFGHIJKLMNOPQRSTUVW'
+  save__bi jpath '~temp/tara12.xls'
+  destroy__bi ''
+)
+NB. Adding New Worksheet
+test8=: 3 : 0
+  bi=. ('Courier New' ; 220 ; 'first worksheet') conew 'biffbook'  NB. name of first worksheet as the third parameter
+  writestring__bi 1 3 ; 'total 3 worksheets'
+  addsheet__bi ''
+  writestring__bi 1 3 ; 'sheet2'
+  addsheet__bi 'last sheet'                NB. name of worksheet
+  writestring__bi 1 3 ; 'last sheet'
+  NB. switch to sheet1, (sheeti is 0-based)
+  sheeti__bi=. 0
+  writestring__bi 2 3 ; 'sheet1'
+  save__bi jpath '~temp/tara8.xls'
+  destroy__bi ''
+)
