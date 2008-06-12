@@ -79,12 +79,12 @@ writeShtdat=: 4 : 0
     as=. ischar &> y
     blks=. blocksx as
     tls=. {.0 2|: blks
-    strdat=: blks <;.0 y NB. blocks of char
-    writestring__x"1 (<"1 tls),.strdat
+    dat=: blks <;.0 y NB. blocks of char
+    writestring__x"1 (<"1 tls),.dat
     blks=. blocksx -.as
     tls=. {.0 2|: blks
-    numdat=. blks ([:<>);.0 y  NB. blocks of non-char
-    writenumber__x"1 (<"1 tls),.numdat
+    dat=. blks ([:<>);.0 y  NB. blocks of non-char
+    writenumber__x"1 (<"1 tls),.dat
   end.
 )
 
@@ -92,27 +92,30 @@ NB. =========================================================
 NB. test
 Note 'testargs'
 x1=: i.3 4
-x4=: 'No name, single char'
-x2=: 'num array';i.3 4
-x3=: ('num array';i.3 4),:'num array2';i.2 2
-x5=: ('num array';i.3 4),:'boxnum array';<<"0 i.2 2
-x6=: ('num array';i.3 4),:'boxchr array';<4 2$'abcd';'kdisd';'eiij asj'
+x2=: 'No name, single char'
+x3=: 'num array0';i.3 4
+x4=: ('num array1';i.3 4),:'num array2';i.2 2
+x5=: ('num array3';i.3 4),:'boxnum array';<<"0 i.2 2
+x6=: ('num array4';i.3 4),:'boxchr array';<4 2$'abcd';'kdisd';'eiij asj'
 x7=: ('';i.3 4),:'boxmix array';<4 2$'abcd';54;'eiij';2;4.4
 x8=: 'data 1';'data 2'
 x9=: 4 2$'abcd';54;'eiij';2;4.4
 x10=: ('numarr';i.3 4),: 'boxchr';'jsadla'
-If sheet name is not present or empty string the use default.
+x11=: (x3,x4,x5,x6,x7,x10)
 )
+
 Note 'tests for writesheets'
 x1 writesheets jpath '~temp/tarawsht1.xls'
-x3 writesheets jpath '~temp/tarawsht2.xls'
-x4 writesheets jpath '~temp/tarawsht3.xls'
-x5 writesheets jpath '~temp/tarawsht4.xls'
-x6 writesheets jpath '~temp/tarawsht5.xls'
-x7 writesheets jpath '~temp/tarawsht6.xls'
-x8 writesheets jpath '~temp/tarawsht7.xls'
-x9 writesheets jpath '~temp/tarawsht8.xls'
-x10 writesheets jpath '~temp/tarawsht9.xls'
+x2 writesheets jpath '~temp/tarawsht2.xls'
+x3 writesheets jpath '~temp/tarawsht3.xls'
+x4 writesheets jpath '~temp/tarawsht4.xls'
+x5 writesheets jpath '~temp/tarawsht5.xls'
+x6 writesheets jpath '~temp/tarawsht6.xls'
+x7 writesheets jpath '~temp/tarawsht7.xls'
+x8 writesheets jpath '~temp/tarawsht8.xls'
+x9 writesheets jpath '~temp/tarawsht9.xls'
+x10 writesheets jpath '~temp/tarawsht10.xls'
+x11 writesheets jpath '~temp/tarawsht11.xls'
 )
 
 NB. =========================================================
