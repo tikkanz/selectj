@@ -10,7 +10,7 @@ NB. x is: One of;
 NB.       literal (data to write in topleft cell of Sheet1)
 NB.       numeric matrix (data to write to Sheet1)
 NB.       boxed (numeric/literal/mixed) matrix (data to write to Sheet1)
-NB.       2-column matrix, 
+NB.       2-column matrix,
 NB.          Sheetnames in 1st col (literal)
 NB.          Associated data formats (above) for sheetnames
 NB. if <sheetname(s)> not given then defaults used default
@@ -77,11 +77,11 @@ writeShtdat=: 4 : 0
     writenumber__x 0 0;y
   else.
     as=. ischar &> y
-    blks=. blocksx as
+    blks=. blocks as
     tls=. {.0 2|: blks
     dat=: blks <;.0 y NB. blocks of char
     writestring__x"1 (<"1 tls),.dat
-    blks=. blocksx -.as
+    blks=. blocks -.as
     tls=. {.0 2|: blks
     dat=. blks ([:<>);.0 y  NB. blocks of non-char
     writenumber__x"1 (<"1 tls),.dat
@@ -130,14 +130,6 @@ indices=: 4$.$.       NB. faster leaner?
 isrowblks=: >/@(+/^:(#&$)"_1) NB. are blocks row oriented
 
 NB. ---------------------------------------------------------
-NB. tacit solution (works best for row-oriented blocks)
-tls=: [: indices firstones"1 NB. topleft index of blocks of 1s
-brs=: [: indices lastones"1  NB. bottomright index of blocks of 1s
-
-shapes=: [: >: brs - tls  NB. shapes of blocks of 1s
-blocks=: tls ,:"1 shapes  NB. blocks of 1s
-
-NB. ---------------------------------------------------------
 NB. explicit solution (chooses best block orientation)
 blocksx=: 3 : 0
   fo=. (firstones ,: firstones"1) y
@@ -161,16 +153,28 @@ tls -.tst1        NB. list of topleft of blocks of 0s
 )
 
 NB. =========================================================
-NB. Attempt 2d version for creating blocks
+NB. 2d version for creating blocks
 
-tl=: (firstones *. firstones"1)  NB. topright
-br=: (lastones *. lastones"1)    NB. bottomleft
+NB. RE Boss better solution programming forum June 2008
+tlc=: [: I. firstones      NB. column indices of toplefts
+brc=: [: I. lastones       NB. column indices of bottomrights
+tlbrc=: <@(tlc ,. brc)"1   NB. box by row
+bpr=: i.@# ,:"0 1&.> tlbrc NB. laminate row indices
 
-Note 'testing'
-('tst1';'firstones';'lastones';'firstones"1';'lastones"1'),:(;firstones;lastones;firstones"1;lastones"1) tst1
-indices tl tst1
-indices br tst1
+mtch=: 4 : 0
+'s t'=.<"0 x (](#~; (#~-.)) e.~&:(<@{:"2))&> {.y
+t=. t((,&.>{:)`[)@.(1=#@])y
+s=. x([:(<@{:"2 ({:@{.@{:(<0 1)} {.)/.]) ,)&> s
+s;t
 )
+
+NB. rowwise blocks (topleft,:bottomright)
+blcks=: [:/:~ [:|:"2 [:,&>/ [:mtch/ bpr
+blcks=:       [:|:"2 [:,&>/ [:mtch/ bpr
+blcks=:       [:|:"2 [:;    [:mtch/ bpr
+
+tlshape=: ([,: (-~>:))/"_1 NB. converts tl,:br to tl,:shape
+blocks=: tlshape@:blcks  NB. accept just rowwise blocks
 
 NB. =========================================================
 NB. test data
