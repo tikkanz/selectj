@@ -1,4 +1,5 @@
 NB. read/write comma-separated value data (*.csv) files
+NB. supports other user-specified field and string delimiters.
 
 require 'files strings'
 cocurrent 'z'
@@ -10,7 +11,7 @@ extcsv=: , #&'.csv' @ (0: = '.'"_ e. (# | i:&PATHSEP_j_) }. ])
 NB. =========================================================
 NB.*appendcsv v Appends an array to a csv file
 NB. result: number of bytes appended or _1 if unsuccessful
-NB. form: dat appendcsv file[;fd[sd1[sd2]]]
+NB. form: dat appendcsv file[;fd[,sd1[,sd2]]]
 NB. y is: literal or 2-item list of boxed literals
 NB.       1{ filename of file to append dat to
 NB.       2{ optional delimiters. Default is ',""'
@@ -23,7 +24,7 @@ appendcsv=: 4 : 0
 
 NB.*quote v Enclose string(s) in quotes (doubling internal quotes as needed).
 NB. result: quoted string
-NB. form: [sd1[sd2]] quote strng(s)
+NB. form: [sd1[,sd2]] quote strng(s)
 NB. y is: string or boxed strings to quote
 NB. x is: optional quote type. Default is ''''''
 NB.       1{ is (start) string delimiter (sd1)
@@ -38,7 +39,7 @@ quote=: 3 : 0
 
 NB.*makecsv v Makes a CSV string from an array
 NB. returns: CSV string
-NB. form: [fd[sd1[sd2]]] makecsv array
+NB. form: [fd[,sd1[,sd2]]] makecsv array
 NB. y is: a numeric or boxed array
 NB. x is: optional delimiters. Default is ',""'
 NB.       1{ is the field delimiter (fd)
@@ -81,7 +82,7 @@ makecsv=: 3 : 0
     dat=. ($y)$dat
     delim=. 0{ delim
   end.
-  NB. make an expansion vector and open space between cols
+  NB. make an expansion vector to open space between cols
   d=. 0= 4!:0 <'dlmidx' NB. are there char cols that need quoting
   c=. 0>. (2*d)+ <:+: {:$dat NB. total num columns incl delims
   b=. c $d=0 1 NB. insert empty odd cols if d else even
@@ -90,7 +91,7 @@ makecsv=: 3 : 0
   ;,dat,.<LF  NB. add EOL & vectorise
 )
 
-NB. chopcsv v Box fields in delimited string
+NB. chopcsv v Box delimited fields in string
 chopcsv=: 3 : 0
   ',""' chopcsv y
   :
@@ -108,8 +109,8 @@ chopcsv=: 3 : 0
   b=. dat e. fd
   c=. ~:/\dat=sd
   fmsk=. b>c NB. end of fields
-  smsk=. sd ([: (> (0: , }:)) =) dat
-  smsk=. -. smsk +. (sd,fd) E. dat
+  smsk=. sd ([: (> (0: , }:)) =) dat NB. first in group of sds
+  smsk=. -. smsk +. (sd,fd) E. dat   NB. or previous to fd
   dat=. smsk#dat  NB. compress out string delims
   fmsk=. smsk#fmsk
   fmsk <;._2 dat  NB. box
@@ -117,7 +118,7 @@ chopcsv=: 3 : 0
 
 NB. =========================================================
 NB.*fixcsv v Convert csv data into J array
-NB. form: [fd[sd1[sd2]]] fixcsv dat
+NB. form: [fd[,sd1[,sd2]]] fixcsv dat
 NB. result: array of boxed literals
 NB. y is: delimited string
 NB. x is: optional delimiters. Default is ',""'
@@ -143,7 +144,7 @@ fixcsv=: 3 : 0
 
 NB. =========================================================
 NB.*readcsv v Reads csv file into a boxed array
-NB. form: [fd[sd1[sd2]]] readcsv file
+NB. form: [fd[,sd1[,sd2]]] readcsv file
 NB. result: array of boxed literals
 NB. y is: filename of file to read from
 NB. x is: optional delimiters. Default is ',""'
@@ -160,14 +161,15 @@ readcsv=: 3 : 0
 
 NB. =========================================================
 NB.*writecsv v Writes an array to a csv file
-NB. form: dat  writecsv file[;fd[sd1[sd2]]]
+NB. form: dat  writecsv file[;fd[,sd1[,sd2]]]
 NB. result: number of bytes written (_1 if write error)
 NB. form: dat appendcsv file[;delim]
 NB. y is: literal or 2-item list of boxed literals
 NB.       1{ filename of file to write dat to
 NB.       2{ optional delimiters. Default is ',""'
-NB.          fd field delimiter, sd1 & sd2 string delimiters
+NB.          fd:field delimiter, sd1 & sd2:string delimiters
 NB. x is: numeric or boxed array of rank 2
+NB. eg: (i.3 4) writecsv (jpath ~temp/test);';{}'
 NB. An existing file will be written over.
 writecsv=: 4 : 0
   'fln delim'=. 2{.!.(<',') boxopen y
