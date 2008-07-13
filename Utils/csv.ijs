@@ -12,7 +12,7 @@ NB. y is: literal or 2-item list of boxed literals
 NB.       1{ filename of file to append dat to
 NB.       2{ optional delimiters. Default is ',""'
 NB.          fd:field delimiter, sd1 & sd2:string delimiters
-NB. x is: numeric or boxed array
+NB. x is: a J array
 appendcsv=: 4 : 0
   'fln delim'=. 2{.!.(<',') boxopen y
   dat=. delim makecsv x
@@ -31,7 +31,7 @@ chopcsv=: 3 : 0
   fd=. 1{.x
   if. =/sd do. sd=. {.sd
   else. NB. replace diff start and end delims with single
-    s=. {.('|'=fd){ '|`'  NB. choose single sd 
+    s=. {.('|'=fd){ '|`'  NB. choose single sd
     dat=. dat rplc ({.sd);s;({:sd);s
     sd=. s
   end.
@@ -68,7 +68,7 @@ fixcsv=: 3 : 0
   if. =/sd do.
     x=. x,{.sd
   else.
-    s=. {.('|'={.x){ '|`'  NB. choose single sd 
+    s=. {.('|'={.x){ '|`'  NB. choose single sd
     y=. y rplc ({.sd);s;({:sd);s
     x=. x,s
   end.
@@ -82,7 +82,7 @@ NB. =========================================================
 NB.*makecsv v Makes a CSV string from an array
 NB. returns: CSV string
 NB. form: [fd[,sd1[,sd2]]] makecsv array
-NB. y is: a numeric or boxed array
+NB. y is: an array
 NB. x is: optional delimiters. Default is ',""'
 NB.       1{ is the field delimiter (fd)
 NB.       2{ is (start) string delimiter (sd1)
@@ -91,13 +91,13 @@ NB. Arrays are flattened to a max rank of 2.
 makecsv=: 3 : 0
   ',""' makecsv y
   :
-  dat=.y=. ,/^:(0>. _2+ [:#$) y NB. flatten to max rank 2
+  dat=. y=. ,/^:(0>. _2+ [:#$) y NB. flatten to max rank 2
+  dat=. y=. ,:^:(2<. 2- [:#$) y NB. raise to min rank 2
   if. 1=#x do. sd=. '""'
   else. sd=. 2$}.x end.
   fd=. {.x
   NB. delim=. ',';',"';'",';'","';'';'"';'"'
   delim=. fd ; (fd,{.sd) ; (({:sd),fd) ; (({:sd),fd,{.sd) ; '' ; ({.sd) ; {:sd
-  if. 2>#$dat do. arry=. ,:dat end. NB. handle vector
   ischar=. ] e. 2 131072"_
   isreal=. ] e. 1 4 8 64 128"_
   
@@ -111,6 +111,8 @@ makecsv=: 3 : 0
       idx=. I. -. type
       if. #idx do. NB. format numeric cols
         dat=. (8!:0 tmp{dat) (tmp=. <a:;idx)}dat
+      elseif. 0=L.dat do. NB. y is literal array
+        dat=. ,each 8!:2 each dat
       end.
       dlmidx=. 2#.\ type
       dlmidx=. _1|.dlmidx, 4&+@(2 1&*) ({:,{.) type
@@ -130,7 +132,9 @@ makecsv=: 3 : 0
   c=. 0>. (2*d)+ <:+: {:$dat NB. total num columns incl delims
   b=. c $d=0 1 NB. insert empty odd cols if d, else even
   dat=. b #^:_1"1 dat  NB. expand dat
-  dat=. delim (<a:;I.-.b)}dat  NB. amend with delims
+  if. #idx=. I.-.b do.
+    dat=. delim (<a:;idx)}dat  NB. amend with delims
+  end.
   ;,dat,.<LF  NB. add EOL & vectorise
 )
 
@@ -176,7 +180,7 @@ NB. y is: literal or 2-item list of boxed literals
 NB.       1{ filename of file to write dat to
 NB.       2{ optional delimiters. Default is ',""'
 NB.          fd:field delimiter, sd1 & sd2:string delimiters
-NB. x is: numeric or boxed array
+NB. x is: an array
 NB. eg: (i.2 3 4) writecsv (jpath ~temp/test);';{}'
 NB. An existing file will be written over.
 writecsv=: 4 : 0
