@@ -139,13 +139,14 @@ makecsv=: 3 : 0
 )
 
 NB. =========================================================
-NB.*quote v Enclose string(s) in quotes (doubling internal quotes as needed).
+NB.*quote v Encloses string in quotes
 NB. result: quoted string
 NB. form: [sd1[,sd2]] quote strng(s)
 NB. y is: string or boxed strings to quote
 NB. x is: optional quote type. Default is ''''''
 NB.       1{ is (start) string delimiter (sd1)
 NB.       2{ is end string delimiter (sd2)
+NB. Internal quotes are doubled if required.
 quote=: 3 : 0
   '''''' quote y
   :
