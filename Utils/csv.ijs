@@ -135,7 +135,7 @@ makecsv=: 3 : 0
   if. #idx=. I.-.b do.
     dat=. delim (<a:;idx)}dat  NB. amend with delims
   end.
-  ;,dat,.<LF  NB. add EOL & vectorise
+  ;,dat,.{.(1<#$dat)#<LF NB. add EOL if dat not empty & vectorise
 )
 
 NB. =========================================================
