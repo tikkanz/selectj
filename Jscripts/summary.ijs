@@ -138,9 +138,9 @@ Note 'test data for plotsummry'
    Y=: Y,8- each {.Y
    Y=: Y,3#a:
    Y=: (a:) (<1 0)}Y
-   Y=: (10%~3 5 7)+each"1 Y
+   Y=: (0.1*3 5 7)+each"1 Y
 
-((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');>'My first one';'My second version';'Base case' )plotsummry X;<Y
+((>'Fleece weight 12';'Live weight 8');(>'phen';'genD');(>'My first one';'My second version';'Base case');'')plotsummry X;<Y
 )
 
 NB.*plotsummry v  plots traits by infotypes for one or more caseinstance summaries
@@ -202,9 +202,13 @@ plotsummry=: 3 : 0
   data=. ,.each/"1 (<X),. <"_1 Y
   data=. msksnull# each data
   pd ,.each/"1 opts ,. <"1 each data
-  NB. pd 'isi'
-  NB. pd 'save png'
-  pd 'pdf ',(,fnme),' 600 400'
+  if. # fnme=.,fnme do.
+    NB. pd 'isi'
+    NB. pd 'save png'
+    pd 'pdf ',fnme,' 600 400'
+  else.
+    pd 'show'
+  end.
 )
 
 NB.*captureIsi v capture the contents of an isigraph form
