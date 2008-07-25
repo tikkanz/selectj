@@ -121,8 +121,8 @@ makecsv=: 3 : 0
   catch.  NB. handle mixed-type columns
     dat=. ,dat
     t=. (+:@:isreal + ischar) 3!:0&> dat
-    dat=. (sd quote idx{dat)(idx=. I. 1=t)}dat NB. quote char
-    dat=. (8!:0 idx{dat) (idx=. I. 2=t)}dat    NB. format numeric
+    dat=. (sd quote idx{dat)(idx=. I. 1=t)}dat NB. quote char cells
+    dat=. (8!:0 idx{dat) (idx=. I. 2=t)}dat    NB. format numeric cells
     dat=. (":@>@{. &.> idx{dat)(idx=. I. 0=t)}dat NB. handle complex or boxed
     dat=. ($y)$dat
     delim=. 0{ delim
@@ -136,6 +136,25 @@ makecsv=: 3 : 0
     dat=. delim (<a:;idx)}dat  NB. amend with delims
   end.
   ;,dat,.{.(1<#$dat)#<LF NB. add EOL if dat not empty & vectorise
+)
+
+NB. =========================================================
+NB.*makenum v Converts cells in array of boxed literals to numeric where possible
+NB. returns: numeric array or array of boxed literals and numbers
+NB. form: [err] makenum array
+NB. y is: an array of boxed literals
+NB. x is: optional numeric error code. Default is _9999
+makenum=: 3 : 0
+  _9999 makenum y
+  :
+  dat=. , x&". &.> y=. boxopen y
+  idx=. I. x&e.@> dat
+  if. #idx do.
+    dat=. (idx{,y) idx}dat NB. amend non-numeric cells
+  else.
+    dat=. >dat NB. unbox to list if all numeric
+  end.
+  ($y)$dat
 )
 
 NB. =========================================================
