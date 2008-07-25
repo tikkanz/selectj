@@ -7,11 +7,11 @@ cocurrent 'z'
 NB. =========================================================
 NB.*appendcsv v Appends an array to a csv file
 NB. result: number of bytes appended or _1 if unsuccessful
-NB. form: dat appendcsv file[;fd[,sd1[,sd2]]]
+NB. form: dat appendcsv file[;fd[,sd0[,sd1]]]
 NB. y is: literal or 2-item list of boxed literals
-NB.       1{ filename of file to append dat to
-NB.       2{ optional delimiters. Default is ',""'
-NB.          fd:field delimiter, sd1 & sd2:string delimiters
+NB.       0{ filename of file to append dat to
+NB.       1{ optional delimiters. Default is ',""'
+NB.          fd:field delimiter, sd0 & sd1:string delimiters
 NB. x is: a J array
 appendcsv=: 4 : 0
   'fln delim'=. 2{.!.(<',') boxopen y
@@ -53,13 +53,13 @@ extcsv=: , #&'.csv' @ (0: = '.'"_ e. (# | i:&PATHSEP_j_) }. ])
 
 NB. =========================================================
 NB.*fixcsv v Convert csv data into J array
-NB. form: [fd[,sd1[,sd2]]] fixcsv dat
+NB. form: [fd[,sd0[,sd1]]] fixcsv dat
 NB. result: array of boxed literals
 NB. y is: delimited string
 NB. x is: optional delimiters. Default is ',""'
-NB.       1{ field delimiter (fd)
-NB.       2{ (start) string delimiter (sd1)
-NB.       3{ end string delimiter (sd2)
+NB.       0{ field delimiter (fd)
+NB.       1{ (start) string delimiter (sd0)
+NB.       2{ end string delimiter (sd1)
 fixcsv=: 3 : 0
   ',' fixcsv y
   :
@@ -81,12 +81,12 @@ fixcsv=: 3 : 0
 NB. =========================================================
 NB.*makecsv v Makes a CSV string from an array
 NB. returns: CSV string
-NB. form: [fd[,sd1[,sd2]]] makecsv array
+NB. form: [fd[,sd0[,sd1]]] makecsv array
 NB. y is: an array
 NB. x is: optional delimiters. Default is ',""'
-NB.       1{ is the field delimiter (fd)
-NB.       2{ is (start) string delimiter (sd1)
-NB.       3{ is end string delimiter (sd2)
+NB.       0{ is the field delimiter (fd)
+NB.       1{ is (start) string delimiter (sd0)
+NB.       2{ is end string delimiter (sd1)
 NB. Arrays are flattened to a max rank of 2.
 makecsv=: 3 : 0
   ',""' makecsv y
@@ -141,29 +141,29 @@ makecsv=: 3 : 0
 NB. =========================================================
 NB.*quote v Encloses string in quotes
 NB. result: quoted string
-NB. form: [sd1[,sd2]] quote strng(s)
+NB. form: [sd0[,sd1]] quote strng(s)
 NB. y is: string or boxed strings to quote
 NB. x is: optional quote type. Default is ''''''
-NB.       1{ is (start) string delimiter (sd1)
-NB.       2{ is end string delimiter (sd2)
+NB.       0{ is (start) string delimiter (sd0)
+NB.       1{ is end string delimiter (sd1)
 NB. Internal quotes are doubled if required.
 quote=: 3 : 0
   '''''' quote y
   :
   if. 0<L. y do. x&quote &.> y return. end.
-  if. 1=#x do. x=. 2$x end.
-  (}:x),((1+(y e. x)*. +./'''"'e. x)#y),}.x
+  if. -.(#x)e. 0 2 do. x=. 2$x end.
+  (}:x),((>: (y e. x) *. =/x)#y),}.x
 )
 
 NB. =========================================================
 NB.*readcsv v Reads csv file into a boxed array
-NB. form: [fd[,sd1[,sd2]]] readcsv file
+NB. form: [fd[,sd0[,sd1]]] readcsv file
 NB. result: array of boxed literals
 NB. y is: filename of file to read from
 NB. x is: optional delimiters. Default is ',""'
-NB.       1{ field delimiter (fd)
-NB.       2{ (start) string delimiter (sd1)
-NB.       3{ end string delimiter (sd2)
+NB.       0{ field delimiter (fd)
+NB.       1{ (start) string delimiter (sd0)
+NB.       2{ end string delimiter (sd1)
 readcsv=: 3 : 0
   ',' readcsv y
   :
@@ -174,13 +174,13 @@ readcsv=: 3 : 0
 
 NB. =========================================================
 NB.*writecsv v Writes an array to a csv file
-NB. form: dat writecsv file[;fd[,sd1[,sd2]]]
+NB. form: dat writecsv file[;fd[,sd0[,sd1]]]
 NB. result: number of bytes written (_1 if write error)
 NB. form: dat appendcsv file[;delim]
 NB. y is: literal or 2-item list of boxed literals
-NB.       1{ filename of file to write dat to
-NB.       2{ optional delimiters. Default is ',""'
-NB.          fd:field delimiter, sd1 & sd2:string delimiters
+NB.       0{ filename of file to write dat to
+NB.       1{ optional delimiters. Default is ',""'
+NB.          fd:field delimiter, sd0 & sd1:string delimiters
 NB. x is: an array
 NB. eg: (i.2 3 4) writecsv (jpath ~temp/test);';{}'
 NB. An existing file will be written over.
