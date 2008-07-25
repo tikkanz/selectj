@@ -120,10 +120,10 @@ makecsv=: 3 : 0
     end.
   catch.  NB. handle mixed-type columns
     dat=. ,dat
-    t=. (+:@:isreal + ischar) 3!:0&> dat
-    dat=. (sd quote idx{dat)(idx=. I. 1=t)}dat NB. quote char cells
+    t=. #. ((0<#@$) , (isreal,.ischar)@:(3!:0)) &> dat NB. cell data type
+    dat=. ((#idx)$sd quote idx{dat)(idx=. I. t e. 1 5)}dat NB. quote char cells
     dat=. (8!:0 idx{dat) (idx=. I. 2=t)}dat    NB. format numeric cells
-    dat=. (":@>@{. &.> idx{dat)(idx=. I. 0=t)}dat NB. handle complex or boxed
+    dat=. (":@:,@:> &.> idx{dat)(idx=. I. t e. 0 4 6)}dat NB. handle complex, boxed, numeric rank>0
     dat=. ($y)$dat
     delim=. 0{ delim
   end.
