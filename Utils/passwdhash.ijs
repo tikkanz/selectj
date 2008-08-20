@@ -15,7 +15,7 @@ randPassword=: 3 : 0
 :
   if. isdefseed'' do. randomize'' end.
   len=. (*#y){ 8,y  NB. default length is 8
-  len (]{~ [:?[$ [:#]) x
+  len ((?@$ #) { ]) x
 )
 
 NB.*isdefseed v Checks if random seed has been reset from J6.01 default.
