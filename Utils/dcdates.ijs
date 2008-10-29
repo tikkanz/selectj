@@ -257,7 +257,10 @@ dIStartST=: 3 : 0
   end.
 )
 
-NB.*dJulian v convert a Gregorian-style date (YYYYMMDD) to a "Julian Day Number".
+NB.*dJulian v convert a Gregorian-style date (YYYYMMDD) to a "Julian Day Number"
+NB. eg: 0 dJulian 2008 10 29 , 2004 4 4 ,: 1901 1 1
+NB. eg: 1 dJulian 20081029 20040404 19010101
+NB. eg:   dJulian 6!:0''
 NB. Dates may optionally include a "time" portion to produce a "timestamp"
 NB. value.  Standard integers are extended to allow non-integer
 NB. values in the format (YYYYMMDD.HHMMSSTTT).  If this optional
