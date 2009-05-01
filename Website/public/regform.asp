@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
 <!-- InstanceBeginEditable name="pgtitle" -->
-<title>AnimalSim</title>
+<title>AnimalSim Live</title>
 <!-- InstanceEndEditable -->
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
@@ -16,7 +16,7 @@
 <body onload="">
 <div id="masthead">
   <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
-  <h1 id="siteName"><!-- InstanceBeginEditable name="SiteName" -->AnimalSim<!-- InstanceEndEditable --></h1> 
+  <h1 id="siteName"><!-- InstanceBeginEditable name="SiteName" -->AnimalSim Live<!-- InstanceEndEditable --></h1> 
   <div id="globalNav"> 
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
@@ -26,9 +26,9 @@
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
 
-<h2 id="pageName">Create AnimalSim user account </h2>
+<h2 id="pageName">Create AnimalSim Live user account </h2>
 <div class="story">
-	<p>Please complete the form below to create a new  AnimalSim user account.<br />
+	<p>Please complete the form below to create a new AnimalSim Live user account.<br />
     If you  already have an account, please <a href="default.jhp" tabindex="9" >return to the login page</a>.</p>
 	 <p class="valerr" style="display:inline"><%= usernameErr %></p>
   </div>

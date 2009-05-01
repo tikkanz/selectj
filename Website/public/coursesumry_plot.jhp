@@ -12,7 +12,11 @@ load '~.CGI/code/selectj.ijs'
   fpng=. fpth,'sumryplot.png'
   NB. convert to png using ghostscript
   _1 fork '"c:\Program Files\gs\gs8.61\bin\gswin32c.exe" -dSAFER -dBATCH -dNOPAUSE -r96 -q -sDEVICE=png16m -sOutputFile=',fpng,' ',fpdf
-  transfer fpng
+  NB. redirect to coursesumry if csinst is invalid for enrolment else transfer image
+  isvld=. -. 0 e. validCaseInstances ;csinsts NB. is caseinstance valid for enrolment?
+  res=. isvld{:: 'coursesumry.jhp';fpng
+  (redirect`transfer@.isvld) res 
+
 NB.   image=. readimg fpng   NB. read png file
 NB. ContentType'image/png' [ Expires 0
 NB.   stdout image putimg 'png'  NB. write to stdout

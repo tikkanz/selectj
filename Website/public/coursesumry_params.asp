@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
 
-<title>AnimalSim</title>
+<title>AnimalSim Live</title>
 
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>

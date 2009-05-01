@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
 <!-- InstanceBeginEditable name="pgtitle" -->
-<title>AnimalSim</title>
+<title>AnimalSim Live</title>
 <!-- InstanceEndEditable -->
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
@@ -16,7 +16,7 @@
 <body onload="">
 <div id="masthead">
   <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
-  <h1 id="siteName"><!-- InstanceBeginEditable name="SiteName" -->AnimalSim<!-- InstanceEndEditable --></h1> 
+  <h1 id="siteName"><!-- InstanceBeginEditable name="SiteName" -->AnimalSim Live<!-- InstanceEndEditable --></h1> 
   <div id="globalNav"> 
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
@@ -25,11 +25,11 @@
 <!-- InstanceBeginEditable name="pageBase" --><!-- InstanceEndEditable -->
 <div id="contentNoNav"> 
   
-  <h2 id="courseName"><!-- InstanceBeginEditable name="page name" -->Welcome to the AnimalSim web interface<!-- InstanceEndEditable --></h2>
+  <h2 id="pageName"><!-- InstanceBeginEditable name="page name" -->Welcome to AnimalSim Live<!-- InstanceEndEditable --></h2>
   <div class="story">
     <!-- InstanceBeginEditable name="Story" -->
-	  <p>Using AnimalSim you can <em>investigate genetic selection</em>. Create your own breeding population, experiment with different selection objectives and strategies.</p>
-	  <p>The<em> first time</em> you visit the site you will need to <a href="register.jhp" tabindex="4">create a new user account</a>. This enables AnimalSim to keep track of your population between sessions.</p>
+	  <p>AnimalSim Live is a web interface for the program <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim</a>. Using AnimalSim you can <em>investigate genetic selection</em>. Create your own breeding population, experiment with different selection objectives and strategies.</p>
+	  <p>The<em> first time</em> you visit the site you will need to <a href="register.jhp" tabindex="4">create a new user account</a>. This enables AnimalSim Live to keep track of your population between sessions.</p>
   	  <p>If already have you have a user account, you can log in below.</p>
 	  <p style="color:red; font-weight:bold">Username and password do not match. The username you entered was &quot;<%= uname %>&quot;. </p>
 	<!-- InstanceEndEditable -->

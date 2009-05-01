@@ -25,7 +25,7 @@
 <!-- InstanceBeginEditable name="pageBase" --><!-- InstanceEndEditable -->
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <h2 id="courseName"><!-- TemplateBeginEditable name="page name" -->Page Name<!-- TemplateEndEditable --></h2>
+  <h2 id="pageName"><!-- TemplateBeginEditable name="page name" -->Page Name<!-- TemplateEndEditable --></h2>
   <div class="story">
     <!-- TemplateBeginEditable name="Story" -->
     <h3>Story Title</h3>

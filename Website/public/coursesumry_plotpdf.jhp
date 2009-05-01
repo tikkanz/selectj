@@ -2,5 +2,8 @@
   csinsts=. 1 qparam 'ciids'
   fpth=. 'sumryfolderpath' getFnme ;{.csinsts
   fpdf=. fpth,'sumryplot.pdf'
-  transfer fpdf
+  NB. redirect to coursesumry if csinst is invalid for enrolment else transfer image
+  isvld=. -. 0 e. validCaseInstances csinsts NB. is caseinstance valid for enrolment?
+  res=. isvld{:: 'coursesumry.jhp';fpdf
+  (redirect`transfer@.isvld) res
 

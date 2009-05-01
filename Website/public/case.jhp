@@ -8,7 +8,7 @@ try.
 	   ('action';'home') redirect 'course.jhp'
 	   return.
      end.
-     ciid=. getCaseInstance uofcsid     
+     ciid=. getCaseInstance uofcsid
   end.
   select. action
     case. 'breed' do.

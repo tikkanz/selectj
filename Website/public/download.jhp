@@ -1,8 +1,18 @@
 load '~.CGI/code/selectj.ijs'
 
-ftype=.qparam 'filetype'  NB. file to read
+ftype=. qparam 'filetype'  NB. file to read
 fnme=. qparam 'filename'   NB. default name for user to save as
-ciid=. qparam 'ciid'
+ciid=. 0". qparam 'ciid'   NB. convert literal to numeric, leave empty
 ciid=. ('caseinstanceid' getInfo validCase)^:(#=0:) ciid
-dat=. ftype getInfo ciid
-dat transfer fnme;fnme
+
+NB. redirect to case if invalid user/offering/case else download file
+NB.! better to redirect to calling url?
+isvld=. -. 0 e. tmp=. validCaseInstances ciid NB. is ciid valid for enrolment?
+((":ciid),LF,(":tmp),LF,":validEnrolment'') fwrites 'c:\D\Web\SelectJ\userpop\tikka\jhp.log'
+dat=. (ftype getInfo ])^:(isvld) ciid NB. only get file data if valid
+dat=. isvld{:: '';dat
+res=. isvld{:: 'case.jhp';<fnme;fnme
+
+NB.dat transfer fnme;fnme  NB. if valid
+NB. '' redirect 'case.jhp' NB. if not valid
+dat (redirect`transfer@.isvld) res

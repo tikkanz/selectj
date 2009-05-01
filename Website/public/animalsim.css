@@ -405,27 +405,6 @@ font-weight: normal;
 	vertical-align: middle;
 }
 
-
-/************* #search styles ***************/
-
-#search{
-	padding: 5px 0px 5px 10px;
-	border-bottom: 1px solid #cccccc;
-	font-size: 90%;
-}
-
-#search form{
- margin: 0px;
- padding: 0px;
-}
-
-#search label{
-	display: block;
-	margin: 0px;
-	padding: 0px;
-}
-
-
 /*********** #navBar link styles ***********/
 
 #navBar a:link,#navBar a:visited,#navBar a:hover {
@@ -445,71 +424,31 @@ font-weight: normal;
 html>body #navBar dd {border-bottom: none;}
 
 
-/*********** #userMenu styles ***********/
+/*********** #userMenu & #adminMenu styles ***********/
 
-#userMenu{
+#userMenu, #adminMenu{
 	position: relative;
 	margin: 0;
 	padding: 15px 0px 0px 0px;
 	border-bottom: 1px solid #ccc;
 	font-size: 90%;
 }
-
-#userMenu dt{
-	padding: 0px 0px 1px 10px;
-	font-weight:bold;
-	color:#668800;
-}
-
-#userMenu h3{
-	padding: 10px 0px 2px 20px;
-}
-
-#userMenu a:link{
-	padding: 2px 0px 2px 20px;
-	border-top: 1px solid #ccc;
-	width: 100%;
-  voice-family: "\"}\""; 
-  voice-family:inherit;
-	width: auto;
-}
-
-#userMenu a:visited{
-	border-top: 1px solid #ccc;
-	padding: 2px 0px 2px 20px;
-}
-
-#userMenu a:hover{
-	border-top: 1px solid #ccc;
-	background-color: #ddd;
-	padding: 2px 0px 2px 20px;
-}
-
-/*********** #adminMenu styles ***********/
 
 #navBar #adminMenu{
 	background-color: #ffdd77;
 }
 
-#adminMenu{
-	position: relative;
-	margin: 0;
-	padding: 15px 0px 0px 0px;
-	border-bottom: 1px solid #ccc;
-	font-size: 90%;
-}
-
-#adminMenu dt{
+#userMenu dt, #adminMenu dt{
 	padding: 0px 0px 1px 10px;
 	font-weight:bold;
 	color:#668800;
 }
 
-#adminMenu h3{
+#userMenu h3, #adminMenu h3{
 	padding: 10px 0px 2px 20px;
 }
 
-#adminMenu a:link{
+#userMenu a:link, #adminMenu a:link{
 	padding: 2px 0px 2px 20px;
 	border-top: 1px solid #ccc;
 	width: 100%;
@@ -518,55 +457,15 @@ html>body #navBar dd {border-bottom: none;}
 	width: auto;
 }
 
-#adminMenu a:visited{
+#userMenu a:visited, #adminMenu a:visited{
 	border-top: 1px solid #ccc;
 	padding: 2px 0px 2px 20px;
 }
 
-#adminMenu a:hover{
+#userMenu a:hover, #adminMenu a:hover{
 	border-top: 1px solid #ccc;
 	background-color: #ddd;
 	padding: 2px 0px 2px 20px;
-}
-
-
-
-/*********** .relatedLinks styles ***********/
-
-.relatedLinks{
-	margin: 0px;
-	padding: 0px 0px 10px 10px;
-	font-size: 90%;
-}
-
-.relatedLinks h3{
-	padding: 10px 0px 2px 0px;
-}
-
-
-/************** #advert styles **************/
-
-#advert{
-	padding: 10px 0px 0px 10px;
-	font-size: 80%;
-	border-top: 1px solid #cccccc;
-}
-
-#advert img{
-	display: block;
-}
-
-
-/************** #headlines styles **************/
-
-#headlines{
-	margin: 0px;
-	padding: 10px 0px 20px 10px;
-	font-size: 80%;
-}
-
-#headlines p{
-	padding: 5px 0px 5px 0px;
 }
 
 /************** #Upload/Download Forms **************/

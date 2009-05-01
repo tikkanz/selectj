@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta content="Ric Sherlock" name="author" />
 <!-- InstanceBeginEditable name="pgtitle" -->
-<title>AnimalSim</title>
+<title>AnimalSim Live</title>
 <!-- InstanceEndEditable -->
 <script language="JavaScript" src="interface.js" type="text/javascript">
 </script>
@@ -16,19 +16,19 @@
 <body onload="">
 <div id="masthead">
   <div id="logo"><a href="default.jhp"><img src="img/deltag.png" alt="AnimalSim home" width="91" height="55" border="0" /></a></div> 
-  <h1 id="siteName">AnimalSim  - <span class="small"><%=pp_fname%> <%=pp_lname%> logged in</span></h1> 
+  <h1 id="siteName">AnimalSim Live - <span class="small"><%=pp_fname%> <%=pp_lname%> logged in</span></h1> 
   <div id="globalNav"> 
   	<a href="http://www.massey.ac.nz" target="_blank">Massey University </a> | <a href="http://ivabs.massey.ac.nz" target="_blank">IVABS</a> | <a href="http://webct-ce.massey.ac.nz/webct/homearea/homearea?" target="_blank">Massey WebCT courses</a> | <a href="http://animalsim.massey.ac.nz/" target="_blank">AnimalSim website</a>
   </div> 
 </div> 
-<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <span class="current">myCourses</span><!-- InstanceEndEditable --> </div>
+<!-- end masthead --><div id="breadCrumb"><!-- InstanceBeginEditable name="breadCrumb" --><a href="default.jhp?action=logout">Logout</a> &gt; <span class="current">Courses</span><!-- InstanceEndEditable --> </div>
 <!-- InstanceBeginEditable name="pageBase" --><!-- InstanceEndEditable -->
 <div id="contentNoNav"> 
   <!-- InstanceBeginEditable name="pgContent" -->
-  <h2 id="pageName">Hi <%= pp_fname %> <%= pp_lname %></h2>
   <div class="story">
-        <table cellspacing=0 width=78%><tr class=rh>
-      <th>myCourses</th> 
+    <h3>Welcome <%= pp_fname %> ...</h3>
+     <table cellspacing=0 width=78%><tr class=rh>
+      <th>Courses</th> 
       </tr>
       <% for_idx. i.#of_id do. %><tr class="r<%=,":2|idx%>">
         <td class="objlist"><a href="course.jhp?of_id=<%= idx{of_id %>"><%= idx{cr_code %> <%= idx{cr_name %></a> <span class="coursecode">(<%= dtb idx{cr_code %>_<%= idx{of_year %>_<%= idx{sm_code %>_<%= idx{dm_code %>)</span><br/>
