@@ -1,9 +1,14 @@
-require '~Projects/utils/dcdates.ijs'
+NB. =========================================================
+NB. Script for extending the dates.ijs system script.
+
 require 'strings dates numeric dll'
 
 coclass 'rgsdates'
 
 NB. TO DO...
+NB. Convert to J Project
+NB. Solicit help from J community
+
 NB. Extend J's getdate to handle converting more string representations 
 NB. to numeric
 
@@ -45,26 +50,6 @@ escaped=: 3 : 0
   mskunescaped=. -. 0,}: mskesc         NB. unescaped characters
   (-.mskesc)&# &.> mskunescaped;y       NB. compress out unescaped x
 )
-
-NB.*eachunderv c Applies verb in gerund to corresponding item of y.
-NB. Provided by Henry Rich in J programming forum August 2009.
-NB. based on idea from Raul Miller and adverb by Ric Sherlock.
-NB. [x] (k{u)`:0 &. v is applied to cell k of y
-NB. u is gerund, v is a verb.  
-NB. eachunderv has the same spec as 'respectively', but looks neater.
-NB. Henry prefers `:6 to @.0, but it's a matter of taste.
-NB. eg: *:`+:`-: eachunderv] 4 5 6
-NB. eg: *:`+:`-: eachunderv> <4 5 6
-eachunderv=: 2 : 0
-   m v 1 :(':';'x`:6&.u y')"_1 y
-:
-   m v 1 :(':';'x`:6&.u&>/ y')"_1 x ,&<"_1 y
-)
-
-NB.*eachv a Applies verbs in gerund to corresponding atom of y [and x]
-NB. based on idea from Raul Miller on J programming forum August 2009.
-NB. eg: [x] mygerund eachv y
-eachv =: eachunderv >
 
 fmt=: 8!:0
 
@@ -136,14 +121,18 @@ toJdayno=: J0Date -~ ]
 NB. =========================================================
 NB. Verbs for formating string reprentations of Dates and Times
  
-NB.*fmtDate v Format a date (given as a Day Number) in a given format
-NB. Specify the date format to be used with the following codes:
+NB.*fmtDate v Format a date in a given format
+NB. eg: '\Date is: DDDD, D MMM, YYYY' fmtDate toDayNumber 6!:0''
+NB. result: formated date string (or array of boxed, formated date strings)
+NB. y is: numeric array of dates given as Day Numbers
+NB. x is: optional format string specifing format of result
+NB.      Use the following codes to specify the date format:
 NB.      D: 1   DD: 01   DDD: Sun   DDDD: Sunday
 NB.      M: 1   MM: 01   MMM: Jan   MMMM: January
-NB.             YY: 99              YYYY: 1999
-NB. To display any of the letters that are codes, "escape" them with '\'
-NB. Any rank & shape array accepted.  See "Describe" for more details.
-NB. Based on dSpell by Davin Church
+NB.             YY: 09              YYYY: 2009
+NB.     To display any of the letters (DMY) that are codes, 
+NB.     "escape" them with '\'
+NB. (Based on APL+Win func dSpell by Davin Church)
 fmtDate=: 3 : 0
   'MMMM D, YYYY' fmtDate y
   :
@@ -173,20 +162,20 @@ fmtDate=: 3 : 0
 )
 
 NB.*fmtTime v Format a time (in seconds) in a given format.
-NB. y is: time in seconds since start of the day (86400 seconds in a day)
-NB. eg: fmtTime 86400 * 1|toDayNumber 6!:0 ''
-NB. Specify the time format to be used with the following codes:
-NB. (either upper or lower case) to specify the formatting of days ("d"),
-NB. hours ("h"), minutes ("m"), seconds ("s"), fractions of a second ("c"),
-NB. or AM/PM designator ("p"):
-NB.    d: 1    h: 1    m: 1    s: 1      c: 1       p: a
-NB.           hh: 01  mm: 01  ss: 01    cc: 01     pp: am
-NB.                          sss: 1.2  ccc: 001
-NB.                                   cccc: 0001
-NB. If no "p" designator is present, 24 hour format is used.
-NB. To display any of the letters that are codes, "escape" them with '\'
-NB. Any rank & shape array accepted.  See "Describe" for more details.
-NB. Based on tSpell by Davin Church
+NB. eg: 'Ti\me i\s: hh:mm:ss' fmtTime 86400 * 1|toDayNumber 6!:0 ''
+NB. result: formated time string (or array of boxed, formated date strings)
+NB. y is: numeric array of times given as time in seconds since start of the day
+NB. x is: optional format string specifing format of result
+NB.      Use the following codes to specify the date format:
+NB.      days ("d"), hours ("h"), minutes ("m"), seconds ("s"), 
+NB.      fractions of a second ("c"), or AM/PM designator ("p"):
+NB.     d: 1    h: 1    m: 1    s: 1      c: 1       p: a
+NB.            hh: 01  mm: 01  ss: 01    cc: 01     pp: am
+NB.                           sss: 1.2  ccc: 001
+NB.     If no "p" designator is present, 24 hour format is used.
+NB.     To display any of the letters (DMY) that are codes, 
+NB.     "escape" them with '\'
+NB. (Based on APL+Win func tSpell by Davin Church)
 fmtTime=: 3 : 0
   'h:mm:ss pp' fmtTime y
   :
@@ -218,7 +207,7 @@ fmtTime=: 3 : 0
 )
 
 NB. =========================================================
-NB. verbs for working with time zones
+NB. Verbs for working with time zones
 
 NB.*getTimeZoneInfo v function to return Windows time zone info
 NB. result: 3-item list of boxed info
@@ -226,9 +215,7 @@ NB.    0{:: Daylight saving status (0 unknown, 1 standarddate, 2 daylightdate)
 NB.    1{:: Bias (offset of local zone from UTC in minutes)
 NB.    2{:: 2 by 3 boxed table: Standard,Daylight by Name,StartDate,Bias
 NB. eg: getTimeZoneInfo ''
-NB. Based on APL+Win func written by Davin Church of Creative Software Design
-NB. Written May 2007 by Ric Sherlock
-NB. kernel32 GetTimeZoneInformation i *i
+NB. (Based on APL+Win func by Davin Church)
 getTimeZoneInfo=: 3 : 0
   'tzstatus tzinfo'=. 'kernel32 GetTimeZoneInformation i *i'&cd <(,43#0)
   NB. read TIME_ZONE_INFORMATION structure
@@ -281,11 +268,12 @@ Note 'Examples/Tests'
  fmtTime 65101.201 16542.081 85421.246
  'Ti\me\s: hh\\mm\\ss' fmtTime 65101.201 16542.081 85421.246
  'hh:mm:ss:ccc' fmtTime 65101.201 16542.081 85421.246
+ require '~Projects/utils/dcdates.ijs'
  'h:m:s:c' (fmtTime -: tSpell) 65101.201 16542.081 85421.246 16542.081
  'h:m:s:c' (fmtTime -: tSpell) 65101.201
 )
 
-Note ' proposal'
+Note 'idea'
 NB. Given Day number (Julian or J equivalent)
 NB. create a set of short verbs to retrieve individual formats
 2 4 getYear
