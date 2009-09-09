@@ -3,6 +3,29 @@ require 'strings dates numeric dll'
 
 coclass 'rgsdates'
 
+NB. TO DO...
+NB. Extend J's getdate to handle converting more string representations 
+NB. to numeric
+
+NB.*TimeDiff v dayno x - dayno y in <YYYY MM DD hh mm ss.sss> format
+NB. result: numeric time difference of x-y in <YYYY MM DD hh mm ss.sss> format
+NB. y is: end date,time as DayNumber
+NB. x is: start date,time as DayNumber
+
+NB.*fmtTimeDiff v Formated time difference
+NB. y is: time difference in <YYYY MM DD hh mm ss.sss> format
+NB. x is: format string
+NB. eg: 'Y year\s, M \months DDD days' fmtTimeDiff y
+NB. eg: 'D day\s' fmtTimeDiff y
+NB. Handle part units for smallest specified unit in format string:
+NB. How to specify? separate option to format string or eg
+NB.    * decimal: YYY, MMM, DDD, hhh, mmm, sss
+NB.    * round (to nearest unit): YY, MM, DD, hh, mm, ss
+NB.    * truncate (only complete units): Y, M, D, h, m, s
+
+NB.*fmtDateTime v Formats date and time together
+
+
 NB. =========================================================
 NB. Utility verbs
 
@@ -109,9 +132,6 @@ toJulian=: J0Date + ]
 NB.*fromJulian v converts Julian day number to J day number
 NB. Dates before 1800 1 1 are not supported
 toJdayno=: J0Date -~ ]
-
-NB. Extend J's getdate to handle converting more string representations 
-NB. to numeric
 
 NB. =========================================================
 NB. Verbs for formating string reprentations of Dates and Times
