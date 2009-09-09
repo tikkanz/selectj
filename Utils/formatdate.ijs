@@ -1,16 +1,31 @@
 NB. =========================================================
 NB. Script for extending the dates.ijs system script.
 
-require 'strings dates numeric dll'
+require 'dates numeric strings dll'
 
 coclass 'rgsdates'
 
-NB. TO DO...
-NB. Convert to J Project
-NB. Solicit help from J community
+NB. =========================================================
+NB. Verbs available:
+NB. fmtTime     - custom string representations of times
+NB. fmtDate     - custom string representations of dates
+NB. toDateTime  - extend todate to handle times too
+NB. toDayNumber - extend todayno to handle times too
+NB. toJdayno    - convert Julian dayno to J dayno
+NB. toJulian    - convert J dayno to Julian dayno
 
-NB. Extend J's getdate to handle converting more string representations 
-NB. to numeric
+NB. getTimeZoneInfo - retrieves time zone info on Windows
+
+NB. =========================================================
+NB. TO DO...
+NB. * Solicit help from J community
+NB. * Convert to J Project
+NB. * Create test suite
+NB. * Add following verbs:
+
+NB.*getDateTime v Extend getdate to handle converting date strings with time
+
+NB.*fmtDateTime v Formats combined date and time strings
 
 NB.*TimeDiff v dayno x - dayno y in <YYYY MM DD hh mm ss.sss> format
 NB. result: numeric time difference of x-y in <YYYY MM DD hh mm ss.sss> format
@@ -23,13 +38,14 @@ NB. x is: format string
 NB. eg: 'Y year\s, M \months DDD days' fmtTimeDiff y
 NB. eg: 'D day\s' fmtTimeDiff y
 NB. Handle part units for smallest specified unit in format string:
-NB. How to specify? separate option to format string or eg
+NB. Truncate, round, decimal
+NB. How to specify? 
+NB.  -additional option to format string eg:
+NB.      [format string[;0 or 1 or 2]] fmtTimeDiff y
+NB.  -or part of format string
 NB.    * decimal: YYY, MMM, DDD, hhh, mmm, sss
 NB.    * round (to nearest unit): YY, MM, DD, hh, mm, ss
 NB.    * truncate (only complete units): Y, M, D, h, m, s
-
-NB.*fmtDateTime v Formats date and time together
-
 
 NB. =========================================================
 NB. Utility verbs
@@ -55,9 +71,16 @@ fmt=: 8!:0
 
 NB. =========================================================
 NB. Constants
-MS0Date=: 2415019  NB. add to Microsoft date to get a Julian dayno
-Linux0DateTime=: 2440588  NB. add to Linux-style date to get a Julian dayno
-J0Date=: 2378497   NB. add to the result of J's todayno verb to get Julian dayno
+J0Date=: 2378497   NB. add to J's dayno to get Julian dayno
+NB. Note that the start of a Julian day is noon so for an 
+NB. accurate representation of a Julian day/time combination 
+NB. 2378496.5 should be added instead.
+MS0Date=: 36522  NB. add to Microsoft date to get a J dayno.
+NB. Note that the first date supported by Microsoft Excel is 1900 1 1
+NB. but dates between 1900 1 1 and 1900 1 28 will not convert properly
+NB. because Excel incorrectly denotes 1900 as a leap year, 
+NB. http://support.microsoft.com/kb/214326
+Linux0DateTime=: 62091 NB. add to Linux-style date to get a J dayno
 
 WKDAYS=: ;:'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'
 MONTHS=: ''; ;:'January February March April May June July August September October November December'
@@ -66,6 +89,12 @@ NB. =========================================================
 NB. Verbs for converting between dates and daynumbers
 
 NB.*toDayNumber v Extends verb "todayno" to handle time
+NB. eg: toDayNumber 6!:0 ''
+NB. result: numeric array as J daynos, decimals represent time
+NB. y is: numeric array in date/time format specified by x
+NB. x is: optional boolean specifying input format. Default 0.
+NB.      0 : date/time format <yyyy mm dd hh mm ss.sss>
+NB.      1 : date/time format <yyyymmdd.hhmmss.sss>
 NB. Dates before 1800 1 1 are not supported
 toDayNumber=: 3 : 0
   0 toDayNumber y
@@ -84,12 +113,12 @@ toDayNumber=: 3 : 0
 )
 
 NB.*toDateTime v Extends verb "todate" to handle time
+NB. eg: 1 toDateTime toDayNumber 6!:0 ''
 NB. result: numeric array in date/time format specified by x
 NB. y is: array of J day numbers
 NB. x is: optional boolean specifying output format. Default 0.
 NB.      0 : date/time format <yyyy mm dd hh mm ss.sss>
 NB.      1 : date/time format <yyyymmdd.hhmmss.sss>
-NB. eg: 1 toDateTime toDayNumber 6!:0 ''
 NB. Dates before 1800 1 1 are not supported
 toDateTime=: 3 : 0
   0 toDateTime y
@@ -109,14 +138,16 @@ toDateTime=: 3 : 0
 )
 
 NB.*toJulian v converts J day number to Julian day number
+NB. eg: toJulian tDayNumber 6!:0 ''
 NB. Dates before 1800 1 1 are not supported
 NB. Add another 0.5 to get true Julian Day number where noon is
 NB. regarded as the "start" of the day.
-toJulian=: J0Date + ]
+toJulian=: +&J0Date
 
 NB.*fromJulian v converts Julian day number to J day number
+NB. eg: fromJulian toJulian tDayNumber 6!:0 ''
 NB. Dates before 1800 1 1 are not supported
-toJdayno=: J0Date -~ ]
+toJdayno=: -&J0Date
 
 NB. =========================================================
 NB. Verbs for formating string reprentations of Dates and Times
@@ -163,7 +194,7 @@ fmtDate=: 3 : 0
 
 NB.*fmtTime v Format a time (in seconds) in a given format.
 NB. eg: 'Ti\me i\s: hh:mm:ss' fmtTime 86400 * 1|toDayNumber 6!:0 ''
-NB. result: formated time string (or array of boxed, formated date strings)
+NB. result: formated time string (or array of boxed, formated time strings)
 NB. y is: numeric array of times given as time in seconds since start of the day
 NB. x is: optional format string specifing format of result
 NB.      Use the following codes to specify the date format:
