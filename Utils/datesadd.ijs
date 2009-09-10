@@ -54,12 +54,12 @@ NB. =========================================================
 NB. Utility verbs
 
 NB.*escaped v process an escaped string
+NB. eg: '\' escaped '\Date is: D\\MM\\YYYY'
 NB. result: 2-item list of boxed mask & string:
-NB.          0{:: boolean mask of escaped characters
+NB.          0{:: boolean mask of non-escaped characters
 NB.          1{:: string with escape character compressed out
 NB. y is: An escaped string
 NB. x is: character used to escape string
-NB. eg: ('\' escaped '\Date is: D\\MM\\YYYY') dSpell dJulian 6!:0 ''
 escaped=: 3 : 0
   '\' escaped y                         NB. default escape char
 :
@@ -141,7 +141,7 @@ toDateTime=: 3 : 0
 )
 
 NB.*toJulian v converts J day number to Julian day number
-NB. eg: toJulian tDayNumber 6!:0 ''
+NB. eg: toJulian toDayNumber 6!:0 ''
 NB. Dates before 1800 1 1 are not supported
 NB. Add another 0.5 to get true Julian Day number where noon is
 NB. regarded as the "start" of the day.
@@ -242,11 +242,11 @@ NB. =========================================================
 NB. Verbs for working with time zones
 
 NB.*getTimeZoneInfo v function to return Windows time zone info
+NB. eg: getTimeZoneInfo ''
 NB. result: 3-item list of boxed info
 NB.    0{:: Daylight saving status (0 unknown, 1 standarddate, 2 daylightdate)
 NB.    1{:: Bias (offset of local zone from UTC in minutes)
 NB.    2{:: 2 by 3 boxed table: Standard,Daylight by Name,StartDate,Bias
-NB. eg: getTimeZoneInfo ''
 getTimeZoneInfo=: 3 : 0
   'tzstatus tzinfo'=. 'kernel32 GetTimeZoneInformation i *i'&cd <(,43#0)
   NB. read TIME_ZONE_INFORMATION structure
