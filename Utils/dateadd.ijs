@@ -1,12 +1,15 @@
 NB. =========================================================
 NB. Script for extending the dates.ijs system script.
+NB. Ric Sherlock, 2009 09 09
+NB. Some of the verbs in this script were derived from 
+NB. APL+Win functions written by Davin Church.
 
 require 'dates numeric strings dll'
 
 coclass 'rgsdates'
 
 NB. =========================================================
-NB. Verbs available:
+NB. Existing Verbs:
 NB. fmtTime     - custom string representations of times
 NB. fmtDate     - custom string representations of dates
 NB. toDateTime  - extend todate to handle times too
@@ -18,7 +21,6 @@ NB. getTimeZoneInfo - retrieves time zone info on Windows
 
 NB. =========================================================
 NB. TO DO...
-NB. * Solicit help from J community
 NB. * Convert to J Project
 NB. * Create test suite
 NB. * Add following verbs:
@@ -27,10 +29,11 @@ NB.*getDateTime v Extend getdate to handle converting date strings with time
 
 NB.*fmtDateTime v Formats combined date and time strings
 
-NB.*TimeDiff v dayno x - dayno y in <YYYY MM DD hh mm ss.sss> format
+NB.*getDateTimeDiff v dayno y - dayno x in <YYYY MM DD hh mm ss.sss> format
 NB. result: numeric time difference of x-y in <YYYY MM DD hh mm ss.sss> format
-NB. y is: end date,time as DayNumber
-NB. x is: start date,time as DayNumber
+NB. y is: start date,time as DayNumber
+NB. x is: end date,time as DayNumber
+NB. could extend to accept <YYYY MM DD hh mm ss.sss> format as inputs
 
 NB.*fmtTimeDiff v Formated time difference
 NB. y is: time difference in <YYYY MM DD hh mm ss.sss> format
@@ -163,7 +166,6 @@ NB.      M: 1   MM: 01   MMM: Jan   MMMM: January
 NB.             YY: 09              YYYY: 2009
 NB.     To display any of the letters (DMY) that are codes, 
 NB.     "escape" them with '\'
-NB. (Based on APL+Win func dSpell by Davin Church)
 fmtDate=: 3 : 0
   'MMMM D, YYYY' fmtDate y
   :
@@ -206,7 +208,6 @@ NB.                           sss: 1.2  ccc: 001
 NB.     If no "p" designator is present, 24 hour format is used.
 NB.     To display any of the letters (DMY) that are codes, 
 NB.     "escape" them with '\'
-NB. (Based on APL+Win func tSpell by Davin Church)
 fmtTime=: 3 : 0
   'h:mm:ss pp' fmtTime y
   :
@@ -246,7 +247,6 @@ NB.    0{:: Daylight saving status (0 unknown, 1 standarddate, 2 daylightdate)
 NB.    1{:: Bias (offset of local zone from UTC in minutes)
 NB.    2{:: 2 by 3 boxed table: Standard,Daylight by Name,StartDate,Bias
 NB. eg: getTimeZoneInfo ''
-NB. (Based on APL+Win func by Davin Church)
 getTimeZoneInfo=: 3 : 0
   'tzstatus tzinfo'=. 'kernel32 GetTimeZoneInformation i *i'&cd <(,43#0)
   NB. read TIME_ZONE_INFORMATION structure
@@ -305,6 +305,12 @@ Note 'Examples/Tests'
 )
 
 Note 'idea'
+Existing verbs calculate all possible types of info needed 
+and then select the ones specified in the format string.
+May be more efficient to work out which types of info are 
+required and only create them. Could create individual verbs
+for each infotype then select appropriate verbs from gerund 
+based on the format string:
 NB. Given Day number (Julian or J equivalent)
 NB. create a set of short verbs to retrieve individual formats
 2 4 getYear
