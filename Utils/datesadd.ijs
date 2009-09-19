@@ -26,12 +26,6 @@ NB. * Convert to J Project
 NB. * Create test suite
 NB. * Add following verbs:
 
-NB.*getDateTimeDiff v dayno y - dayno x in <YYYY MM DD hh mm ss.sss> format
-NB. result: numeric time difference of x-y in <YYYY MM DD hh mm ss.sss> format
-NB. y is: start date,time as DayNumber
-NB. x is: end date,time as DayNumber
-NB. could extend to accept <YYYY MM DD hh mm ss.sss> format as inputs
-
 NB.*fmtTimeDiff v Formated time difference
 NB. y is: time difference in <YYYY MM DD hh mm ss.sss> format
 NB. x is: format string
@@ -156,6 +150,31 @@ NB. Dates before 1800 1 1 are not supported
 toJdayno=: -&J0Date
 
 NB. =========================================================
+NB. Verbs for date and time arithmetic
+
+
+NB.*dateplus v Adds time (y) to timestamp
+dateplus=: [: toDateTime@toDayNumber (6&{.@[ + _6&{.@])"1
+
+NB.*dateminus
+dateminus=: [ dateplus -@]
+
+NB.*tsDiff v timestamp y - timestamp x in <YYYY MM DD hh mm ss.sss> format
+NB. form: endtimestamp tsDiff starttimestamp
+NB. result: array of time difference for x-y in <Days.fraction of days> format
+NB. y is: start date,time in <YYYY MM DD hh mm ss.sss> format
+NB. x is: end date,time in <YYYY MM DD hh mm ss.sss> format
+tsDiff=: -&toDayNumber
+
+NB.timeDiff v Returns the time elapsed between 
+NB.! currently wrong - because always uses 1800 1 1 as base
+NB.! probably best to try and extend tsdiff from dates
+timeDiff=: 4 : 0
+  res=. (] + 1800 1 1 {.~ {:@$) x - y
+  1800 1 1 0 0 0 -~ toDateTime toDayNumber res
+)
+
+NB. =========================================================
 NB. Verbs for formating string reprentations of Dates and Times
  
 NB.*fmtDate v Format a date in a given format
@@ -271,7 +290,7 @@ getTimeFormats=: 3 : 0
   values=. values,('';'r<0>2.0') fmt"0 1 t
   t=. 3{dhms                                     NB. Seconds
   values=. values,('';'r<0>2.0') fmt"0 1 t
-  values=. values, '6.3' fmt t+ccc               NB. sss
+  values=. values, 'r<0>6.3' fmt t+ccc               NB. sss
   t=. 100 10 1 round"0 1 ccc * 1000              NB. c, cc, ccc
   values=. values, 1 2 3 {.&.> 'r<0>3.0' fmt t
   t=. (12<:24|1{dhms){ ;:'am pm'                 NB. am/pm
@@ -312,6 +331,8 @@ toDayNumber_z_ =: toDayNumber_rgsdates_
 toDateTime_z_ =: toDateTime_rgsdates_
 toJulian_z_ =: toJulian_rgsdates_
 toJdayno_z_=: toJdayno_rgsdates_
+dateplus_z_=: dateplus_rgsdates_
+dateminus_z_=: dateminus_rgsdates_
 
 NB. =========================================================
 NB. Example usage and Testing
