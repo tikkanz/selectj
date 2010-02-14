@@ -6,70 +6,82 @@ NB. returns list of boxed error messages if error(s) or 1 if all OK.
 NB. y is 2-row (female, male) by 2-column (filename, filecontents) boxed array
 NB. x is caseinstance id
 makeMateAlloc=: 4 : 0
-  okexist=. -.a:= fnms=. {."1 y  NB. files were found and uploaded
-  okext=. '.csv'(-:"1) _4&{.@> fnms  NB. have '.csv' extension
-  NB.oklen=.*#@> {:"1 y NB. not zero length
-  msg=. 'selection list doesn''t exist.';'selection list file extension is not ".csv".'
-  msg=. |:2 2$(,.'Female ';'Male ') prefsuf msg
-  if. *./*./ok=. okexist,:okext do. NB. continue checks
-    fcs=. fixcsv each toJ each {:"1 y NB. file contents
-    hdrs=. {.!.a: each fcs NB. headers
-    fcs=. }.each fcs NB. drop headers
-    NB. Headers must contain (Tag or uid) and (Flk or Flock)
-    okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) >hdrs
-    ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
-    msg=. msg, (,.'Female ';'Male ') prefsuf ms
-    if. *./*./ok=. ok,okhdr do. NB. continue checks
-      anini=. 'animini' getInfo x
-      'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
-      nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
-      NB.! add handling for across-herd as well as within-herd mating of sires
-      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of Flock/Flk columns in selection lists column labels
-      hrds=. idx {"1 each fcs NB. get flock/flk columns from selection lists
-      nprnts=. (([: #@> </.~) /: ~.) each hrds NB. no. of occurences of each flock number (sorted ascending by flock no)
-      okf=. (listatom ndams)-: nfems=. 0{::nprnts NB. check correct number of females listed (for each sub-popln)
-      okm=. *./3>|nsires- nmales=. _1{::nprnts NB. check approx correct number of males listed (for each sub-popln)
-      ms=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
-      msg=. msg, ms;'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
-      ok=. ok,okf,okm
-    end.
-  end.
-  if. *./*./ok do. NB. passed all checks
+  try.
+    NB. check files are found and uploaded
+    iserr=. a:= fnms=. {."1 y
+    errmsg=. (<' selection list not found') ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    NB. check filenames have '.csv' extension
+    iserr=. -. '.csv' (-:"1) _4&{. &> fnms
+    errmsg=. (<' selection list file extension is not ".csv".') ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    fcs=. fixcsv@toJ each {:"1 y  NB. file contents
+    hdrs=. {.each fcs             NB. headers
+    fcs=. }.each fcs              NB. drop headers
+
+    NB. check headers contain (Tag or uid) and (Flk or Flock)
+    iserr=. -. *./"1 +./"1 (('Flk';'Flock'),:('uid';'Tag')) e."_ 1 >hdrs
+    errmsg=. <' selection list is missing "Tag" and/or "Flk" column labels.' ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    anini=. 'animini' getInfo x
+    'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
+    nsires=. <.0.5&+ ndams%d2s   NB. no. of males required for each sub-popln
+    NB.! add handling for across-herd as well as within-herd mating of sires
+    idx=. <@<./"1 (>hdrs) i."1 'Flk';'Flock' NB. get index of Flock/Flk columns in selection lists column labels
+    hrds=. idx {"1 each fcs NB. get flock/flk columns from selection lists
+    nprnts=. (#/.~ /: ~.) each hrds NB. no. of occurences of each flock number (sorted ascending by flock no)
+
+    NB. check correct number of females listed (for each sub-popln)
+    iserrf=. -. (listatom ndams)-: nfems=. 0{::nprnts
+    NB. check approx correct number of males listed (for each sub-popln)
+    iserrm=. +./ 2 < |nsires- nmales=. _1{::nprnts
+    errmsg=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
+    errmsg=. errmsg; 'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
+    errmsg=. (iserrf,iserrm) # errmsg
+    assert ''-: errmsg  NB. check numbers OK
+
     fpth=. 'mateallocpath' getFnme x
     dat=. xhrd allocateMatings hdrs,.fcs
-    ok=. 0<(;dat) writecsv fpth
-    msg=. ok{:: 'Error writing Mate Allocation file';1
-  else.
-    msg=. (,-.ok)#,msg
+    iserr=. 1> (;dat) writecsv fpth
+    errmsg=. iserr#'Error writing Mate Allocation file'
+    assert ''-:errmsg NB. check non-zero length csv file written
+    msg=. 1
+  catch.
+    if. ''-: errmsg do. errmsg=. 13!:12 '' end.
+    msg=. errmsg
   end.
+  msg
 )
 
 NB.*allocateMatings v Allocates matings for list of dams and sires.
-NB. returns 2-item boxed list containing
+NB. result: 2-item boxed list containing
 NB.     0{ list of boxed column labels for array in 1{
 NB. 	1{ 2d array of four columns damtag, damFlkID & siretag, sireFlkID.
 NB. 	   Each row is a mating. Dams should only appear once, sires can appear many times.
-NB. y is 2-item, rank 2, boxed list containing
+NB. y is: 2-item, rank 2, boxed list containing
 NB.     0{   2-item boxed list of female info
 NB.     1{   2-item boxed list of smale info
 NB.     0{"1 lists of boxed column labels for array in 1{"1
 NB.     1{"1 2d array of parent info (row for each parent, column for each label in 0{"1.
-NB. x is boolean whether selection is across-herd
+NB. x is: boolean whether selection is across-herd
 allocateMatings=: 4 : 0
   lbls=. >{."1 y
   slsts=. {:"1 y
-  idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+  idx=. I. lbls e."1~ ;:'Tag uid Flk Flock'
   parents=. (<"1 idx) {"1 each slsts NB. just keep Tag & flock columns
   if. x do. NB. across-herd matings
     nparents=. # @> parents
   else.     NB. within-herd matings
-    nparents=. (([: #@> </.~) /: ~.) @> 1{"1 each parents NB. no. of occurences of each flock number (sorted ascending by flock no)
+    nparents=. (#/.~ /: ~.)@> 1{"1 each parents NB. no. of occurences of each flock number (sorted ascending by flock no)
   end.
   nsiremtgs=. <. %/nparents
   rem=. |/|.nparents NB. remainder
   rem=. (,rem,.rem-~{:nparents)# (+:#rem)$1 0
   mtgs=. rem+({:nparents)#nsiremtgs
-  parents=. parents /: each |."1 each parents  NB. necessary for matching sires & dams within flock  
+  parents=. parents (/: |."1@]) each parents  NB. necessary for matching sires & dams within flock  
   sires=. mtgs#>{:parents
   sires=. sires /: x}."1 (1{"1 sires),.<"0 (#sires)?@#0 NB. randomly sort sires within or across flocks
   (;:'DTag DFlk STag SFlk');< (>{.parents),.sires
