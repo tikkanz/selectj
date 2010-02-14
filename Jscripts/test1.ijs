@@ -4,8 +4,12 @@ NB. creates 3 course offerings
 NB. imports class lists as users to each of those course offerings
 NB. enrols Joe Bloggs as user in each of the offerings
 
+NB. Don't forget to point to database location if not default
+NB. Below is location on IT026717
+CONNECTSTR_base_=: jpath 'd:\web\selectj\code\select_cmplx.sqlite' 
+
 NB. 117.352 Sheep production courses internal & extramural
-]ofids=: createOfferings 2 2008 4 2 1 ,: 2 2008 1 1 1
+]ofids=: createOfferings 1 2008 4 2 1 ,: 1 2008 1 1 1
  ALLofids=: ofids
 
 NB. Add cases for each offering
@@ -22,7 +26,7 @@ tstfile=.jpath 'c:\d\teach\117352\admin\classlist200801.csv'
 ]uids=: ({: ofids) createUsers importUsers tstfile
 
 NB. 227.202 Vet Genetics course and class
-]ofids=: createOfferings 3 2008 1 1 1
+]ofids=: createOfferings 2 2008 1 1 1
  ofids addOfferingCases 1 3 NB. Add cases for each offering
  ALLofids=: ALLofids,ofids
 
@@ -30,6 +34,14 @@ tstfile=.jpath 'c:\d\teach\227202\admin\classlist200801.csv'
 'file not found' assert fexist tstfile
 ]uids=: ofids createUsers importUsers tstfile
    enrolUsers 4;ALLofids NB. enrol joe bloggs as dummy user in all offerings
+
+NB. randomly assign students to groups
+class=: importUsers tstfile
+grpsz=: 4  NB. target groupsize
+ngrps=: <.@(0.25&+) grpsz %~ #class NB. 3 = min group size
+]grps=: /:~ ((?~@# { 2 3&{"1@])class),.~ <"0 (#class) $ >:i.ngrps
+require 'tables/tara'
+grps writexlsheets jpath '~.user/teach/227202/admin/assign_groups09.xls'
 
 NB. updated intro text for the new offerings
 SheepProdInternalTxt=: 0 : 0
