@@ -56,6 +56,17 @@ insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (11
 insert into params (pr_id,pr_name,pr_code,pr_ctype,pr_cprops) values (12,'Traits to record','trtsrecorded','select','multiple '''' size ''6''');
 insert into params (pr_id,pr_name,pr_code,pr_note,pr_ctype,pr_cprops) values (13,'No. of breeding females','hrdsizes','This does not include female replacements that are too young to mate.<br/>&nbsp;','select','');
 
+insert into pages (pg_id,pg_name,pr_descr) values (1,'default_loginfail.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (2,'user_home.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (3,'course_home.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (4,'case_home.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (5,'case_params.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (6,'case_usrdescr.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (7,'coursesumry_home.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (8,'coursesumry_sumdef.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (9,'coursesumry_params.asp','brief description of page here');
+insert into pages (pg_id,pg_name,pr_descr) values (10,'coursesumry_usrdescr.asp','brief description of page here');
+
 insert into people (pp_fname, pp_lname, pp_email) values ('Temporary', 'Guest', 'guest@nodomain.com');
 insert into people (pp_fname, pp_lname, pp_email) values ('Ric', 'Sherlock', 'r.g.sherlock@massey.ac.nz');
 insert into people (pp_fname, pp_lname, pp_email) values ('Tricia', 'Johnson', 'tricia.johnson@hotmail.co.nz');

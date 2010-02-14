@@ -121,6 +121,7 @@ CREATE TABLE offerings (  -- an offering of a course in terms of year, delivery 
 CREATE TABLE offeringstext (  -- text used in interface with offering
   ox_ofid  INTEGER NOT NULL REFERENCES offerings(of_id) ,
   ox_btid  INTEGER NOT NULL REFERENCES blocktypes(bt_id) DEFAULT 200,
+  ox_pgid  INTEGER NOT NULL REFERENCES pages(pg_id) ,
   ox_xbid  INTEGER REFERENCES textblocks(xb_id) DEFAULT 3, -- id of text block
   PRIMARY KEY(ox_ofid,ox_btid) );
 
@@ -164,8 +165,15 @@ CREATE TABLE fieldsetparams ( -- params and label for each fieldset
 CREATE TABLE casestext (  -- text applicable to each scenario/case
   cx_csid  INTEGER NOT NULL REFERENCES cases(cs_id) ,
   cx_btid  INTEGER NOT NULL REFERENCES blocktypes(bt_id) ,
+  cx_pgid  INTEGER NOT NULL REFERENCES pages(pg_id) ,
+  cx_cycl  INTEGER NOT NULL
   cx_xbid  INTEGER DEFAULT 1 REFERENCES textblocks(xb_id) , -- id of text block
   PRIMARY KEY(cx_csid,cx_btid) );
+
+CREATE TABLE pages (  -- ".asp" template pages
+  pg_id  INTEGER NOT NULL PRIMARY KEY,
+  pg_name  CHAR(64) NOT NULL , -- name of asp page
+  pg_descr  TEXT DEFAULT NULL );
 
 CREATE TABLE caseroles (
   cl_csid INTEGER NOT NULL REFERENCES cases(cs_id),

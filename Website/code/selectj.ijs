@@ -2,9 +2,11 @@ NB. built from project: ~user/projects/selectj/selectj
 
 IFJIJX_j_=: 1
 script_z_ '~system/main/convert.ijs'
-script_z_ '~system/packages/files/csv.ijs'
+script_z_ '~addons/tables/csv/csv.ijs'
 script_z_ '~system/main/dates.ijs'
 script_z_ '~system/main/dir.ijs'
+script_z_ '~addons/general/dirtrees/dirtrees.ijs'
+script_z_ '~addons/general/dirutils/dirutils.ijs'
 script_z_ '~system/main/dll.ijs'
 script_z_ '~system/main/files.ijs'
 script_z_ '~addons/general/inifiles/inifiles.ijs'
@@ -20,6 +22,7 @@ script_z_ '~addons/tables/tara/tara.ijs'
 script_z_ '~system/packages/misc/task.ijs'
 script_z_ '~system/packages/winapi/winapi.ijs'
 script_z_ '~addons/arc/zip/zfiles.ijs'
+script_z_ '~addons/arc/ziptrees/ziptrees.ijs'
 
 coclass 'rgsselectj'
 
@@ -318,6 +321,9 @@ coclass COBASE_z_
 listatom=: 1&#
 boxopenatoms=:<"0^:(L.=0:)
 mfv1=: ,:^:(#&$ = 1:)
+addext=: ,~^:(0 = '.' e. PATHSEP_j_&dropafter&.|.@])
+
+extcsv=: '.csv'&addext
 idxfnd=: i. #~ i. < [: # [
 loc_z_=: 3 : '> (4!:4 <''y'') { 4!:3 $0'
 join=: ' '&$. : (4 : '(;@(#^:_1!.(<x))~  1 0$~_1 2 p.#) y')  
@@ -346,15 +352,15 @@ keyval=: ''&$: : (4 : 0)
     (<i,1) {:: y else. '' end.
 )
 createSession=: 3 : 0
- if. isdefseed_rgspasswd_'' do. randomize'' end.
- sid=. >:?<:-:2^32 
- sh=. salthash ":sid 
- 'newsession' insertInfo  sid;y;sh
- tk=. writeTicket sid;{:sh
+  if. isdefseed_rgspasswd_'' do. randomize'' end.
+  sid=. >:?<:-:2^32 
+  sh=. salthash ":sid
+  'newsession' insertInfo sid;y;sh
+  tk=. writeTicket sid;{:sh
 )
 expireSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
-  sid=.0{:: readTicket y
+  sid=. 0{:: readTicket y
   'expiresession' updateInfo ".sid
 )
 isActive=: 3 : 0
@@ -362,101 +368,115 @@ isActive=: 3 : 0
 )
 readTicket=: 3 : 0
   kVTable=. qsparse y  
-  sid=.'ssid' keyval kVTable
+  sid=. 'ssid' keyval kVTable
   shash=. 'hash' keyval kVTable
   sid;shash
 )
 registerUser=: 3 : 0
-  'action uname fname lname refnum email passwd'=.y
-  if. action-:'guest' do. uname=. randPassword 16  end.
-  if. *#u=.'userlogin' getInfo uname  do. 
+  'action uname fname lname refnum email passwd'=. y
+  if. action-:'guest' do. uname=. randPassword 16 end.
+  if. *#u=. 'userlogin' getInfo uname do. 
     if. 
-      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=.0{::u 
+      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=. 0{::u
       m2=. action-:'importuser'
-     do. 
+    do.
       uid return. 
-     else.
-      _2  return.
+    else.
+      _2 return.
     end.
-  end. 
-  if. 0=# pid=. 'idfromemail' getInfo email  do. 
+  end.
+  if. 0=# pid=. 'idfromemail' getInfo email do. 
     pid=. 'newperson' insertInfo fname;lname;email 
   end.
   sph=. salthash passwd 
-  uid=.'newuser' insertInfo pid;uname;refnum;|.sph 
+  uid=. 'newuser' insertInfo pid;uname;refnum;|.sph 
 )
 enrolUsers=: 3 : 0
   1 enrolUsers y
-:
+  :
   'uids ofids'=. 2{.!.(<1) boxopen y 
   rlids=. (#uids)$x
-  enrl=.(>,{uids;ofids),.(#ofids)#rlids
+  enrl=. (>,{uids;ofids),.(#ofids)#rlids
   if. 0=#enrl do. '' return. end.
   'newenrolment' insertInfo <"0 enrl
 )
 createUsers=: 3 : 0
   1 createUsers y 
-:
- uids=. ,registerUser"1 y
- rowids=. 1 enrolUsers ((0&< # ])uids);x 
- uids
+  :
+  uids=. ,registerUser"1 y
+  rowids=. 1 enrolUsers ((0&< # ])uids);x 
+  uids
 )
 importUsers=: 3 : 0
   'MasseyRPScsv' importUsers y
-:
+  :
   select. x
-   case. 'MasseyRPScsv' do.
-     
-     'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
-     
-     'hdr dat'=. split 13}. readcsv y
-     idx=. hdr i. uname;fname;lname;refnum;email
-     usrs=. idx{"1 dat
-     usrs=. usrs,. (hdr i.<lname){"1 dat 
-     usrs=. (<'importuser'),.usrs      
-   case. do.
-     'unknown data source' assert 0
-  end. 
+    case. 'MasseyRPScsv' do.
+    
+      'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
+    
+      'hdr dat'=. split 13}. readcsv y
+      idx=. hdr i. uname;fname;lname;refnum;email
+      usrs=. idx{"1 dat
+      usrs=. usrs,. (hdr i.<lname){"1 dat 
+      usrs=. (<'importuser'),.usrs      
+    case. do.
+      'unknown data source' assert 0
+  end.
 )
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
-  sid=.0{:: readTicket y
+  sid=. 0{:: readTicket y
   'extendsession' updateInfo ".sid
 )
+validCaseInstances=: 3 : 0
+  if. 0-: uofid=. validEnrolment'' do. 0 return. end.
+  uofid validCaseInstances y
+  :
+  vldci=. }.'validcaseinstances' getInfo x
+  if. (0=#y) do.
+    vldci
+  else.
+    idx=. y i.~ >{:"1 vldci
+    if. *./ isvld=. idx< #vldci do.
+      idx{vldci     
+    else. isvld end.  
+  end.
+)
 validCase=: 3 : 0
-  if. 0-: uofid=.validEnrolment'' do. 0 return. end.
+  if. 0-: uofid=. validEnrolment'' do. 0 return. end.
   uofid validCase y
-:
-  if. 0=#y do. y=.0 qcookie 'CaseID' end.
-  vldcs=.'validcase' getInfo x,<y
+  :
+  if. 0=#y do. y=. 0 qcookie 'CaseID' end.
+  vldcs=. 'validcase' getInfo x,<y
   if. #vldcs do. x,<y else. 0 end.
 )
 validEnrolment=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid validEnrolment y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getInfo x;y
+  enrld=. 'enrolled' getInfo x;y
   if. #enrld do. x;y else. 0 end.
 )
 validLogin=: 3 : 0
- 'usrnme passwd'=. y
+  'usrnme passwd'=. y
   if. 0=# usrnme do. _1 return. end. 
-  uinfo =. 'userlogin' getInfo usrnme  
-  if. 0=# uinfo   do. _2 return. end.   
-  'duid dunme dhash dsalt' =. 4{.uinfo
+  uinfo=. 'userlogin' getInfo usrnme  
+  if. 0=# uinfo do. _2 return. end.   
+  'duid dunme dhash dsalt'=. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. 
   duid
 )
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'sessioninfo' getInfo sid 
+  sinfo=. 'sessioninfo' getInfo sid 
   if. 0=#sinfo do. 0 return. end. 
-  'hdr dat'=. split sinfo         
+  'hdr dat'=. split sinfo
   (hdr)=. |:dat                   
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
-  if. timeleft<0 do. 
+  if. timeleft<0 do.
     'expiresession' updateInfo sid
     0
   else.
@@ -465,23 +485,23 @@ validSession=: 3 : 0
   end.
 )
 writeTicket=: 3 : 0
-  'tsid thash'=.y
+  'tsid thash'=. y
   ('ssid=',":tsid),'&hash=',thash
 )
 getOfferingRole=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid getOfferingRole y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  role=.'offeringrole' getInfo x;y
+  role=. 'offeringrole' getInfo x;y
   if. #role do. role else. 0 end.
 )
 getCaseRole=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid getCaseRole y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'CaseID' end.
-  role=.'caserole' getInfo x;y
+  role=. 'caserole' getInfo x;y
   if. #role do. role else. 0 end.
 )
 cleanGuests=: 3 : 0
@@ -527,6 +547,7 @@ deleteUsers=: 3 : 0
     ''
   end.
 )
+
 getOfferingText=: 3 : 0
   200 getOfferingText y
   :
@@ -577,6 +598,23 @@ getMsg=: 4 : 0
   y=. 2{.boxopen y
   res=. 2{.boxopen 'msgtxt' getInfo x
   res=. (y-.a:) (I. a:~:y)} res
+)
+
+
+Note 'Thoughts on cycle text page'
+Change handling of text contents for page.
+Depends look up based on cycle and page.
+Something like:
+  * page is the "pagename.asp" used to source content not url
+  * looks for entries for case for the page
+  * Case can have multiple entries for a page
+  * Takes the entry with the highest cycle less than or
+    equal to the current cycle of caseinstance.
+  * may need additional handling for "finished" case
+  
+  * How to handle more than one text block per page?
+    - have blocktype too?
+    - add at later date if necessary?
 )
 updateTextBlock=: 4 : 0
   0='updatetextblock' updateInfo x;xbid
@@ -962,58 +1000,70 @@ updateKeyState=: 4 : 0
 )
 
 makeMateAlloc=: 4 : 0
-  okexist=. -.a:= fnms=. {."1 y  
-  okext=. '.csv'(-:"1) _4&{.@> fnms  
-  
-  msg=. 'selection list doesn''t exist.';'selection list file extension is not ".csv".'
-  msg=. |:2 2$(,.'Female ';'Male ') prefsuf msg
-  if. *./*./ok=. okexist,:okext do. 
-    fcs=. fixcsv each toJ each {:"1 y 
-    hdrs=. {.!.a: each fcs 
-    fcs=. }.each fcs 
+  try.
     
-    okhdr=. (([: +./"1('Flk';'Flock')&e."1)*.[: +./"1('uid';'Tag')&e."1) >hdrs
-    ms=. boxopen 'selection list does not contain "Tag" and/or "Flk" column labels.'
-    msg=. msg, (,.'Female ';'Male ') prefsuf ms
-    if. *./*./ok=. ok,okhdr do. 
-      anini=. 'animini' getInfo x
-      'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
-      nsires=. <.0.5&+ ndams%d2s   
-      
-      idx=. <"0 <./"1 (>hdrs) i."1 'Flk';'Flock' 
-      hrds=. idx {"1 each fcs 
-      nprnts=. (([: #@> </.~) /: ~.) each hrds 
-      okf=. (listatom ndams)-: nfems=. 0{::nprnts 
-      okm=. *./3>|nsires- nmales=. _1{::nprnts 
-      ms=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
-      msg=. msg, ms;'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
-      ok=. ok,okf,okm
-    end.
-  end.
-  if. *./*./ok do. 
+    iserr=. a:= fnms=. {."1 y
+    errmsg=. (<' selection list not found') ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    
+    iserr=. -. '.csv' (-:"1) _4&{. &> fnms
+    errmsg=. (<' selection list file extension is not ".csv".') ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    fcs=. fixcsv@toJ each {:"1 y  
+    hdrs=. {.each fcs             
+    fcs=. }.each fcs              
+
+    
+    iserr=. -. *./"1 +./"1 (('Flk';'Flock'),:('uid';'Tag')) e."_ 1 >hdrs
+    errmsg=. <' selection list is missing "Tag" and/or "Flk" column labels.' ,~&.> iserr #;:'Female Male'
+    assert ''-:errmsg
+
+    anini=. 'animini' getInfo x
+    'ndams d2s xhrd'=. (<anini) getIniVals each ('hrdsizes';'dams2hrdsire';'usesiresxhrd')
+    nsires=. <.0.5&+ ndams%d2s   
+    
+    idx=. <@<./"1 (>hdrs) i."1 'Flk';'Flock' 
+    hrds=. idx {"1 each fcs 
+    nprnts=. (#/.~ /: ~.) each hrds 
+
+    
+    iserrf=. -. (listatom ndams)-: nfems=. 0{::nprnts
+    
+    iserrm=. +./ 2 < |nsires- nmales=. _1{::nprnts
+    errmsg=. 'Female selection list contained ',(":nfems),' animals, there should be ',(":ndams),'.'
+    errmsg=. errmsg; 'Male selection list contained ',(":nmales),' animals, there should be approximately ',(":nsires),'.'
+    errmsg=. (iserrf,iserrm) # errmsg
+    assert ''-: errmsg  
+
     fpth=. 'mateallocpath' getFnme x
     dat=. xhrd allocateMatings hdrs,.fcs
-    ok=. 0<(;dat) writecsv fpth
-    msg=. ok{:: 'Error writing Mate Allocation file';1
-  else.
-    msg=. (,-.ok)#,msg
+    iserr=. 1> (;dat) writecsv fpth
+    errmsg=. iserr#'Error writing Mate Allocation file'
+    assert ''-:errmsg 
+    msg=. 1
+  catch.
+    if. ''-: errmsg do. errmsg=. 13!:12 '' end.
+    msg=. errmsg
   end.
+  msg
 )
 allocateMatings=: 4 : 0
   lbls=. >{."1 y
   slsts=. {:"1 y
-  idx=. (({:$lbls)>idx)#"1 idx=.lbls i."1 'Tag';'uid';'Flk';'Flock'
+  idx=. I. lbls e."1~ ;:'Tag uid Flk Flock'
   parents=. (<"1 idx) {"1 each slsts 
   if. x do. 
     nparents=. # @> parents
   else.     
-    nparents=. (([: #@> </.~) /: ~.) @> 1{"1 each parents 
+    nparents=. (#/.~ /: ~.)@> 1{"1 each parents 
   end.
   nsiremtgs=. <. %/nparents
   rem=. |/|.nparents 
   rem=. (,rem,.rem-~{:nparents)# (+:#rem)$1 0
   mtgs=. rem+({:nparents)#nsiremtgs
-  parents=. parents /: each |."1 each parents  
+  parents=. parents (/: |."1@]) each parents  
   sires=. mtgs#>{:parents
   sires=. sires /: x}."1 (1{"1 sires),.<"0 (#sires)?@#0 
   (;:'DTag DFlk STag SFlk');< (>{.parents),.sires
@@ -1363,7 +1413,7 @@ plotsummry1=: 3 : 0
  
 )
 QRYci=: ;:'animinipath caseinstpath caseinstance caseinststatus caseinstbasics casestage paramform'
-QRYci=: QRYci, ;:'scendefpath txtblks'
+QRYci=: QRYci, ;:'scendefpath txtblks validcaseinstance validcaseinstances'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 QRYur=: ;:'caseinst2expire expiredguests usergreeting usercourses userstatus userlist username userrec'
@@ -1389,10 +1439,10 @@ DBINS=: INSci,INSur,INSof,INScs,INSss
   DBtable   =:          ;:'caseinstance paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases usercourse coursesumrys'
-DBtable   =: DBtable, ;:'sessioninfo txtblks'
+DBtable   =: DBtable, ;:'sessioninfo txtblks validcaseinstances'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
-DBrow =: DBrow, ;:'msgtxt'
+DBrow =: DBrow, ;:'validcaseinstance msgtxt'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
@@ -1462,8 +1512,8 @@ getCIInfoStored=: 4 : 0
         res=. dat=. <(toJ zread fnme) getIniAllSections ''
       case. 'caseprogress' do.
         ini=. 'animini' getCIInfoStored y
-        dat=. ini getIniValue 1&transName 'curryear'
-        res=. dat=. <dat; ini getIniValue 'ncycles'
+        dat=. ,. 1&transName each 'curryear';'ncycles'
+        res=. dat=. <ini getIniValues dat
       case. 'trtinfoall' do.
         tmp=.  (getpath_j_ 1{::fnme),'tmp.xls' 
         tmp fwrite~ zread fnme 
@@ -1488,9 +1538,8 @@ getCIInfoCurr=: 4 : 0
       res=. freads fnme
     case. 'caseprogress' do. 
       ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      res=. crcyc;ncyc
+      keys=.  ,.1&transName each 'curryear';'ncycles'
+      res=. ini getIniValues keys
     case. nms=. 'selnlistfem';'selnlistmale' do.
       fnme=. (nms i. boxopen x){ 'selnlistpath' getFnme y
       res=. freads fnme
@@ -1700,7 +1749,26 @@ sqlsel_validcase=: 0 : 0
          en.en_ofid of_id ,
          oc.oc_csid cs_id 
   FROM  `enrolments` en INNER JOIN `offeringcases` oc ON ( `en`.`en_ofid` = `oc`.`oc_ofid` ) 
-  WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
+  WHERE (en.en_urid =?) AND (en.en_ofid =?) 
+        AND (oc.oc_csid =?);
+)
+
+sqlsel_validcaseinstance=: 0 : 0
+  SELECT ci.ci_urid ci_urid ,
+         ci.ci_ofid ci_ofid ,
+         ci.ci_csid ci_csid ,
+         ci.ci_id   ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_id =?) AND (ci.ci_status >0);
+)
+
+sqlsel_validcaseinstances=: 0 : 0
+  SELECT ci.ci_urid ci_urid ,
+         ci.ci_ofid ci_ofid ,
+         ci.ci_csid ci_csid ,
+         ci.ci_id   ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_urid = ?) and (ci.ci_ofid = ?) and ((ci.ci_stored>0) OR (ci.ci_status>0));
 )
 
 sqlins_newcaseinstance=: 0 : 0
@@ -1711,7 +1779,8 @@ sqlins_newcaseinstance=: 0 : 0
 sqlsel_caseinstanceid=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
-  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) 
+        AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
 sqlsel_caseinststatus=: 0 : 0
@@ -2722,9 +2791,11 @@ getDBTable_z_=: getDBTable_rgssqliteq_
 getDBTableStr_z_=: getDBTableStr_rgssqliteq_
 insertDBTable_z_=: insertDBTable_rgssqliteq_
 updateDBTable_z_=: updateDBTable_rgssqliteq_
-require 'random convert/misc/md5'
+require 'stats/base/random convert/misc/md5'
 
 coclass 'rgspasswd'
+
+ic=: 3!:4 
 createSalt=: ([: _2&ic a. {~ [: ? 256 $~ ])&4
 randPassword=: 3 : 0
   defx=.'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789' 
@@ -2732,9 +2803,9 @@ randPassword=: 3 : 0
 :
   if. isdefseed'' do. randomize'' end.
   len=. (*#y){ 8,y  
-  len (]{~ [:?[$ [:#]) x
+  len ((?@$ #) { ]) x
 )
-isdefseed=: 3 : '+./({.2{::9!:44'''')=16807 1215910514'
+isdefseed=: 3 : '+./ 16807 1215910514 = {.2{::9!:44'''' '
 salthash=: 3 : 0
   '' salthash y 
   :
@@ -2750,66 +2821,6 @@ salthash=: 3 : 0
 
 salthash_z_=: salthash_rgspasswd_
 randPassword_z_=: randPassword_rgspasswd_
-require 'files'
-
-coclass 'rgsdiradd'
-addPS=: , PATHSEP_j_ -. {:
-dropPS=: }:^:(PATHSEP_j_={:)
-dircreate=: 3 : 0
-  y=. boxxopen y
-  msk=. -.direxist y
-  if. ''-:$msk do. msk=.(#y)#msk end.
-  res=.1!:5 msk#y
-  msk expand ,res
-)
-direxist=: 2 = ftype&>@: boxopen
-pathcreate=: 3 : 0
-  todir=. addPS jhostpath y
-  todirs=. }. ,each /\ <;.2 todir 
-  msk=. -.direxist todirs 
-  
-  
-  
-  msk=. 0 (i. msk i: 0)}msk
-  dircreate msk#todirs 
-)
-
-dircreate_z_=: dircreate_rgsdiradd_
-direxist_z_=: direxist_rgsdiradd_
-pathcreate_z_=: pathcreate_rgsdiradd_
-addPS_z_=: addPS_rgsdiradd_
-dropPS_z_=: dropPS_rgsdiradd_
-require 'dir files'
-3 : 0 ''
-if. (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. 
-  require 'dir_add' 
-end.
-)
-coclass 'rgstrees'
-copytree=: 4 : 0
-  'todir fromdir'=. addPS each x;y
-  if. -.direxist fromdir do. 0 0 return. end. 
-  dprf=. ] }.&.>~ [: # [  
-  aprf=. ]  ,&.>~ [: < [    
-  fromdirs=. }. dirpath fromdir
-  todirs=. todir aprf fromdir dprf fromdirs
-  fromfiles=. {."1 dirtree fromdir
-  tofiles=. todir aprf fromdir dprf fromfiles
-  resdir=. pathcreate todir
-  resdir=. resdir, dircreate todirs
-  resfile=. 0&< @>tofiles fcopy"0 fromfiles
-  (+/resdir),+/resfile
-)
-deltree=: 3 : 0
-  try.
-    res=.0< ferase {."1 dirtree y
-    *./ res,0<ferase |.dirpath y
-  catch. 0 end.
-)
-fcopy=: fwrite~ fread
-
-copytree_z_=: copytree_rgstrees_
-deltree_z_=: deltree_rgstrees_
 coclass 'z'
 
 ifa =: <@(>"1)@|:              
@@ -2888,90 +2899,3 @@ key=: 1 3 2{invtble
 dat=: 4 5 6{invtble
 ,.each key tkeytble (<tfreq key),key tkeyavg dat
 )
-require 'dir arc/zip/zfiles'
-require 'strings files'  
-3 : 0 ''
-  if.  (-.IFCONSOLE) *. 0>4!:0 <'pathcreate' do. 
-    require 'dir_add' 
-  end.
-)
-
-coclass 'rgsztrees'
-unziptree=: 4 : 0
-  'todir fromzip'=. x;y
-  todir=. addPS todir
-  if. -.fexist fromzip do. 0 0 return. end. 
-  fromall=. /:~{."1 zdir fromzip
-  dirmsk=. '/'={:@> fromall
-  fromfiles=. (-.dirmsk)#fromall
-  repps=. (<'/',PATHSEP_j_) charsub&.> ] 
-  aprf=. ] ,&.>~ [: < [   
-  tofiles=. repps fromfiles
-  tofiles=. todir aprf tofiles
-  fromfiles=. fromfiles,.<fromzip
-  todirs=. repps dirmsk#fromall
-  todirs=. ~.;(,each /\)@(<;.2) each todirs 
-  todirs=. todir aprf todirs
-  resdir=. pathcreate todir 
-  resdir=. resdir, dircreate todirs  
-  resfile=. 0&<@>tofiles zextract"0 1 fromfiles 
-  (+/resdir),+/resfile
-)
-ziptree=: 4 : 0
-  'tozip fromdir'=. x;y
-  if. -.direxist fromdir do. 0 0 return. end. 
-  repps=. (<PATHSEP_j_,'/') charsub&.> ] 
-  dprf=. ] }.&.>~ [: # [  
-  fromdir=. addPS fromdir
-  fromdirs=. addPS each }.dirpath fromdir
-  todirs=. repps fromdir dprf fromdirs
-  todirs=. todirs,.<tozip
-  fromfiles=. {."1 dirtree fromdir
-  tofiles=. repps fromdir dprf fromfiles
-  tofiles=. tofiles,.<tozip
-  zipdir=. PATHSEP_j_ dropto&.|. tozip
-  resdir=. pathcreate zipdir 
-  resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
-  resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
-  (+/resdir),+/resfile
-)
-zipfiles=: 4 : 0
-  fromfiles=. boxopen y
-  'tozip dirinf'=. 2{. boxopen x
-  if. *./-.fexist @> fromfiles do. 0 return. end. 
-  repps=. (<PATHSEP_j_,'/') charsub&.> ] 
-  dprf=. ] }.&.>~ [: # [  
-  aprf=. ]  ,&.>~ [: < [   
-  if. (0-:dirinf) +. (''-:dirinf) *. 1=#fromfiles do. 
-    tofiles=. '/' taketo&.|. each repps fromfiles
-    tofiles=. tofiles,.<tozip
-    todirs=. ''
-  else.
-    basedir=. (0 i. ~ *./ 2=/\>fromfiles){."1 >{.fromfiles 
-    basedir=. PATHSEP_j_ dropto&.|. basedir
-    if. 1-:dirinf do.
-      dirinf=. basedir 
-    else.
-      dirinf=. (, ('/' -. {:))^:(*@#) > repps <dirinf 
-    end.
-    tofiles=. repps dirinf aprf basedir dprf fromfiles 
-    todirs=. '/' dropto&.|. each tofiles 
-    todirs=. todirs #~ (a:~:todirs) *. ~: tolower each todirs 
-    todirs=. todirs,.<tozip
-    tofiles=. tofiles,.<tozip
-  end.
-  zipdir=. PATHSEP_j_ dropto&.|. tozip
-  resdir=. pathcreate zipdir 
-  resdir=. resdir, 0= (((#todirs),0)$'') zwrite"1 todirs 
-  resfile=. 0&<@>tofiles zcompress"1 0 fromfiles
-  (+/resdir),+/resfile
-)
-ztypes=: [: >: '/' = [: {:@> [: {."1 zdir
-
-zextract=: fwrite~ zread
-zcompress=: zwrite~ fread
-
-unziptree_z_=: unziptree_rgsztrees_
-zipfiles_z_=: zipfiles_rgsztrees_
-ziptree_z_=: ziptree_rgsztrees_
-ztypes_z_=: ztypes_rgsztrees_
