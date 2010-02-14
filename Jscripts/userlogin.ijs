@@ -4,18 +4,18 @@ NB.*createSession v creates a new user session
 NB. returns ticket to write to cookie
 NB. y is userID
 createSession=: 3 : 0
- if. isdefseed_rgspasswd_'' do. randomize'' end.
- sid=. >:?<:-:2^32 NB. random session id
- sh=. salthash ":sid 
- 'newsession' insertInfo  sid;y;sh
- tk=. writeTicket sid;{:sh
+  if. isdefseed_rgspasswd_'' do. randomize'' end.
+  sid=. >:?<:-:2^32 NB. random session id
+  sh=. salthash ":sid
+  'newsession' insertInfo sid;y;sh
+  tk=. writeTicket sid;{:sh
 )
 
 NB.*expireSession v changes status of session to inactive
 NB. maybe better to delete expired sessions?
 expireSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
-  sid=.0{:: readTicket y
+  sid=. 0{:: readTicket y
   'expiresession' updateInfo ".sid
 )
 
@@ -28,7 +28,7 @@ NB.*readTicket v reads ticket string
 NB. returns 2-item boxed list of sessionid;hash
 readTicket=: 3 : 0
   kVTable=. qsparse y  NB. qsparse from JHP
-  sid=.'ssid' keyval kVTable
+  sid=. 'ssid' keyval kVTable
   shash=. 'hash' keyval kVTable
   sid;shash
 )
@@ -37,23 +37,23 @@ NB.*registerUser v creates a new user, if successful returns userid
 NB. y is boxed list of strings from registration form
 NB. result is numeric -ve if not successful, string userid if successful
 registerUser=: 3 : 0
-  'action uname fname lname refnum email passwd'=.y
-  if. action-:'guest' do. uname=. randPassword 16  end.
-  if. *#u=.'userlogin' getInfo uname  do. NB. check usrname not already in use
+  'action uname fname lname refnum email passwd'=. y
+  if. action-:'guest' do. uname=. randPassword 16 end.
+  if. *#u=. 'userlogin' getInfo uname do. NB. check usrname not already in use
     if. NB. check if same person
-      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=.0{::u 
+      m1=. email-:'pp_email' keyval |:'userrec' getInfo uid=. 0{::u
       m2=. action-:'importuser'
-     do. 
-      uid return. NB. return existing user id 
-     else.
-      _2  return.
+    do.
+      uid return. NB. return existing user id
+    else.
+      _2 return.
     end.
-  end. 
-  if. 0=# pid=. 'idfromemail' getInfo email  do. NB. if email address not already used in people table
+  end.
+  if. 0=# pid=. 'idfromemail' getInfo email do. NB. if email address not already used in people table
     pid=. 'newperson' insertInfo fname;lname;email NB. insert person in people table
   end.
   sph=. salthash passwd NB. create salt and passhash
-  uid=.'newuser' insertInfo pid;uname;refnum;|.sph NB. insert user into database
+  uid=. 'newuser' insertInfo pid;uname;refnum;|.sph NB. insert user into database
 )
 
 NB.*enrolUsers v enrols user(s) in offering(s)
@@ -64,10 +64,10 @@ NB.     1{::y is optional numeric offering id(s) to enrol every user id in (defa
 NB. x is optional role id for enrolment [default is 1 (student)]
 enrolUsers=: 3 : 0
   1 enrolUsers y
-:
+  :
   'uids ofids'=. 2{.!.(<1) boxopen y NB. fill 1 is default offering
   rlids=. (#uids)$x
-  enrl=.(>,{uids;ofids),.(#ofids)#rlids
+  enrl=. (>,{uids;ofids),.(#ofids)#rlids
   if. 0=#enrl do. '' return. end.
   'newenrolment' insertInfo <"0 enrl
 )
@@ -80,10 +80,10 @@ NB.        ('action uname fname lname refnum email passwd')
 NB. x is optional numeric list of offering id(s) to enrol every user in
 createUsers=: 3 : 0
   1 createUsers y NB. enrol in Expt with AnSim course by default
-:
- uids=. ,registerUser"1 y
- rowids=. 1 enrolUsers ((0&< # ])uids);x NB. enrol non-negative uids
- uids
+  :
+  uids=. ,registerUser"1 y
+  rowids=. 1 enrolUsers ((0&< # ])uids);x NB. enrol non-negative uids
+  uids
 )
 
 NB.*importUsers v extract info required for user registration from external source
@@ -95,27 +95,49 @@ NB. x is optional literal label describing type of external source
 NB. EG. 'MasseyRPS' importUsers 'c:\temp\classlist200801.csv'
 importUsers=: 3 : 0
   'MasseyRPScsv' importUsers y
-:
+  :
   select. x
-   case. 'MasseyRPScsv' do.
-     NB. map  user info to csv column headers
-     'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
-     NB. require 'csv'
-     'hdr dat'=. split 13}. readcsv y
-     idx=. hdr i. uname;fname;lname;refnum;email
-     usrs=. idx{"1 dat
-     usrs=. usrs,. (hdr i.<lname){"1 dat NB. passwd=. lname
-     usrs=. (<'importuser'),.usrs      NB. action=.<'importuser'
-   case. do.
-     'unknown data source' assert 0
-  end. 
+    case. 'MasseyRPScsv' do.
+    NB. map  user info to csv column headers
+      'uname fname lname refnum email'=. ;:'stud_code forename surname stud_code email_address'
+    NB. require 'csv'
+      'hdr dat'=. split 13}. readcsv y
+      idx=. hdr i. uname;fname;lname;refnum;email
+      usrs=. idx{"1 dat
+      usrs=. usrs,. (hdr i.<lname){"1 dat NB. passwd=. lname
+      usrs=. (<'importuser'),.usrs      NB. action=.<'importuser'
+    case. do.
+      'unknown data source' assert 0
+  end.
 )
 
 NB.*updateSession v updates expiry of session
 updateSession=: 3 : 0
   if.0=#y do. y=. qcookie 'SessionTicket' end.
-  sid=.0{:: readTicket y
+  sid=. 0{:: readTicket y
   'extendsession' updateInfo ".sid
+)
+
+NB.*validCaseInstances v Checks if case instances valid for user offering
+NB. returns: length #y boolean list if at least 1 y not valid
+NB.        otherwise returns length #y list of 4-item list of boxes userID;offeringID;caseID;caseinstanceID
+NB.        if empty y then returns list of all valid 4-item list of boxes
+NB. y is empty or numerical list of caseinstanceids (ci_id)
+NB. x is optional 2-item list of boxes of userid;offeringid, otherwise gets via validEnrolment
+NB. calling with no left argument will update session expiry if valid
+validCaseInstances=: 3 : 0
+  if. 0-: uofid=. validEnrolment'' do. 0 return. end.
+  uofid validCaseInstances y
+  :
+  vldci=. }.'validcaseinstances' getInfo x
+  if. (0=#y) do.
+    vldci
+  else.
+    idx=. y i.~ >{:"1 vldci
+    if. *./ isvld=. idx< #vldci do.
+      idx{vldci     NB. if all valid return table of valid rows from vldci
+    else. isvld end.  NB. else boolean
+  end.
 )
 
 NB.*validCase v Checks if case id is valid for user offering
@@ -124,11 +146,11 @@ NB. y is optional numeric case id (cs_id), otherwise reads cookie
 NB. x is optional 2-item boxed list of user id;offering id, otherwise gets via validEnrolment
 NB. calling with no left argument will update session expiry if valid
 validCase=: 3 : 0
-  if. 0-: uofid=.validEnrolment'' do. 0 return. end.
+  if. 0-: uofid=. validEnrolment'' do. 0 return. end.
   uofid validCase y
-:
-  if. 0=#y do. y=.0 qcookie 'CaseID' end.
-  vldcs=.'validcase' getInfo x,<y
+  :
+  if. 0=#y do. y=. 0 qcookie 'CaseID' end.
+  vldcs=. 'validcase' getInfo x,<y
   if. #vldcs do. x,<y else. 0 end.
 )
 
@@ -138,11 +160,11 @@ NB. y is optional numeric offering id (of_id), otherwise reads cookie
 NB. x is optional numeric user id, otherwise gets via sessionticket cookie
 NB. calling with no left argument will update session expiry if valid
 validEnrolment=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid validEnrolment y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  enrld=.'enrolled' getInfo x;y
+  enrld=. 'enrolled' getInfo x;y
   if. #enrld do. x;y else. 0 end.
 )
 
@@ -150,11 +172,11 @@ NB.*validLogin v checks if login is valid returns userid
 NB.  y is boxed list of two strings 'username';'password'
 NB.  result is numeric _1 if not valid, string userid if valid
 validLogin=: 3 : 0
- 'usrnme passwd'=. y
+  'usrnme passwd'=. y
   if. 0=# usrnme do. _1 return. end. NB. check for empty usrname
-  uinfo =. 'userlogin' getInfo usrnme  NB. retrieve data for username
-  if. 0=# uinfo   do. _2 return. end.   NB. check username exists
-  'duid dunme dhash dsalt' =. 4{.uinfo
+  uinfo=. 'userlogin' getInfo usrnme  NB. retrieve data for username
+  if. 0=# uinfo do. _2 return. end.   NB. check username exists
+  'duid dunme dhash dsalt'=. 4{.uinfo
   if. -. dhash-: _1{::dsalt salthash passwd do. _3 return. end. NB. check password is valid
   duid
 )
@@ -167,12 +189,12 @@ NB. y is content (session ticket) of sessionID cookie
 validSession=: 3 : 0
   if. 0=#y do. y=. qcookie 'SessionTicket' end.
   'sid shash'=. readTicket y
-  sinfo=.'sessioninfo' getInfo sid NB. returns ss_urid, ss_salt, timeleft
+  sinfo=. 'sessioninfo' getInfo sid NB. returns ss_urid, ss_salt, timeleft
   if. 0=#sinfo do. 0 return. end. NB. no (active) session
-  'hdr dat'=. split sinfo         
+  'hdr dat'=. split sinfo
   (hdr)=. |:dat                   NB. assign hdrnames
   if. -. shash -: 1{::ss_salt salthash sid do. 0 return. end.
-  if. timeleft<0 do. 
+  if. timeleft<0 do.
     'expiresession' updateInfo sid
     0
   else.
@@ -184,7 +206,7 @@ validSession=: 3 : 0
 NB.*writeTicket v makes ticket string for cookie
 NB. returns string to write to cookie
 writeTicket=: 3 : 0
-  'tsid thash'=.y
+  'tsid thash'=. y
   ('ssid=',":tsid),'&hash=',thash
 )
 
@@ -194,11 +216,11 @@ NB. y is optional numeric offering id (of_id), otherwise reads cookie
 NB. x is optional numeric user id, otherwise gets via sessionticket cookie
 NB. calling with no left argument will update session expiry if valid
 getOfferingRole=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid getOfferingRole y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'OfferingID' end.
-  role=.'offeringrole' getInfo x;y
+  role=. 'offeringrole' getInfo x;y
   if. #role do. role else. 0 end.
 )
 
@@ -208,10 +230,10 @@ NB. y is optional numeric case id (cs_id), otherwise reads cookie
 NB. x is optional numeric user id, otherwise gets via sessionticket cookie
 NB. calling with no left argument will update session expiry if valid
 getCaseRole=: 3 : 0
-  if. 0-: uid=.validSession'' do. 0 return. end.
+  if. 0-: uid=. validSession'' do. 0 return. end.
   uid getCaseRole y
-:
+  :
   if. 0=#y do. y=. 0 qcookie 'CaseID' end.
-  role=.'caserole' getInfo x;y
+  role=. 'caserole' getInfo x;y
   if. #role do. role else. 0 end.
 )

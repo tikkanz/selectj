@@ -1,7 +1,5 @@
 NB. functions to do with administering users
 
-
-NB.*importUsers v imports list of users and enrols them in offering
 NB.*getOfferingUsers v gets a list of users enrolled in offering
 NB.*deleteEnrolment v deletes user enrolment
 

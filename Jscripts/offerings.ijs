@@ -90,3 +90,20 @@ getMsg=: 4 : 0
   res=. 2{.boxopen 'msgtxt' getInfo x
   res=. (y-.a:) (I. a:~:y)} res
 )
+
+
+Note 'Thoughts on cycle text page'
+Change handling of text contents for page.
+Depends look up based on cycle and page.
+Something like:
+  * page is the "pagename.asp" used to source content not url
+  * looks for entries for case for the page
+  * Case can have multiple entries for a page
+  * Takes the entry with the highest cycle less than or
+    equal to the current cycle of caseinstance.
+  * may need additional handling for "finished" case
+  
+  * How to handle more than one text block per page?
+    - have blocktype too?
+    - add at later date if necessary?
+)

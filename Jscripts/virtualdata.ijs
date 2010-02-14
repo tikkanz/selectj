@@ -13,7 +13,7 @@ NB. =========================================================
 NB. Available Database SELECT query names in their classes
 NB. y is mostly case instance id 
 QRYci=: ;:'animinipath caseinstpath caseinstance caseinststatus caseinstbasics casestage paramform'
-QRYci=: QRYci, ;:'scendefpath txtblks'
+QRYci=: QRYci, ;:'scendefpath txtblks validcaseinstance validcaseinstances'
 UPDci=: ;:'casestage caseinstusrdescr delstoredcaseinst expirecaseinst storecaseinst'
 INSci=: ;:'newcaseinstance'
 
@@ -55,10 +55,10 @@ NB. (table, tablestr, row, column, item etc)
   DBtable   =:          ;:'caseinstance paramform'
   DBtable   =: DBtable, ;:'userlist userrec usergreeting usercourses expiredguests validcase enrolled'
   DBtable   =: DBtable, ;:'coursecases usercourse coursesumrys'
-DBtable   =: DBtable, ;:'sessioninfo txtblks'
+DBtable   =: DBtable, ;:'sessioninfo txtblks validcaseinstances'
 DBtablestr=: ;:'caseinstpath'
 DBrow     =: ;:'casestage userlogin caseinststatus caseinstbasics offeringtext defaulttext casetext'
-DBrow =: DBrow, ;:'msgtxt'
+DBrow =: DBrow, ;:'validcaseinstance msgtxt'
 DBcol     =: ;:'caseinst2expire username'
 DBitem    =: ;:'animinipath scendefpath caseinstanceid userstatus idfromemail'
 DBitem=: DBitem, ;:'existoffering existofferingcases offeringxbid countofferingxbid defaulttextid'
@@ -150,8 +150,8 @@ getCIInfoStored=: 4 : 0
         res=. dat=. <(toJ zread fnme) getIniAllSections ''
       case. 'caseprogress' do.
         ini=. 'animini' getCIInfoStored y
-        dat=. ini getIniValue 1&transName 'curryear'
-        res=. dat=. <dat; ini getIniValue 'ncycles'
+        dat=. ,. 1&transName each 'curryear';'ncycles'
+        res=. dat=. <ini getIniValues dat
       case. 'trtinfoall' do.
         tmp=.  (getpath_j_ 1{::fnme),'tmp.xls' NB. temporary file name
         tmp fwrite~ zread fnme NB. read file from zip, write to temp
@@ -180,9 +180,8 @@ getCIInfoCurr=: 4 : 0
       res=. freads fnme
     case. 'caseprogress' do. NB. returns currcycle;ncycles from animalsim.ini
       ini=. getIniAllSections fnme
-      crcyc=. ini getIniValue 1&transName 'curryear'
-      ncyc=.  ini getIniValue 'ncycles'
-      res=. crcyc;ncyc
+      keys=.  ,.1&transName each 'curryear';'ncycles'
+      res=. ini getIniValues keys
     case. nms=. 'selnlistfem';'selnlistmale' do.
       fnme=. (nms i. boxopen x){ 'selnlistpath' getFnme y
       res=. freads fnme

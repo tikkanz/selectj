@@ -14,6 +14,13 @@ NB.*mfv1 v Make a 1-row matrix from a vector
 mfv1=: ,:^:(#&$ = 1:)
 NB. use mfv in convert.ijs instead
 
+NB.*addext v add extension x to filename y if necessary
+NB. eg: '.csv' addext jpath '\myfolder\myfile'
+NB. Extension is only added if one isn't already given.
+addext=: ,~^:(0 = '.' e. PATHSEP_j_&dropafter&.|.@])
+
+extcsv=: '.csv'&addext
+
 NB.*idxfnd v Returns only indexes of items of y that are found in x.
 idxfnd=: i. #~ i. < [: # [
 

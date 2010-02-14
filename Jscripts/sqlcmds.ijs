@@ -99,7 +99,26 @@ sqlsel_validcase=: 0 : 0
          en.en_ofid of_id ,
          oc.oc_csid cs_id 
   FROM  `enrolments` en INNER JOIN `offeringcases` oc ON ( `en`.`en_ofid` = `oc`.`oc_ofid` ) 
-  WHERE (en.en_urid =?) AND (en.en_ofid =?) AND (oc.oc_csid =?);
+  WHERE (en.en_urid =?) AND (en.en_ofid =?) 
+        AND (oc.oc_csid =?);
+)
+
+sqlsel_validcaseinstance=: 0 : 0
+  SELECT ci.ci_urid ci_urid ,
+         ci.ci_ofid ci_ofid ,
+         ci.ci_csid ci_csid ,
+         ci.ci_id   ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_id =?) AND (ci.ci_status >0);
+)
+
+sqlsel_validcaseinstances=: 0 : 0
+  SELECT ci.ci_urid ci_urid ,
+         ci.ci_ofid ci_ofid ,
+         ci.ci_csid ci_csid ,
+         ci.ci_id   ci_id 
+  FROM  `caseinstances`  ci 
+  WHERE (ci.ci_urid = ?) and (ci.ci_ofid = ?) and ((ci.ci_stored>0) OR (ci.ci_status>0));
 )
 
 sqlins_newcaseinstance=: 0 : 0
@@ -110,7 +129,8 @@ sqlins_newcaseinstance=: 0 : 0
 sqlsel_caseinstanceid=: 0 : 0
   SELECT ci.ci_id ci_id 
   FROM  `caseinstances`  ci 
-  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) AND (ci.ci_csid =?) AND (ci.ci_status >0);
+  WHERE (ci.ci_urid =?) AND (ci.ci_ofid =?) 
+        AND (ci.ci_csid =?) AND (ci.ci_status >0);
 )
 
 sqlsel_caseinststatus=: 0 : 0
